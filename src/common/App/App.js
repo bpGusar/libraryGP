@@ -1,6 +1,10 @@
 import React from 'react';
-import './App.css';
+import { root, branch } from 'baobab-react/higher-order';
 import axios from 'axios';
+
+import store, { PARAMS } from '../store/index';
+
+import s from './App.css';
 
 class App extends React.Component {
   state = {
@@ -20,14 +24,27 @@ class App extends React.Component {
   }
 
   render() {
+    console.log(this.props.loaded);
     return (
       <div>
         {this.state.data.map((el, key) => {
-          return <div>{el.sname}</div>;
+          return (
+            <div className={s.App} key={el._id}>
+              {el.sname}
+            </div>
+          );
         })}
       </div>
     );
   }
 }
 
-export default App;
+export default root(
+  store,
+  branch(
+    {
+      loaded: PARAMS.LOADED,
+    },
+    App,
+  ),
+);

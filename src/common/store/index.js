@@ -15,10 +15,8 @@ store.on('update', function(e) {
     const blueLog = `color: blue; font-style: italic;`;
 
     console.groupCollapsed('Store changed:  ', eventData.paths.map((path) => path[0]).join(', '));
-    //console.log('Affected paths', eventData.paths);
     console.log('%cCurrent data:', titleLog, eventData.currentData);
     console.log('%cPrevious data:', titleLog, eventData.previousData);
-    //console.log('Transaction details:', eventData.transaction);
     console.group('Transaction details: ');
     eventData.transaction.forEach((t) => {
       console.groupCollapsed('transaction: ');
