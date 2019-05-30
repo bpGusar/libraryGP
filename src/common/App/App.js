@@ -5,6 +5,7 @@ import axios from 'axios';
 import store, { PARAMS } from '../store/index';
 
 import s from './index.module.css';
+import Button from 'react-bootstrap/Button';
 
 class App extends React.Component {
   state = {
@@ -24,9 +25,9 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.props.loaded);
     return (
       <div>
+        <Button>dsfgds</Button>
         {this.state.data.map((el, key) => {
           return (
             <div className={s.app} key={el._id}>
