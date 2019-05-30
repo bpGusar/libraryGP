@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import store, { PARAMS } from '../store/index';
 
-import s from './App.css';
+import s from './index.module.css';
 
 class App extends React.Component {
   state = {
@@ -29,7 +29,7 @@ class App extends React.Component {
       <div>
         {this.state.data.map((el, key) => {
           return (
-            <div className={s.App} key={el._id}>
+            <div className={s.app} key={el._id}>
               {el.sname}
             </div>
           );
