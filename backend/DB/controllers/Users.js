@@ -8,11 +8,11 @@ export function getAll() {
   return Users.find();
 }
 
-export function setTestData(data) {
-  const testData = new Users({
-    fname: data.fname,
-    sname: data.sname,
+export function setUserCred(data) {
+  const userCred = new Users({
+    email: data.email,
+    password: data.password,
   });
 
-  return testData.save();
+  return userCred.save();
 }
