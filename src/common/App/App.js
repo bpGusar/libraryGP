@@ -1,6 +1,6 @@
 import React from 'react';
 import { root, branch } from 'baobab-react/higher-order';
-import axios from 'axios';
+import { axs } from '@axios';
 
 import store, { PARAMS } from '../store/index';
 
@@ -13,11 +13,7 @@ class App extends React.Component {
   };
 
   componentDidMount() {
-    const instance = axios.create({
-      baseURL: 'http://localhost:4000',
-    });
-
-    instance.get('/').then((resp) => {
+    axs.get('/').then((resp) => {
       this.setState({
         data: resp.data,
       });

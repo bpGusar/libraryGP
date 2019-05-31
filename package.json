@@ -9,9 +9,7 @@
   },
   "scripts": {
     "start": " concurrently \"node scripts/start.js\" \"nodemon --exec babel-node backend/server/index.js\" ",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "node scripts/build.js"
   },
   "eslintConfig": {
     "extends": "react-app"
