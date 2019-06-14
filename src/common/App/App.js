@@ -10,6 +10,8 @@ import MainPage from '@views/mainPage';
 
 import store, { PARAMS } from '../store/index';
 
+require('dotenv').config();
+
 const history = createBrowserHistory();
 
 class App extends React.Component {

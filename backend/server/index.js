@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 import * as config from '../DB/config';
 import * as Users from '../DB/controllers/Users';
 
+require('dotenv').config();
+
 const app = express();
 const secret = 'mysecretsshhh';
 
@@ -14,8 +16,8 @@ config.setUpConnection();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.listen(config.dbConfig.port, () => {
-  console.log(`Server is up and running on port ${config.dbConfig.port}`);
+app.listen(process.env.BACK_PORT, () => {
+  console.log(`Server is up and running on port ${process.env.BACK_PORT}`);
 });
 
 app.get('/api/', (req, res) => {
@@ -30,6 +32,5 @@ app.post('/api/register', (req, res) => {
     res,
   });
 });
-
 
 // сделать авторизацию
