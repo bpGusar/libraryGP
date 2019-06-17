@@ -1,8 +1,6 @@
 import Mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
-const saltRnd = 10;
-
 const Schema = Mongoose.Schema;
 
 const UsersSchema = new Schema({
@@ -27,7 +25,7 @@ UsersSchema.pre('save', function(next) {
   if (this.isNew || this.isModified('password')) {
     // Saving reference to this because of changing scopes
     const document = this;
-    bcrypt.hash(document.password, saltRnd, function(err, hashedPassword) {
+    bcrypt.hash(document.password, process.env.BCRYPT_SALT, function(err, hashedPassword) {
       if (err) {
         next(err);
       } else {
@@ -41,7 +39,7 @@ UsersSchema.pre('save', function(next) {
 });
 
 UsersSchema.methods.isCorrectPassword = function(pass, cb) {
-  bcrypt.compare(pass, this.pass, function(err, same) {
+  bcrypt.compare(pass, this.password, function(err, same) {
     if (err) {
       cb(err);
     } else {
@@ -50,4 +48,4 @@ UsersSchema.methods.isCorrectPassword = function(pass, cb) {
   });
 };
 
-Mongoose.model('Users', UsersSchema);
+export default Mongoose.model('Users', UsersSchema);

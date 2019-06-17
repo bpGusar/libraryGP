@@ -10,6 +10,8 @@ import MainPage from '@views/mainPage';
 
 import store, { PARAMS } from '../store/index';
 
+import withAuth from '../../views/withAuth';
+
 require('dotenv').config();
 
 const history = createBrowserHistory();
@@ -25,8 +27,17 @@ class App extends React.Component {
           <Link to='/secret'>Секрет</Link>
           <Switch>
             <Route exact path='/' component={MainPage} />
-            <Route exact path='/login' component={LoginPage} />
-            <Route exact path='/secret' render={() => <div>секретная страница</div>} />
+            <Route exact path='/login' component={withAuth(LoginPage, false)} />
+            <Route
+              exact
+              path='/secret'
+              component={withAuth(
+                () => (
+                  <div>секретная страница</div>
+                ),
+                true,
+              )}
+            />
           </Switch>
           ФУТЕР
         </Container>
