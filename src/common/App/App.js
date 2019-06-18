@@ -10,6 +10,7 @@ import { axs } from '@axios';
 
 import LoginPage from '@views/loginPage';
 import MainPage from '@views/mainPage';
+import Header from '@views/header';
 
 import store, { PARAMS } from '../store/index';
 import { authStatus, isAuthInProgress } from '@act';
@@ -18,11 +19,13 @@ const history = createBrowserHistory();
 
 class App extends React.Component {
   componentDidMount() {
-    this.checkToken();
-    setInterval(this.checkToken(), 25000);
+    this.checkAuth();
+    if (Cookies.get('token') !== undefined) {
+      setInterval(() => this.checkAuth(), 25000);
+    }
   }
 
-  checkToken() {
+  checkAuth() {
     axs
       .get('/api/checkToken/', { headers: { 'x-access-token': Cookies.get('token') } })
       .then((res) => {
@@ -30,8 +33,8 @@ class App extends React.Component {
           this.props.dispatch(authStatus, true);
           this.props.dispatch(isAuthInProgress, false);
         } else {
-          const error = new Error(res.error);
-          throw error;
+          this.props.dispatch(authStatus, false);
+          this.props.dispatch(isAuthInProgress, false);
         }
       })
       .catch((err) => {
@@ -40,13 +43,36 @@ class App extends React.Component {
       });
   }
 
+  getUserInfo(){
+    axs.get('api/getUserInfo/', )
+  }
+
   render() {
     const PrivateRoute = ({ component: Component, ...rest }) => {
-      return <Route {...rest} render={(props) => (this.props.isUserAuthorized ? <Component {...props} /> : <Redirect to='/login' />)} />;
+      return (
+        <Route
+          {...rest}
+          render={(props) => {
+            this.checkAuth();
+
+            return this.props.isUserAuthorized ? (
+              <Component {...props} />
+            ) : (
+              <Redirect
+                to={{
+                  pathname: '/login',
+                  state: { from: props.location },
+                }}
+              />
+            );
+          }}
+        />
+      );
     };
     return (
       <Router history={history}>
         <Container>
+          <Header />
           ШАПКА
           <Link to='/login'>Вход</Link>
           <Link to='/'>Главная</Link>
@@ -62,7 +88,7 @@ class App extends React.Component {
               <>
                 <Route exact path='/' component={MainPage} />
                 <Route exact path='/login' component={LoginPage} />
-                <PrivateRoute exact path='/secret' isUserAuthorized={this.props.isUserAuthorized} component={() => <div>секретная страница</div>} />
+                <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
               </>
             )}
           </Switch>

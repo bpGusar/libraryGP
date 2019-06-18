@@ -45,7 +45,9 @@ app.post('/api/auth/', (req, res) => {
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: '1h',
           });
-          res.cookie('token', token, { httpOnly: false }).sendStatus(200);
+          res
+            .cookie('token', token, { httpOnly: false })
+            .json(user)
         }
       });
     }
@@ -53,6 +55,7 @@ app.post('/api/auth/', (req, res) => {
 });
 
 app.get('/api/checkToken', withAuth, function(req, res) {
+  console.log(res.body);
   res.sendStatus(200);
 });
 

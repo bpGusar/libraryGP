@@ -8,7 +8,7 @@
     "url": "https://github.com/bpGusar"
   },
   "scripts": {
-    "start": " concurrently \"node scripts/start.js\" \"nodemon --exec babel-node backend/server/index.js\" ",
+    "start": " concurrently \"yarn install\" \"node scripts/start.js\" \"nodemon --exec babel-node backend/server/index.js\" ",
     "build": "node scripts/build.js"
   },
   "eslintConfig": {
@@ -66,6 +66,7 @@
     "react-bootstrap": "^1.0.0-beta.8",
     "react-dev-utils": "^9.0.1",
     "react-dom": "^16.8.6",
+    "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1",
     "resolve": "1.10.0",

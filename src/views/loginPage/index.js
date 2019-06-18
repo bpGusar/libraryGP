@@ -3,7 +3,7 @@ import { Row, Col, Form, Button } from 'react-bootstrap';
 
 import { branch } from 'baobab-react/higher-order';
 import { PARAMS } from '@store';
-import { authStatus } from '@act';
+import { authStatus, setUserInfo } from '@act';
 
 import { axs } from '@axios';
 
@@ -33,6 +33,7 @@ class loginPage extends Component {
     axs.post('/api/auth/', this.state, { withCredentials: true }).then((res) => {
       if (res.status === 200) {
         this.props.dispatch(authStatus, true);
+        this.props.dispatch(setUserInfo, res.data.login);
         this.props.history.push('/');
       } else {
         this.props.dispatch(authStatus, false);
