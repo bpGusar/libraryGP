@@ -1,13 +1,23 @@
 import React, { Component } from 'react';
 import { Row, Col, Form, Button } from 'react-bootstrap';
 
+import { branch } from 'baobab-react/higher-order';
+import { PARAMS } from '@store';
+import { authStatus } from '@act';
+
 import { axs } from '@axios';
 
-export default class loginPage extends Component {
+class loginPage extends Component {
   state = {
     email: '',
     password: '',
   };
+
+  componentDidMount() {
+    if (this.props.isUserAuthorized) {
+      this.props.history.push('/');
+    }
+  }
 
   handleInputChange(e) {
     const { value, name } = e.target;
@@ -22,8 +32,10 @@ export default class loginPage extends Component {
 
     axs.post('/api/auth/', this.state, { withCredentials: true }).then((res) => {
       if (res.status === 200) {
+        this.props.dispatch(authStatus, true);
         this.props.history.push('/');
       } else {
+        this.props.dispatch(authStatus, false);
         const error = new Error(res.error);
         throw error;
       }
@@ -70,3 +82,5 @@ export default class loginPage extends Component {
     );
   }
 }
+
+export default branch({ isUserAuthorized: PARAMS.IS_USER_AUTHORIZED }, loginPage);
