@@ -43,11 +43,9 @@ app.post('/api/auth/', (req, res) => {
         } else {
           const payload = { email };
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '1h',
+            expiresIn: '365d',
           });
-          res
-            .cookie('token', token, { httpOnly: false })
-            .json(user)
+          res.cookie('token', token, { httpOnly: false }).json(user);
         }
       });
     }
@@ -55,8 +53,19 @@ app.post('/api/auth/', (req, res) => {
 });
 
 app.get('/api/checkToken', withAuth, function(req, res) {
-  console.log(res.body);
   res.sendStatus(200);
+});
+
+app.get('/api/getUserInfo', withAuth, function(req, res) {
+  Users.findOne({email: req.email}, (err, user) => {
+    if (err) {
+      res.status(500).json({ errorCode: 'ERR_INTERNAL_ERR_500' });
+    } else if (!user) {
+      res.status(401).json({ errorCode: 'ERR_WRONG_EMAIL' });
+    } else {
+      res.json(user);
+    }
+  });
 });
 
 app.post('/api/register', (req, res) => {

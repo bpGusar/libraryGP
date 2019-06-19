@@ -8,7 +8,7 @@
     "url": "https://github.com/bpGusar"
   },
   "scripts": {
-    "start": " concurrently \"yarn install\" \"node scripts/start.js\" \"nodemon --exec babel-node backend/server/index.js\" ",
+    "start": " concurrently \"yarn install\" \"node scripts/start.js\" \"nodemon --exec babel-node backend/server/index.js --ignore src/\" ",
     "build": "node scripts/build.js"
   },
   "eslintConfig": {

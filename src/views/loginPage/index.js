@@ -30,7 +30,7 @@ class loginPage extends Component {
   onSubmit = (event) => {
     event.preventDefault();
 
-    axs.post('/api/auth/', this.state, { withCredentials: true }).then((res) => {
+    axs.post('/auth/', this.state, { withCredentials: true }).then((res) => {
       if (res.status === 200) {
         this.props.dispatch(authStatus, true);
         this.props.dispatch(setUserInfo, res.data.login);

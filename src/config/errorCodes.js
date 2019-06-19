@@ -3,6 +3,7 @@ export const ERROR_KEYS = {
   errorToken2: 'ERR_ACCESS_BY_TOKEN_2',
   internalErr500: 'ERR_INTERNAL_ERR_500',
   wrongAuthCred: 'ERR_WRONG_AUTH_CRED',
+  wrongEmail: 'ERR_WRONG_EMAIL',
 };
 
 export const ERROR_INSTR = {
@@ -20,6 +21,10 @@ export const ERROR_INSTR = {
   },
   [ERROR_KEYS.wrongAuthCred]: {
     ru: 'Не правильный e-mail или пароль.',
+    en: '',
+  },
+  [ERROR_KEYS.wrongEmail]: {
+    ru: 'Не правильный e-mail при поиске пользователя.',
     en: '',
   },
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { root, branch } from 'baobab-react/higher-order';
 import { Container, Spinner } from 'react-bootstrap';
 import { Switch, Route, Router } from 'react-router';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import Cookies from 'js-cookie';
 import 'dotenv/config';
@@ -13,21 +13,24 @@ import MainPage from '@views/mainPage';
 import Header from '@views/header';
 
 import store, { PARAMS } from '../store/index';
-import { authStatus, isAuthInProgress } from '@act';
+import { authStatus, isAuthInProgress, setUserInfo } from '@act';
 
 const history = createBrowserHistory();
 
 class App extends React.Component {
   componentDidMount() {
-    this.checkAuth();
     if (Cookies.get('token') !== undefined) {
-      setInterval(() => this.checkAuth(), 25000);
+      this.checkAuth();
+      this.getUserInfo();
+    } else {
+      this.props.dispatch(authStatus, false);
+      this.props.dispatch(isAuthInProgress, false);
     }
   }
 
   checkAuth() {
     axs
-      .get('/api/checkToken/', { headers: { 'x-access-token': Cookies.get('token') } })
+      .get('/checkToken/', { headers: { 'x-access-token': Cookies.get('token') } })
       .then((res) => {
         if (res.status === 200) {
           this.props.dispatch(authStatus, true);
@@ -43,8 +46,13 @@ class App extends React.Component {
       });
   }
 
-  getUserInfo(){
-    axs.get('api/getUserInfo/', )
+  getUserInfo() {
+    axs
+      .get('/getUserInfo/', { headers: { 'x-access-token': Cookies.get('token') } })
+      .then((res) => {
+        this.props.dispatch(setUserInfo, res.data.login);
+      })
+      .catch((err) => {});
   }
 
   render() {
@@ -73,10 +81,6 @@ class App extends React.Component {
       <Router history={history}>
         <Container>
           <Header />
-          ШАПКА
-          <Link to='/login'>Вход</Link>
-          <Link to='/'>Главная</Link>
-          <Link to='/secret'>Секрет</Link>
         </Container>
         <Container>
           <Switch>
