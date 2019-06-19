@@ -34,7 +34,7 @@ class loginPage extends Component {
       if (res.status === 200) {
         this.props.dispatch(authStatus, true);
         this.props.dispatch(setUserInfo, res.data.login);
-        this.props.history.push('/');
+        document.location.href = '/';
       } else {
         this.props.dispatch(authStatus, false);
         const error = new Error(res.error);

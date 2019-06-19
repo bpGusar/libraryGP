@@ -30,7 +30,7 @@ class App extends React.Component {
 
   checkAuth() {
     axs
-      .get('/checkToken/', { headers: { 'x-access-token': Cookies.get('token') } })
+      .get('/checkToken/')
       .then((res) => {
         if (res.status === 200) {
           this.props.dispatch(authStatus, true);
@@ -48,7 +48,7 @@ class App extends React.Component {
 
   getUserInfo() {
     axs
-      .get('/getUserInfo/', { headers: { 'x-access-token': Cookies.get('token') } })
+      .get('/getUserInfo/')
       .then((res) => {
         this.props.dispatch(setUserInfo, res.data.login);
       })
@@ -85,9 +85,7 @@ class App extends React.Component {
         <Container>
           <Switch>
             {this.props.isAuthInProgress ? (
-              <Spinner animation='border' role='status'>
-                <span className='sr-only'>Loading...</span>
-              </Spinner>
+              <Spinner animation='border' variant='danger' />
             ) : (
               <>
                 <Route exact path='/' component={MainPage} />

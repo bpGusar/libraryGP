@@ -73,7 +73,6 @@ app.post('/api/register', (req, res) => {
     login: 'admin',
     email: 'admin@admin.kek',
     password: '123412341234123',
-    res,
   });
 });
 
