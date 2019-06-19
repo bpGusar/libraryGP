@@ -21,7 +21,6 @@ class loginPage extends Component {
   }
 
   handleInputChange(e) {
-    console.log(e.currentTarget.value);
     const { value, name } = e.target;
 
     this.setState({
@@ -33,9 +32,10 @@ class loginPage extends Component {
     e.preventDefault();
 
     axs.post('/auth/', this.state, { withCredentials: true }).then((res) => {
+      console.log(res);
       if (res.status === 200) {
+        localStorage.setItem('token', res.data.token);
         this.props.dispatch(authStatus, true);
-        this.props.dispatch(setUserInfo, res.data.login);
         document.location.href = '/';
       } else {
         this.props.dispatch(authStatus, false);

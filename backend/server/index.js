@@ -24,14 +24,14 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 app.post('/api/auth/', (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
   Users.findOne({ email }, (err, user) => {
     if (err) {
       res.status(500).json({ errorCode: 'ERR_INTERNAL_ERR_500' });
     } else if (!user) {
       res.status(401).json({ errorCode: 'ERR_WRONG_AUTH_CRED' });
     } else {
-      user.isCorrectPassword(password, function(err, same) {
+      user.isCorrectPassword(password, function (err, same) {
         if (err) {
           res.status(500).json({
             errorCode: 'ERR_INTERNAL_ERR_500',
@@ -43,27 +43,27 @@ app.post('/api/auth/', (req, res) => {
         } else {
           const payload = { email };
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '365d',
+            expiresIn: rememberMe ? '365d' : '1d',
           });
-          res.cookie('token', token, { httpOnly: false }).json(user);
+          res.json({ token, user: { email: user.email, login: user.login } });
         }
       });
     }
   });
 });
 
-app.get('/api/checkAuthStatus', withAuth, function(req, res) {
+app.get('/api/checkAuthStatus', withAuth, function (req, res) {
   res.sendStatus(200);
 });
 
-app.get('/api/getUserInfo', withAuth, function(req, res) {
-  Users.findOne({email: req.email}, (err, user) => {
+app.get('/api/getUserInfo', withAuth, function (req, res) {
+  Users.findOne({ email: req.email }, (err, user) => {
     if (err) {
       res.status(500).json({ errorCode: 'ERR_INTERNAL_ERR_500' });
     } else if (!user) {
       res.status(401).json({ errorCode: 'ERR_WRONG_EMAIL' });
     } else {
-      res.json(user);
+      res.json({ login: user.login });
     }
   });
 });

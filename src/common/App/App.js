@@ -4,7 +4,6 @@ import { Container, Spinner } from 'react-bootstrap';
 import { Switch, Route, Router } from 'react-router';
 import { Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
-import Cookies from 'js-cookie';
 import 'dotenv/config';
 import { axs } from '@axios';
 
@@ -19,7 +18,7 @@ const history = createBrowserHistory();
 
 class App extends React.Component {
   componentDidMount() {
-    if (Cookies.get('token') !== undefined) {
+    if (localStorage.getItem('token') !== undefined) {
       this.checkAuth();
       this.getUserInfo();
     } else {
@@ -52,7 +51,7 @@ class App extends React.Component {
       .then((res) => {
         this.props.dispatch(setUserInfo, res.data.login);
       })
-      .catch((err) => {});
+      .catch((err) => { });
   }
 
   render() {
@@ -66,13 +65,13 @@ class App extends React.Component {
             return this.props.isUserAuthorized ? (
               <Component {...props} />
             ) : (
-              <Redirect
-                to={{
-                  pathname: '/login',
-                  state: { from: props.location },
-                }}
-              />
-            );
+                <Redirect
+                  to={{
+                    pathname: '/login',
+                    state: { from: props.location },
+                  }}
+                />
+              );
           }}
         />
       );
@@ -87,12 +86,12 @@ class App extends React.Component {
             {this.props.isAuthInProgress ? (
               <Spinner animation='border' variant='danger' />
             ) : (
-              <>
-                <Route exact path='/' component={MainPage} />
-                <Route exact path='/login' component={LoginPage} />
-                <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
-              </>
-            )}
+                <>
+                  <Route exact path='/' component={MainPage} />
+                  <Route exact path='/login' component={LoginPage} />
+                  <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
+                </>
+              )}
           </Switch>
         </Container>
         <Container>ФУТЕР</Container>
