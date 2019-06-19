@@ -30,7 +30,7 @@ class App extends React.Component {
 
   checkAuth() {
     axs
-      .get('/checkToken/')
+      .get('/checkAuthStatus/')
       .then((res) => {
         if (res.status === 200) {
           this.props.dispatch(authStatus, true);

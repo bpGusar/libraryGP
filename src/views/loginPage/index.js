@@ -11,6 +11,7 @@ class loginPage extends Component {
   state = {
     email: '',
     password: '',
+    rememberMe: true,
   };
 
   componentDidMount() {
@@ -20,6 +21,7 @@ class loginPage extends Component {
   }
 
   handleInputChange(e) {
+    console.log(e.currentTarget.value);
     const { value, name } = e.target;
 
     this.setState({
@@ -27,8 +29,8 @@ class loginPage extends Component {
     });
   }
 
-  onSubmit = (event) => {
-    event.preventDefault();
+  onSubmit = (e) => {
+    e.preventDefault();
 
     axs.post('/auth/', this.state, { withCredentials: true }).then((res) => {
       if (res.status === 200) {
@@ -72,7 +74,13 @@ class loginPage extends Component {
               />
             </Form.Group>
             <Form.Group controlId='formBasicChecbox'>
-              <Form.Check type='checkbox' label='Запомнить меня' />
+              <Form.Check
+                name='rememberMe'
+                checked={this.state.rememberMe}
+                type='checkbox'
+                label='Запомнить меня'
+                onChange={(e) => this.setState({ [e.currentTarget.name]: !this.state.rememberMe })}
+              />
             </Form.Group>
             <Button variant='primary' type='submit'>
               Войти

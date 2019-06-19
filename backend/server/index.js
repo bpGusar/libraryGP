@@ -52,7 +52,7 @@ app.post('/api/auth/', (req, res) => {
   });
 });
 
-app.get('/api/checkToken', withAuth, function(req, res) {
+app.get('/api/checkAuthStatus', withAuth, function(req, res) {
   res.sendStatus(200);
 });
 
