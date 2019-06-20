@@ -3,7 +3,7 @@ import { Row, Col, Form, Button } from 'react-bootstrap';
 
 import { branch } from 'baobab-react/higher-order';
 import { PARAMS } from '@store';
-import { authStatus, setUserInfo } from '@act';
+import { authStatus } from '@act';
 
 import { axs } from '@axios';
 
@@ -35,7 +35,6 @@ class loginPage extends Component {
       console.log(res);
       if (res.status === 200) {
         localStorage.setItem('token', res.data.token);
-        this.props.dispatch(authStatus, true);
         document.location.href = '/';
       } else {
         this.props.dispatch(authStatus, false);

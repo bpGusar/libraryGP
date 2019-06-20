@@ -1,6 +1,6 @@
 import React from 'react';
 import { root, branch } from 'baobab-react/higher-order';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container, Spinner, Row, Col, Card } from 'react-bootstrap';
 import { Switch, Route, Router } from 'react-router';
 import { Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
@@ -51,7 +51,7 @@ class App extends React.Component {
       .then((res) => {
         this.props.dispatch(setUserInfo, res.data.login);
       })
-      .catch((err) => { });
+      .catch((err) => {});
   }
 
   render() {
@@ -65,13 +65,13 @@ class App extends React.Component {
             return this.props.isUserAuthorized ? (
               <Component {...props} />
             ) : (
-                <Redirect
-                  to={{
-                    pathname: '/login',
-                    state: { from: props.location },
-                  }}
-                />
-              );
+              <Redirect
+                to={{
+                  pathname: '/login',
+                  state: { from: props.location },
+                }}
+              />
+            );
           }}
         />
       );
@@ -81,18 +81,24 @@ class App extends React.Component {
         <Container>
           <Header />
         </Container>
-        <Container>
-          <Switch>
-            {this.props.isAuthInProgress ? (
-              <Spinner animation='border' variant='danger' />
-            ) : (
-                <>
-                  <Route exact path='/' component={MainPage} />
-                  <Route exact path='/login' component={LoginPage} />
-                  <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
-                </>
-              )}
-          </Switch>
+        <Container className="mt-3 mb-3">
+          <Row>
+            <Col lg={12}>
+              <Card>
+                <Switch>
+                  {this.props.isAuthInProgress ? (
+                    <Spinner animation='border' variant='danger' />
+                  ) : (
+                    <div className="m-3">
+                      <Route exact path='/' component={MainPage} />
+                      <Route exact path='/login' component={LoginPage} />
+                      <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
+                    </div >
+                  )}
+                </Switch>
+              </Card>
+            </Col>
+          </Row>
         </Container>
         <Container>ФУТЕР</Container>
       </Router>
