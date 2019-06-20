@@ -81,19 +81,21 @@ class App extends React.Component {
         <Container>
           <Header />
         </Container>
-        <Container className="mt-3 mb-3">
+        <Container className='mt-3 mb-3'>
           <Row>
             <Col lg={12}>
               <Card>
                 <Switch>
-                  {this.props.isAuthInProgress ? (
-                    <Spinner animation='border' variant='danger' />
+                  {this.props.isAuthInProgress || this.props.pageLoaded ? (
+                    <div className='m-3'>
+                      <Spinner animation='border' variant='danger' />
+                    </div>
                   ) : (
-                    <div className="m-3">
+                    <div className='m-3'>
                       <Route exact path='/' component={MainPage} />
                       <Route exact path='/login' component={LoginPage} />
                       <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
-                    </div >
+                    </div>
                   )}
                 </Switch>
               </Card>
@@ -111,6 +113,7 @@ export default root(
   branch(
     {
       isAuthInProgress: PARAMS.IS_AUTH_IN_PROGRESS,
+      pageLoaded: PARAMS.LOADED,
       isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
     },
     App,

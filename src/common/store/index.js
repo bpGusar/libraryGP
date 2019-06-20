@@ -2,6 +2,7 @@ import Baobab from 'baobab';
 
 export const PARAMS = {
   IS_AUTH_IN_PROGRESS: 'is auth in progress',
+  LOADED: 'loading in progress',
   IS_USER_AUTHORIZED: 'is user authorized',
   USER_INFO: 'information about logged user',
 };
@@ -9,6 +10,7 @@ export const PARAMS = {
 const store = new Baobab({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
   [PARAMS.IS_USER_AUTHORIZED]: false,
+  [PARAMS.LOADED]: false,
   [PARAMS.USER_INFO]: '',
 });
 
