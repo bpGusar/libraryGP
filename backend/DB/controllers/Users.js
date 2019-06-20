@@ -9,10 +9,13 @@ export function getAll() {
 }
 
 export function setUserCred(data) {
-  const userCred = new Users({
-    email: data.email,
-    password: data.password,
+  const { login, email, password } = data;
+  const user = new Users({ login, email, password });
+  user.save(function(err) {
+    if (err) {
+      data.res.status(500).send('Error registering new user please try again.');
+    } else {
+      data.res.status(200).send('Welcome to the club!');
+    }
   });
-
-  return userCred.save();
 }

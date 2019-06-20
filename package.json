@@ -8,10 +8,8 @@
     "url": "https://github.com/bpGusar"
   },
   "scripts": {
-    "start": " concurrently \"node scripts/start.js\" \"nodemon --exec babel-node backend/server/index.js\" ",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": " concurrently \"yarn install\" \"node scripts/start.js\" \"nodemon --exec babel-node backend/server/index.js --ignore src/\" ",
+    "build": "node scripts/build.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -28,10 +26,13 @@
     "babel-preset-react-app": "^9.0.0",
     "baobab": "^2.5.2",
     "baobab-react": "^4.0.0",
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
     "camelcase": "^5.2.0",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
+    "concurrently": "^4.1.0",
+    "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "css-loader": "2.1.1",
     "dotenv": "6.2.0",
@@ -54,6 +55,8 @@
     "jest-environment-jsdom-fourteen": "0.1.0",
     "jest-resolve": "24.7.1",
     "jest-watch-typeahead": "0.3.0",
+    "js-cookie": "^2.2.0",
+    "jsonwebtoken": "^8.5.1",
     "mini-css-extract-plugin": "0.5.0",
     "mongodb": "^3.2.5",
     "mongoose": "^5.5.9",
@@ -64,6 +67,7 @@
     "react-bootstrap": "^1.0.0-beta.8",
     "react-dev-utils": "^9.0.1",
     "react-dom": "^16.8.6",
+    "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1",
     "resolve": "1.10.0",

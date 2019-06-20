@@ -1,11 +1,15 @@
 import Baobab from 'baobab';
 
 export const PARAMS = {
-  LOADED: 'loaded',
+  IS_AUTH_IN_PROGRESS: 'is auth in progress',
+  IS_USER_AUTHORIZED: 'is user authorized',
+  USER_INFO: 'information about logged user',
 };
 
 const store = new Baobab({
-  [PARAMS.LOADED]: false,
+  [PARAMS.IS_AUTH_IN_PROGRESS]: true,
+  [PARAMS.IS_USER_AUTHORIZED]: false,
+  [PARAMS.USER_INFO]: '',
 });
 
 store.on('update', function(e) {
