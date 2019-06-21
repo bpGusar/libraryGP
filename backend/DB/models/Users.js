@@ -18,14 +18,16 @@ const UsersSchema = new Schema({
     type: String,
     required: true,
   },
+  userGroup: {
+    type: Number,
+    required: true,
+  },
 });
 
 UsersSchema.pre('save', function(next) {
-  // Check if document is new or a new password has been set
   if (this.isNew || this.isModified('password')) {
-    // Saving reference to this because of changing scopes
     const document = this;
-    bcrypt.hash(document.password, process.env.BCRYPT_SALT, function(err, hashedPassword) {
+    bcrypt.hash(document.password, Number(process.env.BCRYPT_SALT), function(err, hashedPassword) {
       if (err) {
         next(err);
       } else {

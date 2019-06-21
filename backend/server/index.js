@@ -4,10 +4,16 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import { MSG } from '../../config/msgCodes';
+import { getMsgByCode } from '../DB/config';
 
 import * as config from '../DB/config';
+
 import * as UsersContr from '../DB/controllers/Users';
+
 import Users from '../DB/models/Users';
+import Menu from '../DB/models/Menu';
+
 import { withAuth } from './middleware';
 
 const app = express();
@@ -27,52 +33,103 @@ app.post('/api/auth/', (req, res) => {
   const { email, password, rememberMe } = req.body;
   Users.findOne({ email }, (err, user) => {
     if (err) {
-      res.status(500).json({ errorCode: 'ERR_INTERNAL_ERR_500' });
+      res.status(500).json({ msg: getMsgByCode(MSG.internalErr500) });
     } else if (!user) {
-      res.status(401).json({ errorCode: 'ERR_WRONG_AUTH_CRED' });
+      res.status(401).json({ msg: getMsgByCode(MSG.ERR_WRONG_AUTH_CRED) });
     } else {
-      user.isCorrectPassword(password, function (err, same) {
+      user.isCorrectPassword(password, function(err, same) {
         if (err) {
           res.status(500).json({
-            errorCode: 'ERR_INTERNAL_ERR_500',
+            msg: getMsgByCode(MSG.internalErr500),
           });
         } else if (!same) {
           res.status(401).json({
-            errorCode: 'ERR_WRONG_AUTH_CRED',
+            msg: getMsgByCode(MSG.wrongAuthCred),
           });
         } else {
-          const payload = { email };
+          const { email, userGroup } = user;
+          const payload = { email, userGroup };
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: rememberMe ? '365d' : '1d',
           });
-          res.json({ token, user: { email: user.email, login: user.login } });
+          res.json({ token });
         }
       });
     }
   });
 });
 
-app.get('/api/checkAuthStatus', withAuth, function (req, res) {
+app.post('/api/checkAuth', withAuth, (req, res) => {
   res.sendStatus(200);
 });
 
-app.get('/api/getUserInfo', withAuth, function (req, res) {
+app.post('/api/getUserInfo', withAuth, (req, res) => {
   Users.findOne({ email: req.email }, (err, user) => {
     if (err) {
-      res.status(500).json({ errorCode: 'ERR_INTERNAL_ERR_500' });
+      res.status(500).json({ msg: getMsgByCode(MSG.internalErr500) });
     } else if (!user) {
-      res.status(401).json({ errorCode: 'ERR_WRONG_EMAIL' });
+      res.status(401).json({ msg: getMsgByCode(MSG.wrongEmail) });
     } else {
-      res.json({ login: user.login });
+      res.json({ user: { login: user.login, role: user.userGroup } });
     }
   });
 });
 
 app.post('/api/register', (req, res) => {
   UsersContr.setUserCred({
-    login: 'admin',
-    email: 'admin@admin.kek',
+    login: 'admins',
+    email: 'admin@admin.kekы',
     password: '123412341234123',
+    userGroup: 2,
+    res,
+  });
+});
+
+app.post('/api/getMenu', (req, res) => {
+  Menu.findOne({ email: req.menuId }, (err, menu) => {
+    if (err) {
+      res.status(500).json({ msg: getMsgByCode(MSG.internalErr500), err });
+    } else if (!menu) {
+      res.status(401).json({ msg: getMsgByCode(MSG.cannotFindMenu) });
+    } else {
+      res.json(menu);
+    }
+  });
+});
+
+app.put('/api/menu', (req, res) => {
+  const newmenu = {
+    menu: {
+      always: [
+        {
+          to: '/',
+          name: 'Главная',
+        },
+      ],
+      authorized: [
+        {
+          to: '/secret',
+          name: 'Секрет',
+        },
+        {
+          to: '/346345634',
+          name: '34563456345',
+        },
+      ],
+      onlyNotAuthorized: [
+        {
+          to: '/login',
+          name: 'Вход',
+        },
+      ],
+    },
+  };
+  Menu.update({ _id: '5d0cdd7669529541dc73e657' }, { ...newmenu }, (err, menu) => {
+    if (err) {
+      res.json({ msg: getMsgByCode(MSG.cannotUpdateMenu), err });
+    } else {
+      res.json({ msg: getMsgByCode(MSG.menuWasUpdated) });
+    }
   });
 });
 

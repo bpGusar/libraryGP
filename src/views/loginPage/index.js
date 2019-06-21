@@ -32,7 +32,6 @@ class loginPage extends Component {
     e.preventDefault();
 
     axs.post('/auth/', this.state, { withCredentials: true }).then((res) => {
-      console.log(res);
       if (res.status === 200) {
         localStorage.setItem('token', res.data.token);
         document.location.href = '/';

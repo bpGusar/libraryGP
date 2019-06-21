@@ -9,5 +9,9 @@ export function isAuthInProgress(store, status) {
 }
 
 export function setUserInfo(store, info) {
-  store.set(PARAMS.USER_INFO, info);
+  store.set(PARAMS.USER_INFO, { ...info });
+}
+
+export function getMenuFromDB(store, menu) {
+  store.set(PARAMS.MENU, { ...menu });
 }

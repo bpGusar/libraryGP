@@ -11,14 +11,14 @@ import LoginPage from '@views/loginPage';
 import MainPage from '@views/mainPage';
 import Header from '@views/header';
 
-import store, { PARAMS } from '../store/index';
+import store, { PARAMS } from '@store';
 import { authStatus, isAuthInProgress, setUserInfo } from '@act';
 
 const history = createBrowserHistory();
 
 class App extends React.Component {
   componentDidMount() {
-    if (localStorage.getItem('token') !== undefined) {
+    if (localStorage.getItem('token') !== null) {
       this.checkAuth();
       this.getUserInfo();
     } else {
@@ -29,7 +29,7 @@ class App extends React.Component {
 
   checkAuth() {
     axs
-      .get('/checkAuthStatus/')
+      .post('/checkAuth/')
       .then((res) => {
         if (res.status === 200) {
           this.props.dispatch(authStatus, true);
@@ -47,9 +47,9 @@ class App extends React.Component {
 
   getUserInfo() {
     axs
-      .get('/getUserInfo/')
+      .post('/getUserInfo/')
       .then((res) => {
-        this.props.dispatch(setUserInfo, res.data.login);
+        this.props.dispatch(setUserInfo, res.data.user);
       })
       .catch((err) => {});
   }
@@ -115,6 +115,7 @@ export default root(
       isAuthInProgress: PARAMS.IS_AUTH_IN_PROGRESS,
       pageLoaded: PARAMS.LOADED,
       isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
+      user: PARAMS.USER_INFO,
     },
     App,
   ),
