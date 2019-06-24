@@ -68,7 +68,7 @@ class loginPage extends Component {
             checked={this.state.rememberMe}
             type='checkbox'
             label='Запомнить меня'
-            onChange={(e) => this.setState({ [e.currentTarget.name]: !this.state.rememberMe })}
+            onChange={(e) => this.setState({ rememberMe: !this.state.rememberMe })}
           />
         </Form.Field>
         <Button type='submit'>Войти</Button>

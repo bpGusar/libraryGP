@@ -1,8 +1,7 @@
 import React from 'react';
 import { root, branch } from 'baobab-react/higher-order';
 import { Switch, Route, Router } from 'react-router';
-import { Redirect } from 'react-router-dom';
-import { Grid, Segment, Dimmer, Loader, Image, Container } from 'semantic-ui-react';
+import { Segment, Dimmer, Loader, Image, Container } from 'semantic-ui-react';
 import { createBrowserHistory } from 'history';
 import 'dotenv/config';
 import { axs } from '@axios';
@@ -11,6 +10,7 @@ import LoginPage from '@views/LoginPage';
 import MainPage from '@views/MainPage';
 import Header from '@views/Header';
 import AddBookPage from '@views/AddBookPage';
+import AccessDenied from '@views/AccessDenied';
 
 import store, { PARAMS } from '@store';
 import { authStatus, isAuthInProgress, setUserInfo } from '@act';
@@ -57,24 +57,20 @@ class App extends React.Component {
 
   render() {
     const PrivateRoute = ({ component: Component, ...rest }) => {
-      console.log(rest);
-
+      let accGrnt = true;
       return (
         <Route
           {...rest}
           render={(props) => {
             this.checkAuth();
 
-            return this.props.isUserAuthorized ? (
-              <Component {...props} />
-            ) : (
-              <Redirect
-                to={{
-                  pathname: '/login',
-                  state: { from: props.location },
-                }}
-              />
-            );
+            if (this.props.user.role !== 1) {
+              if (rest.hasOwnProperty('accessRole') && rest.accessRole !== this.props.user.role) {
+                accGrnt = false;
+              }
+            }
+
+            return this.props.isUserAuthorized && accGrnt ? <Component {...props} /> : <AccessDenied />;
           }}
         />
       );
@@ -91,7 +87,7 @@ class App extends React.Component {
                     <Loader />
                   </Dimmer>
 
-                  <Image src='../assets/img/short-paragraph.png' />
+                  <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
                 </Segment>
               ) : (
                 <div className='m-3'>
