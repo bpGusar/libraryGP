@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Button } from 'react-bootstrap';
+import { Button, Checkbox, Form } from 'semantic-ui-react';
 
 import { branch } from 'baobab-react/higher-order';
 import { PARAMS } from '@store';
@@ -45,47 +45,34 @@ class loginPage extends Component {
 
   render() {
     return (
-      <Row className='justify-content-md-center'>
-        <Col md='auto'>
-          <Form onSubmit={this.onSubmit}>
-            <Form.Group controlId='formBasicEmail'>
-              <Form.Label>Email адрес</Form.Label>
-              <Form.Control
-                type='email'
-                value={this.state.email}
-                placeholder='Enter email'
-                name='email'
-                onChange={(e) => this.handleInputChange(e)}
-                required
-              />
-            </Form.Group>
+      <Form onSubmit={this.onSubmit}>
+        <Form.Field>
+          <label>Email адрес</label>
+          <input type='email' value={this.state.email} placeholder='Enter email' name='email' onChange={(e) => this.handleInputChange(e)} required />
+        </Form.Field>
+        <Form.Field>
+          <label>Пароль</label>
+          <input
+            type='password'
+            value={this.state.password}
+            placeholder='Password'
+            name='password'
+            onChange={(e) => this.handleInputChange(e)}
+            required
+          />
+        </Form.Field>
 
-            <Form.Group controlId='formBasicPassword'>
-              <Form.Label>Пароль</Form.Label>
-              <Form.Control
-                type='password'
-                value={this.state.password}
-                placeholder='Password'
-                name='password'
-                onChange={(e) => this.handleInputChange(e)}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId='formBasicChecbox'>
-              <Form.Check
-                name='rememberMe'
-                checked={this.state.rememberMe}
-                type='checkbox'
-                label='Запомнить меня'
-                onChange={(e) => this.setState({ [e.currentTarget.name]: !this.state.rememberMe })}
-              />
-            </Form.Group>
-            <Button variant='primary' type='submit'>
-              Войти
-            </Button>
-          </Form>
-        </Col>
-      </Row>
+        <Form.Field>
+          <Checkbox
+            name='rememberMe'
+            checked={this.state.rememberMe}
+            type='checkbox'
+            label='Запомнить меня'
+            onChange={(e) => this.setState({ [e.currentTarget.name]: !this.state.rememberMe })}
+          />
+        </Form.Field>
+        <Button type='submit'>Войти</Button>
+      </Form>
     );
   }
 }

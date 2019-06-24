@@ -1,5 +1,4 @@
 import Mongoose from 'mongoose';
-import { MSG } from '../../config/msgCodes';
 
 export function setUpConnection() {
   Mongoose.connect(

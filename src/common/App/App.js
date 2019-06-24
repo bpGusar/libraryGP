@@ -1,15 +1,16 @@
 import React from 'react';
 import { root, branch } from 'baobab-react/higher-order';
-import { Container, Spinner, Row, Col, Card } from 'react-bootstrap';
 import { Switch, Route, Router } from 'react-router';
 import { Redirect } from 'react-router-dom';
+import { Grid, Segment, Dimmer, Loader, Image, Container } from 'semantic-ui-react';
 import { createBrowserHistory } from 'history';
 import 'dotenv/config';
 import { axs } from '@axios';
 
-import LoginPage from '@views/loginPage';
-import MainPage from '@views/mainPage';
-import Header from '@views/header';
+import LoginPage from '@views/LoginPage';
+import MainPage from '@views/MainPage';
+import Header from '@views/Header';
+import AddBookPage from '@views/AddBookPage';
 
 import store, { PARAMS } from '@store';
 import { authStatus, isAuthInProgress, setUserInfo } from '@act';
@@ -56,6 +57,8 @@ class App extends React.Component {
 
   render() {
     const PrivateRoute = ({ component: Component, ...rest }) => {
+      console.log(rest);
+
       return (
         <Route
           {...rest}
@@ -78,31 +81,30 @@ class App extends React.Component {
     };
     return (
       <Router history={history}>
-        <Container>
+        <Container style={{ margin: 20 }}>
           <Header />
+          <Segment>
+            <Switch>
+              {this.props.isAuthInProgress || this.props.pageLoaded ? (
+                <Segment>
+                  <Dimmer active>
+                    <Loader />
+                  </Dimmer>
+
+                  <Image src='../assets/img/short-paragraph.png' />
+                </Segment>
+              ) : (
+                <div className='m-3'>
+                  <Route exact path='/' component={MainPage} />
+                  <Route exact path='/login' component={LoginPage} />
+                  <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
+                  <PrivateRoute exact accessRole={1} path='/addBook' component={AddBookPage} />
+                </div>
+              )}
+            </Switch>
+          </Segment>
+          ФУТЕР
         </Container>
-        <Container className='mt-3 mb-3'>
-          <Row>
-            <Col lg={12}>
-              <Card>
-                <Switch>
-                  {this.props.isAuthInProgress || this.props.pageLoaded ? (
-                    <div className='m-3'>
-                      <Spinner animation='border' variant='danger' />
-                    </div>
-                  ) : (
-                    <div className='m-3'>
-                      <Route exact path='/' component={MainPage} />
-                      <Route exact path='/login' component={LoginPage} />
-                      <PrivateRoute exact path='/secret' component={() => <div>секретная страница</div>} />
-                    </div>
-                  )}
-                </Switch>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
-        <Container>ФУТЕР</Container>
       </Router>
     );
   }
