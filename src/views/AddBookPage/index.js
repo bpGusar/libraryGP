@@ -7,21 +7,29 @@ import SearchResults from '@views/AddBookPage/SearchResults.js';
 
 class AddBookPage extends React.Component {
   state = {
-    ISBN: '',
+    searchQuery: '',
     loading: false,
     showResults: false,
     results: [],
+    popUpISBN: false,
   };
 
+  componentDidMount() {
+    localStorage.getItem('popUpISBN') === 'false' &&
+      this.setState({
+        popUpISBN: true,
+      });
+  }
+
   handleSubmit = () => {
-    const { ISBN } = this.state;
+    const { searchQuery } = this.state;
 
     this.setState({
       loading: !this.state.loading,
       showResults: false,
     });
 
-    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${ISBN}`).then((res) => {
+    axios.get(`https://www.googleapis.com/books/v1/volumes?q=${searchQuery}`).then((res) => {
       this.setState({
         loading: !this.state.loading,
         showResults: true,
@@ -32,10 +40,13 @@ class AddBookPage extends React.Component {
 
   _hidePopup4eva() {
     localStorage.setItem('popUpISBN', false);
+    this.setState({
+      popUpISBN: true,
+    });
   }
 
   render() {
-    const { ISBN, loading, showResults, results } = this.state;
+    const { searchQuery, loading, showResults, results, popUpISBN } = this.state;
     return (
       <>
         <Segment placeholder>
@@ -52,22 +63,23 @@ class AddBookPage extends React.Component {
                 <Form onSubmit={this.handleSubmit} loading={loading}>
                   <Form.Group>
                     <Popup
-                      disabled={localStorage.getItem('popUpISBN') === "false"}
+                      disabled={popUpISBN}
                       trigger={
                         <Form.Input
-                          placeholder='Введите ISBN книги'
-                          name='ISBN'
-                          value={ISBN}
+                          placeholder='Введите запрос'
+                          name='searchQuery'
+                          value={searchQuery}
                           onChange={(e) => this.setState({ [e.target.name]: e.target.value })}
                         />
                       }
-                      header='Поиск с помощью Google Books'
                       children={
                         <>
-                          <div class='header'>Поиск с помощью Google Books</div>
-                          <div class='content'>Введите номер ISBN в исходном формате. Для более точного поиска попробуйте ввести ISBN без тире.</div>
+                          <div className='header'>Поиск с помощью Google Books</div>
+                          <div className='content'>
+                            Введите номер searchQuery в исходном формате. Для более точного поиска попробуйте ввести searchQuery без тире.
+                          </div>
                           <br />
-                          <Button size='small' onClick={this._hidePopup4eva}>
+                          <Button size='small' onClick={() => this._hidePopup4eva()}>
                             Больше не показывать
                           </Button>
                         </>
