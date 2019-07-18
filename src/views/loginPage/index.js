@@ -15,6 +15,8 @@ class loginPage extends Component {
       password: "",
       rememberMe: true
     };
+
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -29,18 +31,16 @@ class loginPage extends Component {
 
     const { dispatch } = this.props;
 
-    axs()
-      .post("/auth/", this.state, { withCredentials: true })
-      .then(res => {
-        if (res.status === 200) {
-          localStorage.setItem("token", res.data.token);
-          document.location.href = "/";
-        } else {
-          dispatch(authStatus, false);
-          const error = new Error(res.error);
-          throw error;
-        }
-      });
+    axs.post("/auth/", this.state, { withCredentials: true }).then(res => {
+      if (res.status === 200) {
+        localStorage.setItem("token", res.data.token);
+        document.location.href = "/";
+      } else {
+        dispatch(authStatus, false);
+        const error = new Error(res.error);
+        throw error;
+      }
+    });
   }
 
   handleInputChange(e) {

@@ -31,13 +31,11 @@ class Header extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    axs()
-      .post("/getMenu", { menuId: "5d0cdd7669529541dc73e657" })
-      .then(res => {
-        if (res.status === 200) {
-          dispatch(getMenuFromDB, res.data.menu);
-        }
-      });
+    axs.post("/getMenu", { menuId: "5d0cdd7669529541dc73e657" }).then(res => {
+      if (res.status === 200) {
+        dispatch(getMenuFromDB, res.data.menu);
+      }
+    });
   }
 
   getLink(to, name) {

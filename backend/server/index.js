@@ -13,7 +13,7 @@ import * as UsersContr from "../DB/controllers/Users";
 import Users from "../DB/models/Users";
 import Menu from "../DB/models/Menu";
 
-import { withAuth } from "./middleware";
+import withAuth from "./middleware";
 
 const app = express();
 const corsOptions = {

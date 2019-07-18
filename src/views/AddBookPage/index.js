@@ -25,6 +25,8 @@ class AddBookPage extends React.Component {
       results: [],
       popUpISBN: false
     };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -36,10 +38,10 @@ class AddBookPage extends React.Component {
   }
 
   handleSubmit() {
-    const { searchQuery, loading } = this.state;
+    const { searchQuery } = this.state;
 
     this.setState({
-      loading: !loading,
+      loading: true,
       showResults: false
     });
 
@@ -47,7 +49,7 @@ class AddBookPage extends React.Component {
       .get(`https://www.googleapis.com/books/v1/volumes?q=${searchQuery}`)
       .then(res => {
         this.setState({
-          loading: !loading,
+          loading: false,
           showResults: true,
           results: res.data
         });

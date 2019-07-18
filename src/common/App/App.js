@@ -31,7 +31,7 @@ class App extends React.Component {
 
   getUserInfo() {
     const { dispatch } = this.props;
-    axs()
+    axs
       .post("/getUserInfo/")
       .then(res => {
         dispatch(setUserInfo, res.data.user);
@@ -43,7 +43,7 @@ class App extends React.Component {
 
   checkAuth() {
     const { dispatch } = this.props;
-    axs()
+    axs
       .post("/checkAuth/")
       .then(res => {
         if (res.status === 200) {
@@ -61,7 +61,12 @@ class App extends React.Component {
   }
 
   render() {
-    const { user, isUserAuthorized, pageLoaded } = this.props;
+    const {
+      user,
+      isUserAuthorized,
+      pageLoaded,
+      isAuthInProgresStored
+    } = this.props;
 
     const PrivateRoute = ({ component: Component, ...rest }) => {
       let accGrnt = true;
@@ -95,7 +100,7 @@ class App extends React.Component {
           <Header />
           <Segment>
             <Switch>
-              {isAuthInProgress || pageLoaded ? (
+              {isAuthInProgresStored || pageLoaded ? (
                 <Segment>
                   <Dimmer active>
                     <Loader />
@@ -133,7 +138,7 @@ export default root(
   store,
   branch(
     {
-      isAuthInProgress: PARAMS.IS_AUTH_IN_PROGRESS,
+      isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,
       pageLoaded: PARAMS.LOADED,
       isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
       user: PARAMS.USER_INFO
