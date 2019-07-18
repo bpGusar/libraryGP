@@ -1,41 +1,49 @@
-import React from 'react';
-import { Button, Icon, Image, Item, Label } from 'semantic-ui-react';
+import React from "react";
+import { Button, Icon, Item, Label } from "semantic-ui-react";
 
-export default class SearchResults extends React.Component {
-  render() {
-    const { results } = this.props;
-    return (
-      <>
-        {results.items.map((el, i) => {
-          return (
-            <Item.Group divided key={i}>
-              <Item>
-                <Item.Image src={el.volumeInfo.imageLinks.thumbnail} />
+export default function SearchResults(props) {
+  const { results } = props;
+  return (
+    <>
+      {results.items.map(item => {
+        return (
+          <Item.Group divided key={item.volumeInfo.title}>
+            <Item>
+              <Item.Image src={item.volumeInfo.imageLinks.thumbnail} />
 
-                <Item.Content>
-                  <Item.Header>{el.volumeInfo.title}</Item.Header>
-                  <Item.Meta>
-                    <span className='cinema'>
-                      {el.volumeInfo.publisher} | {el.volumeInfo.publishedDate}
-                    </span>
-                  </Item.Meta>
-                  <Item.Description>{el.volumeInfo.description}</Item.Description>
-                  <Item.Extra>
-                    <Button primary floated='right'>
-                      Добавить в базу
-                      <Icon name='right chevron' />
-                    </Button>
-                    {el.volumeInfo.hasOwnProperty('authors') &&
-                      el.volumeInfo.authors.map((el, i) => {
-                        return <Label icon='pencil alternate' key={i}>{el}</Label>;
-                      })}
-                  </Item.Extra>
-                </Item.Content>
-              </Item>
-            </Item.Group>
-          );
-        })}
-      </>
-    );
-  }
+              <Item.Content>
+                <Item.Header>{item.volumeInfo.title}</Item.Header>
+                <Item.Meta>
+                  <span className="cinema">
+                    {item.volumeInfo.publisher} |{" "}
+                    {item.volumeInfo.publishedDate}
+                  </span>
+                </Item.Meta>
+                <Item.Description>
+                  {item.volumeInfo.description}
+                </Item.Description>
+                <Item.Extra>
+                  <Button primary floated="right">
+                    Добавить в базу
+                    <Icon name="right chevron" />
+                  </Button>
+                  {Object.prototype.hasOwnProperty.call(
+                    item.volumeInfo,
+                    "authors"
+                  ) &&
+                    item.volumeInfo.authors.map(author => {
+                      return (
+                        <Label icon="pencil alternate" key={author}>
+                          {author}
+                        </Label>
+                      );
+                    })}
+                </Item.Extra>
+              </Item.Content>
+            </Item>
+          </Item.Group>
+        );
+      })}
+    </>
+  );
 }

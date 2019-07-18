@@ -1,73 +1,105 @@
-import React from 'react';
-import { Menu, Segment, Dimmer, Loader, Image, Dropdown } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import {
+  Menu,
+  Segment,
+  Dimmer,
+  Loader,
+  Image,
+  Dropdown
+} from "semantic-ui-react";
+import { Link } from "react-router-dom";
 
-import { branch } from 'baobab-react/higher-order';
-import { PARAMS } from '@store';
-import { getMenuFromDB } from '@act';
+import { branch } from "baobab-react/higher-order";
+import { PARAMS } from "@store";
+import { getMenuFromDB } from "@act";
 
-import { axs } from '@axios';
+import axs from "@axios";
 
 class Header extends React.Component {
-  state = { activeItem: 'home' };
+  static handleLogOut() {
+    localStorage.removeItem("token");
+    document.location.href = "/";
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = { activeItem: "home" };
+
+    this.handleItemClick = this.handleItemClick.bind(this);
+  }
 
   componentDidMount() {
-    axs.post('/getMenu', { menuId: '5d0cdd7669529541dc73e657' }).then((res) => {
-      if (res.status === 200) {
-        this.props.dispatch(getMenuFromDB, res.data.menu);
-      }
-    });
+    const { dispatch } = this.props;
+    axs()
+      .post("/getMenu", { menuId: "5d0cdd7669529541dc73e657" })
+      .then(res => {
+        if (res.status === 200) {
+          dispatch(getMenuFromDB, res.data.menu);
+        }
+      });
   }
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
-
-  _logOut() {
-    localStorage.removeItem('token');
-    document.location.href = '/';
-  }
-
-  _getLink(to, name) {
+  getLink(to, name) {
+    const { activeItem } = this.state;
     return (
-      <Menu.Item onClick={this.handleItemClick} active={this.state.activeItem === name} name={name} as={Link} to={to} key={name} content={name} />
+      <Menu.Item
+        onClick={this.handleItemClick}
+        active={activeItem === name}
+        name={name}
+        as={Link}
+        to={to}
+        key={name}
+        content={name}
+      />
     );
   }
 
-  _generateMenu() {
-    let menuArr = [];
-    for (const key in this.props.menu) {
-      if (key === 'always') {
-        this.props.menu[key].map((el) => menuArr.push(this._getLink(el.to, el.name)));
-      } else if (key === 'authorized' && this.props.isUserAuthorized) {
-        this.props.menu[key].map((el) => menuArr.push(this._getLink(el.to, el.name)));
-      } else if (key === 'onlyNotAuthorized' && !this.props.isUserAuthorized) {
-        this.props.menu[key].map((el) => menuArr.push(this._getLink(el.to, el.name)));
+  handleItemClick(e, { name }) {
+    this.setState({ activeItem: name });
+  }
+
+  generateMenu() {
+    const { menu, isUserAuthorized } = this.props;
+    const menuArr = [];
+
+    Object.keys(menu).forEach(menuKey => {
+      if (menuKey === "always") {
+        menu[menuKey].map(el => menuArr.push(this.getLink(el.to, el.name)));
+      } else if (menuKey === "authorized" && isUserAuthorized) {
+        menu[menuKey].map(el => menuArr.push(this.getLink(el.to, el.name)));
+      } else if (menuKey === "onlyNotAuthorized" && !isUserAuthorized) {
+        menu[menuKey].map(el => menuArr.push(this.getLink(el.to, el.name)));
       }
-    }
+    });
     return menuArr;
   }
 
   render() {
+    const { isUserAuthorized, isAuthInProgress, userInfo } = this.props;
     return (
       <Segment inverted>
         <Menu secondary inverted>
-          {this.props.isAuthInProgress ? (
+          {isAuthInProgress ? (
             <>
               <Dimmer active>
                 <Loader />
               </Dimmer>
-              <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
+              <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" />
             </>
           ) : (
             <>
-              {this._generateMenu().map((el) => el)}
-              {this.props.isUserAuthorized ? (
-                <Dropdown item text={this.props.userInfo.login}>
+              {this.generateMenu().map(el => el)}
+              {isUserAuthorized ? (
+                <Dropdown item text={userInfo.login}>
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => this._logOut()}>Выход</Dropdown.Item>
+                    <Dropdown.Item onClick={() => Header.handleLogOut()}>
+                      Выход
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               ) : (
-                ''
+                ""
               )}
             </>
           )}
@@ -82,7 +114,7 @@ export default branch(
     isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
     isAuthInProgress: PARAMS.IS_AUTH_IN_PROGRESS,
     userInfo: PARAMS.USER_INFO,
-    menu: PARAMS.MENU,
+    menu: PARAMS.MENU
   },
-  Header,
+  Header
 );
