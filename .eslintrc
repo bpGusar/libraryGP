@@ -17,12 +17,5 @@
   },
   "env": {
     "browser": true
-  },
-  "settings": {
-    "import/resolver": {
-      "webpack": {
-        "config": "./config/aliases.js"
-      }
-    }
   }
 }

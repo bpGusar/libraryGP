@@ -1,9 +1,11 @@
-import Mongoose from 'mongoose';
+import Mongoose from "mongoose";
 
-import '../models/Menu';
+import "../models/Menu";
 
-const Menu = Mongoose.model('Menu');
+const Menu = Mongoose.model("Menu");
 
-export function getAll() {
+function getAll() {
   return Menu.find();
 }
+
+export default { getAll };

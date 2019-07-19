@@ -1,47 +1,51 @@
-import Mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import Mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
-const Schema = Mongoose.Schema;
+const { Schema } = Mongoose;
 
 const UsersSchema = new Schema({
   login: {
     type: String,
     requiared: true,
-    unique: true,
+    unique: true
   },
   email: {
     type: String,
     requiared: true,
-    unique: true,
+    unique: true
   },
   password: {
     type: String,
-    required: true,
+    required: true
   },
   userGroup: {
     type: Number,
-    required: true,
-  },
+    required: true
+  }
 });
 
-UsersSchema.pre('save', function(next) {
-  if (this.isNew || this.isModified('password')) {
+UsersSchema.pre("save", next => {
+  if (this.isNew || this.isModified("password")) {
     const document = this;
-    bcrypt.hash(document.password, Number(process.env.BCRYPT_SALT), function(err, hashedPassword) {
-      if (err) {
-        next(err);
-      } else {
-        document.password = hashedPassword;
-        next();
+    bcrypt.hash(
+      document.password,
+      Number(process.env.BCRYPT_SALT),
+      (err, hashedPassword) => {
+        if (err) {
+          next(err);
+        } else {
+          document.password = hashedPassword;
+          next();
+        }
       }
-    });
+    );
   } else {
     next();
   }
 });
 
-UsersSchema.methods.isCorrectPassword = function(pass, cb) {
-  bcrypt.compare(pass, this.password, function(err, same) {
+UsersSchema.methods.isCorrectPassword = (pass, cb) => {
+  bcrypt.compare(pass, this.password, (err, same) => {
     if (err) {
       cb(err);
     } else {
@@ -50,4 +54,4 @@ UsersSchema.methods.isCorrectPassword = function(pass, cb) {
   });
 };
 
-export default Mongoose.model('Users', UsersSchema);
+export default Mongoose.model("Users", UsersSchema);
