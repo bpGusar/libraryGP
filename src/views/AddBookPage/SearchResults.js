@@ -1,9 +1,17 @@
 import React from "react";
 import { Button, Icon, Item, Label, Segment, Header } from "semantic-ui-react";
 
+import { setBookIntoStore } from "@act";
+
 export default function SearchResults(props) {
-  const { results } = props;
-  console.log(results);
+  const { results, dispatch } = props;
+
+  function addBookToStore(book) {
+    const { history } = props;
+    dispatch(setBookIntoStore, book);
+    history.push("/addBook");
+  }
+
   return (
     <>
       {results.totalItems !== 0 ? (
@@ -33,8 +41,12 @@ export default function SearchResults(props) {
                   {resultItem.volumeInfo.description}
                 </Item.Description>
                 <Item.Extra>
-                  <Button primary floated="right">
-                    Добавить в базу
+                  <Button
+                    primary
+                    floated="right"
+                    onClick={() => addBookToStore(resultItem)}
+                  >
+                    Добавить в базу...
                     <Icon name="right chevron" />
                   </Button>
                   {Object.prototype.hasOwnProperty.call(

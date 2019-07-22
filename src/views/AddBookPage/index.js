@@ -14,7 +14,7 @@ import axios from "axios";
 
 import SearchResults from "@views/AddBookPage/SearchResults";
 
-class AddBookPage extends React.Component {
+class FindBookPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -71,6 +71,7 @@ class AddBookPage extends React.Component {
       results,
       popUpISBN
     } = this.state;
+
     return (
       <>
         <Segment placeholder>
@@ -102,8 +103,8 @@ class AddBookPage extends React.Component {
                     >
                       <div className="header">Поиск с помощью Google Books</div>
                       <div className="content">
-                        Введите номер searchQuery в исходном формате. Для более
-                        точного поиска попробуйте ввести searchQuery без тире.
+                        Введите номер ISBN в исходном формате. Для более точного
+                        поиска попробуйте ввести ISBN без тире.
                       </div>
                       <br />
                       <Button size="small" onClick={() => this.hidePopup4eva()}>
@@ -129,10 +130,10 @@ class AddBookPage extends React.Component {
             </Grid.Row>
           </Grid>
         </Segment>
-        {showResults && <SearchResults results={results} />}
+        {showResults && <SearchResults results={results} {...this.props} />}
       </>
     );
   }
 }
 
-export default branch({}, AddBookPage);
+export default branch({}, FindBookPage);

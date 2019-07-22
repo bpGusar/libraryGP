@@ -44,8 +44,8 @@ UsersSchema.pre("save", next => {
   }
 });
 
-UsersSchema.methods.isCorrectPassword = (pass, cb) => {
-  bcrypt.compare(pass, this.password, (err, same) => {
+UsersSchema.methods.isCorrectPassword = (bodyPass, userPass, cb) => {
+  bcrypt.compare(bodyPass, userPass, (err, same) => {
     if (err) {
       cb(err);
     } else {

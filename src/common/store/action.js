@@ -15,3 +15,7 @@ export function setUserInfo(store, info) {
 export function getMenuFromDB(store, menu) {
   store.set(PARAMS.MENU, { ...menu });
 }
+
+export function setBookIntoStore(store, book) {
+  store.set(PARAMS.BOOK, { ...book });
+}

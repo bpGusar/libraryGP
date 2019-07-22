@@ -8,7 +8,8 @@ import "dotenv/config";
 import LoginPage from "@views/LoginPage";
 import MainPage from "@views/MainPage";
 import Header from "@views/Header";
-import AddBookPage from "@views/AddBookPage";
+import FindBookPage from "@views/AddBookPage";
+import AddBookForm from "@views/AddBookPage/AddBookForm";
 import AccessDenied from "@views/AccessDenied";
 import axs from "@axios";
 
@@ -120,8 +121,14 @@ class App extends React.Component {
                   <PrivateRoute
                     exact
                     accessRole={1}
+                    path="/findBook"
+                    component={FindBookPage}
+                  />
+                  <PrivateRoute
+                    exact
+                    accessRole={1}
                     path="/addBook"
-                    component={AddBookPage}
+                    component={AddBookForm}
                   />
                 </div>
               )}

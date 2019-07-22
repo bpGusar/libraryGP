@@ -5,7 +5,8 @@ export const PARAMS = {
   LOADED: "loading in progress",
   IS_USER_AUTHORIZED: "is user authorized",
   USER_INFO: "information about logged user",
-  MENU: "menu"
+  MENU: "menu",
+  BOOK: "book which need to add into DB"
 };
 
 export const store = new Baobab({
@@ -13,7 +14,8 @@ export const store = new Baobab({
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.USER_INFO]: {},
-  [PARAMS.MENU]: {}
+  [PARAMS.MENU]: {},
+  [PARAMS.BOOK]: {}
 });
 
 if (process.env.NODE_ENV === "development") {

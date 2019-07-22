@@ -38,24 +38,28 @@ app.post("/api/auth/", (req, res) => {
         .status(401)
         .json({ msg: config.getMsgByCode(MSG.ERR_WRONG_AUTH_CRED) });
     } else {
-      user.isCorrectPassword(password, (incorrectPassERR, same) => {
-        if (incorrectPassERR) {
-          res.status(500).json({
-            msg: config.getMsgByCode(MSG.internalErr500)
-          });
-        } else if (!same) {
-          res.status(401).json({
-            msg: config.getMsgByCode(MSG.wrongAuthCred)
-          });
-        } else {
-          const { email: userEmail, userGroup } = user;
-          const payload = { email: userEmail, userGroup };
-          const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: rememberMe ? "365d" : "1d"
-          });
-          res.json({ token });
+      user.isCorrectPassword(
+        password,
+        user.password,
+        (incorrectPassERR, same) => {
+          if (incorrectPassERR) {
+            res.status(500).json({
+              msg: config.getMsgByCode(MSG.internalErr500)
+            });
+          } else if (!same) {
+            res.status(401).json({
+              msg: config.getMsgByCode(MSG.wrongAuthCred)
+            });
+          } else {
+            const { email: userEmail, userGroup } = user;
+            const payload = { email: userEmail, userGroup };
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {
+              expiresIn: rememberMe ? "365d" : "1d"
+            });
+            res.json({ token });
+          }
         }
-      });
+      );
     }
   });
 });

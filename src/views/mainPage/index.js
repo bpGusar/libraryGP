@@ -6,7 +6,7 @@ export default function MainPage() {
   return (
     <div>
       главная <br />
-      <Button as={Link} to="/addBook" color="blue">
+      <Button as={Link} to="/findBook" color="blue">
         Добавить книгу
       </Button>
     </div>
