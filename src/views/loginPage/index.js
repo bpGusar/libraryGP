@@ -32,8 +32,8 @@ class loginPage extends Component {
     const { dispatch } = this.props;
 
     axs.post("/auth/", this.state, { withCredentials: true }).then(res => {
-      if (res.status === 200) {
-        localStorage.setItem("token", res.data.token);
+      if (!res.data.msg.error) {
+        localStorage.setItem("token", res.data.msg.infoMsg);
         document.location.href = "/";
       } else {
         dispatch(authStatus, false);

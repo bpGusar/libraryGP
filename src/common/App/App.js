@@ -35,7 +35,7 @@ class App extends React.Component {
     axs
       .post("/getUserInfo/")
       .then(res => {
-        dispatch(setUserInfo, res.data.user);
+        dispatch(setUserInfo, res.data.msg.infoMsg.user);
       })
       .catch(err => {
         console.error(err);
@@ -47,11 +47,11 @@ class App extends React.Component {
     axs
       .post("/checkAuth/")
       .then(res => {
-        if (res.status === 200) {
-          dispatch(authStatus, true);
+        if (res.data.msg.error) {
+          dispatch(authStatus, false);
           dispatch(isAuthInProgress, false);
         } else {
-          dispatch(authStatus, false);
+          dispatch(authStatus, true);
           dispatch(isAuthInProgress, false);
         }
       })

@@ -11,6 +11,7 @@ import * as config from "../DB/config";
 import * as UsersContr from "../DB/controllers/Users";
 
 import Users from "../DB/models/Users";
+import Authors from "../DB/models/Authors";
 import Menu from "../DB/models/Menu";
 
 import withAuth from "./middleware";
@@ -32,31 +33,27 @@ app.post("/api/auth/", (req, res) => {
   const { email: bodyEmail, password, rememberMe } = req.body;
   Users.findOne({ email: bodyEmail }, (err, user) => {
     if (err) {
-      res.status(500).json({ msg: config.getMsgByCode(MSG.internalErr500) });
+      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
     } else if (!user) {
-      res
-        .status(401)
-        .json({ msg: config.getMsgByCode(MSG.ERR_WRONG_AUTH_CRED) });
+      res.json(config.getStatusMsg(true, MSG.wrongAuthCred));
     } else {
       user.isCorrectPassword(
         password,
         user.password,
         (incorrectPassERR, same) => {
           if (incorrectPassERR) {
-            res.status(500).json({
-              msg: config.getMsgByCode(MSG.internalErr500)
-            });
+            res.json(
+              config.getStatusMsg(true, MSG.internalErr500, incorrectPassERR)
+            );
           } else if (!same) {
-            res.status(401).json({
-              msg: config.getMsgByCode(MSG.wrongAuthCred)
-            });
+            res.json(config.getStatusMsg(true, MSG.wrongAuthCred));
           } else {
             const { email: userEmail, userGroup } = user;
             const payload = { email: userEmail, userGroup };
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
               expiresIn: rememberMe ? "365d" : "1d"
             });
-            res.json({ token });
+            res.json(config.getStatusMsg(false, null, token));
           }
         }
       );
@@ -64,18 +61,34 @@ app.post("/api/auth/", (req, res) => {
   });
 });
 
+app.post("/api/getAuthors/", (req, res) => {
+  Authors.findOne({ authorName: req.body.authorName }, (err, author) => {
+    if (err) {
+      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
+    } else if (!author) {
+      res.json(config.getStatusMsg(true, MSG.cantFindAuthor));
+    } else {
+      res.json(config.getStatusMsg(false, null, author));
+    }
+  });
+});
+
 app.post("/api/checkAuth", withAuth, (req, res) => {
-  res.sendStatus(200);
+  res.json(config.getStatusMsg(false));
 });
 
 app.post("/api/getUserInfo", withAuth, (req, res) => {
   Users.findOne({ email: req.email }, (err, user) => {
     if (err) {
-      res.status(500).json({ msg: config.getMsgByCode(MSG.internalErr500) });
+      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
     } else if (!user) {
-      res.status(401).json({ msg: config.getMsgByCode(MSG.wrongEmail) });
+      res.json(config.getStatusMsg(true, MSG.wrongEmail));
     } else {
-      res.json({ user: { login: user.login, role: user.userGroup } });
+      res.json(
+        config.getStatusMsg(false, null, {
+          user: { login: user.login, role: user.userGroup }
+        })
+      );
     }
   });
 });
@@ -93,13 +106,11 @@ app.post("/api/register", (req, res) => {
 app.post("/api/getMenu", (req, res) => {
   Menu.findOne({ email: req.menuId }, (err, menu) => {
     if (err) {
-      res
-        .status(500)
-        .json({ msg: config.getMsgByCode(MSG.internalErr500), err });
+      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
     } else if (!menu) {
-      res.status(401).json({ msg: config.getMsgByCode(MSG.cannotFindMenu) });
+      res.json(config.getStatusMsg(true, MSG.cannotFindMenu));
     } else {
-      res.json(menu);
+      res.json(config.getStatusMsg(false, null, menu));
     }
   });
 });
@@ -133,9 +144,9 @@ app.put("/api/menu", (req, res) => {
   };
   Menu.update({ _id: "5d0cdd7669529541dc73e657" }, { ...newmenu }, err => {
     if (err) {
-      res.json({ msg: config.getMsgByCode(MSG.cannotUpdateMenu), err });
+      res.json(config.getStatusMsg(true, MSG.cannotUpdateMenu, err));
     } else {
-      res.json({ msg: config.getMsgByCode(MSG.menuWasUpdated) });
+      res.json(config.getStatusMsg(false, MSG.menuWasUpdated));
     }
   });
 });

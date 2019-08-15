@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 
 import { MSG } from "../../../config/msgCodes";
-import { getMsgByCode } from "../config";
+import { getStatusMsg } from "../config";
 
 import "../models/Users";
 
@@ -16,11 +16,9 @@ export function setUserCred(data) {
   const user = new Users({ login, email, password, userGroup });
   user.save(err => {
     if (err) {
-      data.res
-        .status(500)
-        .json({ msg: getMsgByCode(MSG.registrationError), err });
+      data.res.json(getStatusMsg(true, MSG.registrationError, err));
     } else {
-      data.res.status(200).send({ msg: getMsgByCode(MSG.registrationSuccess) });
+      data.res.send(getStatusMsg(false));
     }
   });
 }

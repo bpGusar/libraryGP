@@ -9,7 +9,7 @@
       }
     ],
     "prettier/prettier": "error",
-    "max-len": ["error", 100],
+    "max-len": ["error", 9999],
     "react/prop-types": [0],
     "import/no-unresolved": "off",
     "no-console": "off",
