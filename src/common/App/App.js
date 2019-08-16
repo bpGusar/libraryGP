@@ -19,6 +19,17 @@ import { authStatus, isAuthInProgress, setUserInfo } from "@act";
 const history = createBrowserHistory();
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      roles: {
+        notLogged: "notLogged",
+        admin: 1
+      }
+    };
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
     if (localStorage.getItem("token") !== null) {
@@ -35,7 +46,7 @@ class App extends React.Component {
     axs
       .post("/getUserInfo/")
       .then(res => {
-        dispatch(setUserInfo, res.data.msg.infoMsg.user);
+        dispatch(setUserInfo, res.data.msg.payload.user);
       })
       .catch(err => {
         console.error(err);
@@ -69,24 +80,26 @@ class App extends React.Component {
       isAuthInProgresStored
     } = this.props;
 
+    const { roles } = this.state;
+
     const PrivateRoute = ({ component: Component, ...rest }) => {
-      let accGrnt = true;
+      let accessGranted = true;
       return (
         <Route
           {...rest}
           render={props => {
             this.checkAuth();
 
-            if (user.role !== 1) {
+            if (user.role !== roles.admin) {
               if (
                 Object.prototype.hasOwnProperty.call(rest, "accessRole") &&
                 rest.accessRole !== user.role
               ) {
-                accGrnt = false;
+                accessGranted = false;
               }
             }
 
-            return isUserAuthorized && accGrnt ? (
+            return isUserAuthorized && accessGranted ? (
               <Component {...props} />
             ) : (
               <AccessDenied />
@@ -120,13 +133,13 @@ class App extends React.Component {
                   />
                   <PrivateRoute
                     exact
-                    accessRole={1}
+                    accessRole={roles.admin}
                     path="/findBook"
                     component={FindBookPage}
                   />
                   <PrivateRoute
                     exact
-                    accessRole={1}
+                    accessRole={roles.admin}
                     path="/addBook"
                     component={AddBookForm}
                   />

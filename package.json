@@ -62,6 +62,7 @@
     "jest-watch-typeahead": "0.3.1",
     "js-cookie": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
     "mini-css-extract-plugin": "0.8.0",
     "mongodb": "^3.2.7",
     "mongoose": "^5.6.5",

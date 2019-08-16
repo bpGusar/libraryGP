@@ -18,12 +18,12 @@ export function buildModel(schemaName, schemaTypes) {
   Mongoose.model(schemaName, newSchema);
 }
 
-export function getStatusMsg(error, msgCode = null, infoMsg = null) {
+export function getRespData(error, msgCode = null, payload = null) {
   return {
     msg: {
       error,
-      statusMsg: msgCode === null ? null : msgCode[process.env.APP_LANG],
-      infoMsg
+      message: msgCode === null ? null : msgCode[process.env.APP_LANG],
+      payload
     }
   };
 }

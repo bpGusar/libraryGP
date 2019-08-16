@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 import { MSG } from "../../config/msgCodes";
-import { getStatusMsg } from "../DB/config";
+import { getRespData } from "../DB/config";
 
 const withAuth = (req, res, next) => {
   const token =
@@ -11,11 +11,11 @@ const withAuth = (req, res, next) => {
     req.cookies.token;
 
   if (!token) {
-    res.json(getStatusMsg(true, MSG.errorToken1));
+    res.json(getRespData(true, MSG.errorToken1));
   } else {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        res.json(getStatusMsg(true, MSG.errorToken2, err));
+        res.json(getRespData(true, MSG.errorToken2, err));
       } else {
         req.email = decoded.email;
         req.accessRole = decoded.userGroup;

@@ -19,7 +19,7 @@ class loginPage extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     const { isUserAuthorized, history } = this.props;
     if (isUserAuthorized) {
       history.push("/");
@@ -33,7 +33,7 @@ class loginPage extends Component {
 
     axs.post("/auth/", this.state, { withCredentials: true }).then(res => {
       if (!res.data.msg.error) {
-        localStorage.setItem("token", res.data.msg.infoMsg);
+        localStorage.setItem("token", res.data.msg.payload);
         document.location.href = "/";
       } else {
         dispatch(authStatus, false);

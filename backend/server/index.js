@@ -33,9 +33,9 @@ app.post("/api/auth/", (req, res) => {
   const { email: bodyEmail, password, rememberMe } = req.body;
   Users.findOne({ email: bodyEmail }, (err, user) => {
     if (err) {
-      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
+      res.json(config.getRespData(true, MSG.internalErr500, err));
     } else if (!user) {
-      res.json(config.getStatusMsg(true, MSG.wrongAuthCred));
+      res.json(config.getRespData(true, MSG.wrongAuthCred));
     } else {
       user.isCorrectPassword(
         password,
@@ -43,17 +43,17 @@ app.post("/api/auth/", (req, res) => {
         (incorrectPassERR, same) => {
           if (incorrectPassERR) {
             res.json(
-              config.getStatusMsg(true, MSG.internalErr500, incorrectPassERR)
+              config.getRespData(true, MSG.internalErr500, incorrectPassERR)
             );
           } else if (!same) {
-            res.json(config.getStatusMsg(true, MSG.wrongAuthCred));
+            res.json(config.getRespData(true, MSG.wrongAuthCred));
           } else {
             const { email: userEmail, userGroup } = user;
             const payload = { email: userEmail, userGroup };
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
               expiresIn: rememberMe ? "365d" : "1d"
             });
-            res.json(config.getStatusMsg(false, null, token));
+            res.json(config.getRespData(false, null, token));
           }
         }
       );
@@ -61,31 +61,45 @@ app.post("/api/auth/", (req, res) => {
   });
 });
 
-app.post("/api/getAuthors/", (req, res) => {
+app.post("/api/findAuthor/", (req, res) => {
   Authors.findOne({ authorName: req.body.authorName }, (err, author) => {
     if (err) {
-      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
+      res.json(config.getRespData(true, MSG.internalErr500, err));
     } else if (!author) {
-      res.json(config.getStatusMsg(true, MSG.cantFindAuthor));
+      res.json(
+        config.getRespData(true, MSG.cantFindAuthor, {
+          authorName: req.body.authorName
+        })
+      );
     } else {
-      res.json(config.getStatusMsg(false, null, author));
+      res.json(config.getRespData(false, null, author));
+    }
+  });
+});
+
+app.get("/api/getAuthors/", (req, res) => {
+  Authors.find({}, (err, author) => {
+    if (err) {
+      res.json(config.getRespData(true, MSG.internalErr500, err));
+    } else {
+      res.json(config.getRespData(false, null, author));
     }
   });
 });
 
 app.post("/api/checkAuth", withAuth, (req, res) => {
-  res.json(config.getStatusMsg(false));
+  res.json(config.getRespData(false));
 });
 
 app.post("/api/getUserInfo", withAuth, (req, res) => {
   Users.findOne({ email: req.email }, (err, user) => {
     if (err) {
-      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
+      res.json(config.getRespData(true, MSG.internalErr500, err));
     } else if (!user) {
-      res.json(config.getStatusMsg(true, MSG.wrongEmail));
+      res.json(config.getRespData(true, MSG.wrongEmail));
     } else {
       res.json(
-        config.getStatusMsg(false, null, {
+        config.getRespData(false, null, {
           user: { login: user.login, role: user.userGroup }
         })
       );
@@ -106,11 +120,11 @@ app.post("/api/register", (req, res) => {
 app.post("/api/getMenu", (req, res) => {
   Menu.findOne({ email: req.menuId }, (err, menu) => {
     if (err) {
-      res.json(config.getStatusMsg(true, MSG.internalErr500, err));
+      res.json(config.getRespData(true, MSG.internalErr500, err));
     } else if (!menu) {
-      res.json(config.getStatusMsg(true, MSG.cannotFindMenu));
+      res.json(config.getRespData(true, MSG.cannotFindMenu));
     } else {
-      res.json(config.getStatusMsg(false, null, menu));
+      res.json(config.getRespData(false, null, menu));
     }
   });
 });
@@ -144,9 +158,9 @@ app.put("/api/menu", (req, res) => {
   };
   Menu.update({ _id: "5d0cdd7669529541dc73e657" }, { ...newmenu }, err => {
     if (err) {
-      res.json(config.getStatusMsg(true, MSG.cannotUpdateMenu, err));
+      res.json(config.getRespData(true, MSG.cannotUpdateMenu, err));
     } else {
-      res.json(config.getStatusMsg(false, MSG.menuWasUpdated));
+      res.json(config.getRespData(false, MSG.menuWasUpdated));
     }
   });
 });

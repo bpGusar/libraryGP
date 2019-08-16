@@ -33,7 +33,7 @@ class Header extends React.Component {
     const { dispatch } = this.props;
     axs.post("/getMenu", { menuId: "5d0cdd7669529541dc73e657" }).then(res => {
       if (!res.data.msg.error) {
-        dispatch(getMenuFromDB, res.data.msg.infoMsg.menu);
+        dispatch(getMenuFromDB, res.data.msg.payload.menu);
       }
     });
   }
