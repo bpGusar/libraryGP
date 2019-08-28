@@ -9,7 +9,7 @@ import LoginPage from "@views/LoginPage";
 import MainPage from "@views/MainPage";
 import Header from "@views/Header";
 import FindBookPage from "@views/AddBookPage";
-import AddBookForm from "@views/AddBookPage/AddBookForm";
+import AddBookForm from "@views/AddBookPage/AddBookForm/index";
 import AccessDenied from "@views/AccessDenied";
 import axs from "@axios";
 

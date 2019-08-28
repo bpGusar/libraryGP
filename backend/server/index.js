@@ -9,6 +9,7 @@ import { MSG } from "../../config/msgCodes";
 import * as config from "../DB/config";
 
 import * as UsersContr from "../DB/controllers/Users";
+import * as AuthorsContr from "../DB/controllers/Authors";
 
 import Users from "../DB/models/Users";
 import Authors from "../DB/models/Authors";
@@ -61,7 +62,7 @@ app.post("/api/auth/", (req, res) => {
   });
 });
 
-app.post("/api/findAuthor/", (req, res) => {
+app.post("/api/findAuthor/", withAuth, (req, res) => {
   Authors.findOne({ authorName: req.body.authorName }, (err, author) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
@@ -77,7 +78,11 @@ app.post("/api/findAuthor/", (req, res) => {
   });
 });
 
-app.get("/api/getAuthors/", (req, res) => {
+app.post("/api/addAuthor/", withAuth, (req, res) => {
+  AuthorsContr.setAuthor(req.body.authorName, res);
+});
+
+app.get("/api/getAuthors/", withAuth, (req, res) => {
   Authors.find({}, (err, author) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
@@ -107,7 +112,7 @@ app.post("/api/getUserInfo", withAuth, (req, res) => {
   });
 });
 
-app.post("/api/register", (req, res) => {
+app.post("/api/register", withAuth, (req, res) => {
   UsersContr.setUserCred({
     login: "admins",
     email: "admin@admin.kekы",

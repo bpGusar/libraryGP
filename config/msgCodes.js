@@ -47,5 +47,9 @@ export const MSG = {
   cantFindAuthor: {
     ru: "Такого автора в базе данных нет.",
     en: ""
+  },
+  cantAddAuthor: {
+    ru: "Ошибка добавления автора.",
+    en: ""
   }
 };

@@ -46,7 +46,7 @@ export default function SearchResults(props) {
                     floated="right"
                     onClick={() => addBookToStore(resultItem)}
                   >
-                    Добавить в базу...
+                    Открыть в редакторе
                     <Icon name="right chevron" />
                   </Button>
                   {Object.prototype.hasOwnProperty.call(
