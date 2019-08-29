@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import Mongoose from "mongoose";
 
 import { MSG } from "../../../config/msgCodes";
@@ -9,7 +10,6 @@ const BookCategories = Mongoose.model("BookCategories");
 
 export function setNewCategory(catName, res) {
   const category = new BookCategories({ categoryName: catName });
-  console.log(catName);
   category.save(err => {
     if (err) {
       res.res.json(getRespData(true, MSG.cantAddNewBookCategory, err));
@@ -18,5 +18,3 @@ export function setNewCategory(catName, res) {
     }
   });
 }
-
-export default { setNewCategory };

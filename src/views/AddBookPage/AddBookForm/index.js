@@ -11,57 +11,54 @@ import CategoriesDropdown from "./components/CategoriesDropdown";
 import { PARAMS } from "@store";
 
 function AddBookForm(props) {
-  const { book, isBookDataLoaded } = props;
+  const { book } = props;
   const { volumeInfo } = book;
-
+  // TODO: переделать логику. должна быть голая форма которую можно заполнить а данные отправить в базу
+  // а если юзаем апи то переберать данные из апи под схему в сторе и заполнять данные в форме данными из стора
   return (
     <>
-      {isBookDataLoaded ? (
-        <Form>
-          <Input
-            label="Google Books ID"
-            value={book.id}
-            onChange={() => false}
-            action={{
-              color: "teal",
-              content: "Перейти",
-              onClick: () =>
-                window.open(`https://books.google.ru/books?id=${book.id}`)
-            }}
-          />
-          <Divider />
+      <Form>
+        <Input
+          label="Google Books ID"
+          value={book.id}
+          onChange={() => false}
+          action={{
+            color: "teal",
+            content: "Перейти",
+            onClick: () =>
+              window.open(`https://books.google.ru/books?id=${book.id}`)
+          }}
+        />
+        <Divider />
+        <Form.Field>
+          <label htmlFor={uniqid(`title_`)}>
+            Название
+            <input id={uniqid(`title_`)} defaultValue={volumeInfo.title} />
+          </label>
+        </Form.Field>
+        {_.has(volumeInfo, "subtitle") && (
           <Form.Field>
-            <label htmlFor={uniqid(`title_`)}>
-              Название
-              <input id={uniqid(`title_`)} defaultValue={volumeInfo.title} />
+            <label htmlFor={uniqid(`subtitle_`)}>
+              Subtitle
+              <input
+                id={uniqid(`subtitle_`)}
+                defaultValue={volumeInfo.subtitle}
+              />
             </label>
           </Form.Field>
-          {_.has(volumeInfo, "subtitle") && (
-            <Form.Field>
-              <label htmlFor={uniqid(`subtitle_`)}>
-                Subtitle
-                <input
-                  id={uniqid(`subtitle_`)}
-                  defaultValue={volumeInfo.subtitle}
-                />
-              </label>
-            </Form.Field>
-          )}
-          <Form.Group widths="equal">
-            <AuthorsDropdown />
-            <Form.Input
-              fluid
-              label="Издательство"
-              defaultValue={volumeInfo.publisher}
-            />
-          </Form.Group>
-          <Form.Group widths="equal">
-            <CategoriesDropdown />
-          </Form.Group>
-        </Form>
-      ) : (
-        "данные отсутствуют"
-      )}
+        )}
+        <Form.Group widths="equal">
+          <AuthorsDropdown />
+          <Form.Input
+            fluid
+            label="Издательство"
+            defaultValue={volumeInfo.publisher}
+          />
+        </Form.Group>
+        <Form.Group widths="equal">
+          <CategoriesDropdown />
+        </Form.Group>
+      </Form>
     </>
   );
 }

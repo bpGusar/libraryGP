@@ -24,30 +24,7 @@ class CategoriesDropdown extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const { book } = this.props;
-    this.getCategories(book.volumeInfo.categories);
-  }
-
-  getCategories() {
-    this.setState({
-      isLoading: true
-    });
-
-    // const { book, dispatch } = this.props;
-    // const currentBookCloned = _.cloneDeep(book);
-    const promises = [];
-    // const categoriesFromDB = [];
-
-    promises.push(
-      axs.get(`/getBookCategories`).then(resp => {
-        console.log(resp);
-        // if(!res.data.msg.error){
-        //   categoriesFromDB = res.data.payload
-        // }
-      })
-    );
-  }
+  componentDidMount() {}
 
   getNonExistAuthorList() {
     const { book } = this.props;

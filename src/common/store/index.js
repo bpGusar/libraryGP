@@ -17,7 +17,38 @@ export const store = new Baobab({
   [PARAMS.USER_INFO]: {},
   [PARAMS.MENU]: {},
   [PARAMS.IS_BOOK_DATA_LOADED]: false,
-  [PARAMS.BOOK]: {}
+  [PARAMS.BOOK]: {
+    userIdWhoAddedInDb: "",
+    dateAdded: "",
+    bookInfo: {
+      title: "",
+      authors: [],
+      publisher: "",
+      publishedDate: "",
+      description: "",
+      industryIdentifiers: [
+        {
+          type: "ISBN_13",
+          identifier: ""
+        },
+        {
+          type: "ISBN_10",
+          identifier: ""
+        }
+      ],
+      pageCount: 0,
+      categories: [],
+      maturityRating: "",
+      imageLinks: {
+        poster: ""
+      },
+      language: "",
+      linkToWebStore: ""
+    },
+    stockInfo: {
+      quantityInStock: 0
+    }
+  }
 });
 
 if (process.env.NODE_ENV === "development") {

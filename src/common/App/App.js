@@ -6,9 +6,9 @@ import { Segment, Dimmer, Loader, Image, Container } from "semantic-ui-react";
 import { createBrowserHistory } from "history";
 import "dotenv/config";
 
-import LoginPage from "@views/LoginPage";
-import MainPage from "@views/MainPage";
-import Header from "@views/Header";
+import LoginPage from "@views/loginPage";
+import MainPage from "@views/mainPage";
+import Header from "@views/header";
 import FindBookPage from "@views/AddBookPage";
 import AddBookForm from "@views/AddBookPage/AddBookForm/index";
 import AccessDenied from "@views/AccessDenied";
