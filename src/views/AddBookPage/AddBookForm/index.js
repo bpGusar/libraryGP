@@ -6,6 +6,7 @@ import _ from "lodash";
 import { Form, Input, Divider } from "semantic-ui-react";
 
 import AuthorsDropdown from "./components/AuthorsDropdown";
+import CategoriesDropdown from "./components/CategoriesDropdown";
 
 import { PARAMS } from "@store";
 
@@ -53,6 +54,9 @@ function AddBookForm(props) {
               label="Издательство"
               defaultValue={volumeInfo.publisher}
             />
+          </Form.Group>
+          <Form.Group widths="equal">
+            <CategoriesDropdown />
           </Form.Group>
         </Form>
       ) : (

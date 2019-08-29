@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { Button, Icon, Item, Label, Segment, Header } from "semantic-ui-react";
 
 import { setBookIntoStore } from "@act";
@@ -20,10 +21,7 @@ export default function SearchResults(props) {
             <Item>
               <Item.Image
                 src={
-                  Object.prototype.hasOwnProperty.call(
-                    resultItem.volumeInfo,
-                    "imageLinks"
-                  )
+                  _.has(resultItem.volumeInfo, "imageLinks")
                     ? resultItem.volumeInfo.imageLinks.thumbnail
                     : "https://react.semantic-ui.com/images/wireframe/image.png"
                 }
@@ -49,10 +47,7 @@ export default function SearchResults(props) {
                     Открыть в редакторе
                     <Icon name="right chevron" />
                   </Button>
-                  {Object.prototype.hasOwnProperty.call(
-                    resultItem.volumeInfo,
-                    "authors"
-                  ) &&
+                  {_.has(resultItem.volumeInfo, "authors") &&
                     resultItem.volumeInfo.authors.map(author => {
                       return (
                         <Label

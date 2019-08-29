@@ -51,5 +51,9 @@ export const MSG = {
   cantAddAuthor: {
     ru: "Ошибка добавления автора.",
     en: ""
+  },
+  cantAddNewBookCategory: {
+    ru: "Ошибка добавления категории книги.",
+    en: ""
   }
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { branch } from "baobab-react/higher-order";
-import uniqid from "uniqid";
+// import uniqid from "uniqid";
 import _ from "lodash";
 
 import { Form, Divider, Message, Button, Icon } from "semantic-ui-react";
@@ -11,11 +11,11 @@ import axs from "@axios";
 import { PARAMS } from "@store";
 import { setBookIntoStore } from "@act";
 
-class AuthorsDropdown extends React.Component {
+class CategoriesDropdown extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleChangeAuthorsDropdown = this.handleChangeAuthorsDropdown.bind(
+    this.handleChangeCategoriesDropdown = this.handleChangeCategoriesDropdown.bind(
       this
     );
 
@@ -26,78 +26,27 @@ class AuthorsDropdown extends React.Component {
 
   componentDidMount() {
     const { book } = this.props;
-    this.getAuthors(book.volumeInfo.authors);
+    this.getCategories(book.volumeInfo.categories);
   }
 
-  getAuthors(authors) {
+  getCategories() {
     this.setState({
       isLoading: true
     });
-    const { book, dispatch } = this.props;
-    const currentBookCloned = _.cloneDeep(book);
+
+    // const { book, dispatch } = this.props;
+    // const currentBookCloned = _.cloneDeep(book);
     const promises = [];
-    const defaultAuthors = _.isArray(currentBookCloned.volumeInfo.authors)
-      ? currentBookCloned.volumeInfo.authors
-      : currentBookCloned.volumeInfo.authors.authors.defaultAuthors;
-
-    currentBookCloned.volumeInfo.authors = {
-      showMessage: false,
-      authors: {
-        defaultAuthors,
-        allAuthorsFromDB: [],
-        defaultValue: [],
-        notFoundInDatabase: {}
-      }
-    };
-
-    authors.map(el =>
-      promises.push(
-        axs.post("/findAuthor/", { authorName: el }).then(res => {
-          const buttonId = uniqid("addAuthorButton_");
-          if (res.data.msg.error) {
-            currentBookCloned.volumeInfo.authors.showMessage = true;
-            currentBookCloned.volumeInfo.authors.authors.notFoundInDatabase[
-              buttonId
-            ] = {
-              id: buttonId,
-              authorName: res.data.msg.payload.authorName,
-              isLoading: false
-            };
-          } else {
-            currentBookCloned.volumeInfo.authors.authors.defaultValue.push(
-              _.snakeCase(res.data.msg.payload.authorName)
-            );
-          }
-        })
-      )
-    );
+    // const categoriesFromDB = [];
 
     promises.push(
-      axs.get("/getAuthors/").then(res => {
-        const arr = [];
-        // eslint-disable-next-line array-callback-return
-        res.data.msg.payload.map((author, i) => {
-          arr.push({
-            // eslint-disable-next-line no-underscore-dangle
-            key: author._id,
-            text: author.authorName,
-            value: _.snakeCase(author.authorName)
-          });
-          if (res.data.msg.payload.length - 1 === i) {
-            currentBookCloned.volumeInfo.authors.authors.allAuthorsFromDB = arr;
-          }
-        });
+      axs.get(`/getBookCategories`).then(resp => {
+        console.log(resp);
+        // if(!res.data.msg.error){
+        //   categoriesFromDB = res.data.payload
+        // }
       })
     );
-
-    Promise.all(promises).then(() => {
-      dispatch(setBookIntoStore, currentBookCloned);
-      setTimeout(() => {
-        this.setState({
-          isLoading: false
-        });
-      }, 500);
-    });
   }
 
   getNonExistAuthorList() {
@@ -134,8 +83,9 @@ class AuthorsDropdown extends React.Component {
     );
   }
 
-  handleChangeAuthorsDropdown(e, { value }) {
+  handleChangeCategoriesDropdown(e, { value }) {
     const { book, dispatch } = this.props;
+    console.log({ book, dispatch });
     const currentBookCloned = _.cloneDeep(book);
 
     currentBookCloned.volumeInfo.authors.authors.defaultValue = value;
@@ -155,7 +105,7 @@ class AuthorsDropdown extends React.Component {
 
     axs.post("/addAuthor/", { authorName: el.authorName }).then(res => {
       if (!res.data.msg.error) {
-        this.getAuthors(book.volumeInfo.authors.authors.defaultAuthors);
+        this.getCategories(book.volumeInfo.authors.authors.defaultAuthors);
       }
     });
   }
@@ -174,7 +124,7 @@ class AuthorsDropdown extends React.Component {
             multiple
             search
             selection
-            onChange={this.handleChangeAuthorsDropdown}
+            onChange={this.handleChangeCategoriesDropdown}
             {...(!isLoading
               ? {
                   ...{
@@ -226,5 +176,5 @@ export default branch(
   {
     book: PARAMS.BOOK
   },
-  AuthorsDropdown
+  CategoriesDropdown
 );

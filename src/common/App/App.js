@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { root, branch } from "baobab-react/higher-order";
 import { Switch, Route, Router } from "react-router";
 import { Segment, Dimmer, Loader, Image, Container } from "semantic-ui-react";
@@ -91,10 +92,7 @@ class App extends React.Component {
             this.checkAuth();
 
             if (user.role !== roles.admin) {
-              if (
-                Object.prototype.hasOwnProperty.call(rest, "accessRole") &&
-                rest.accessRole !== user.role
-              ) {
+              if (_.has(rest, "accessRole") && rest.accessRole !== user.role) {
                 accessGranted = false;
               }
             }
