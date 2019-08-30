@@ -55,5 +55,9 @@ export const MSG = {
   cantAddNewBookCategory: {
     ru: "Ошибка добавления категории книги.",
     en: ""
+  },
+  cannotUploadPoster: {
+    ru: "Ошибка загрузки постера.",
+    en: ""
   }
 };

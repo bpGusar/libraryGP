@@ -78,6 +78,7 @@ class App extends React.Component {
       user,
       isUserAuthorized,
       pageLoaded,
+      globalPageLoader,
       isAuthInProgresStored
     } = this.props;
 
@@ -108,6 +109,9 @@ class App extends React.Component {
     };
     return (
       <Router history={history}>
+        <Dimmer active={globalPageLoader} page inverted>
+          <Loader />
+        </Dimmer>
         <Container style={{ margin: 20 }}>
           <Header />
           <Segment>
@@ -157,6 +161,7 @@ export default root(
   branch(
     {
       isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,
+      globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
       pageLoaded: PARAMS.LOADED,
       isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
       user: PARAMS.USER_INFO

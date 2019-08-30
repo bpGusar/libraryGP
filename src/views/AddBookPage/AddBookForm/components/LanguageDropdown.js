@@ -11,7 +11,7 @@ import { Form } from "semantic-ui-react";
 import { PARAMS } from "@store";
 // import { setBookIntoStore } from "@act";
 
-class AuthorsDropdown extends React.Component {
+class LanguageDropdown extends React.Component {
   // constructor(props) {
   //   super(props);
 
@@ -37,8 +37,8 @@ class AuthorsDropdown extends React.Component {
             search
             selection
             onChange={this.handleChangeAuthorsDropdown}
-            label="Автор"
-            defaultValue={book.bookInfo.authors}
+            label="Язык"
+            defaultValue={book.bookInfo.language}
           />
         </div>
       </>
@@ -50,5 +50,5 @@ export default branch(
   {
     book: PARAMS.BOOK
   },
-  AuthorsDropdown
+  LanguageDropdown
 );

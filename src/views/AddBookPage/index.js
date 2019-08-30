@@ -72,6 +72,8 @@ class FindBookPage extends React.Component {
       popUpISBN
     } = this.state;
 
+    const { history } = this.props;
+
     return (
       <>
         <Segment placeholder>
@@ -125,7 +127,9 @@ class FindBookPage extends React.Component {
                   <Icon name="pencil alternate" />
                   Ввести данные вручную
                 </Header>
-                <Button primary>Ввести</Button>
+                <Button primary onClick={() => history.push("/addBook")}>
+                  Ввести
+                </Button>
               </Grid.Column>
             </Grid.Row>
           </Grid>

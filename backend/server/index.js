@@ -1,7 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import path from "path";
 import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
 import "dotenv/config";
 
 import * as config from "../DB/config";
@@ -19,7 +21,10 @@ config.setUpConnection();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(fileUpload());
 app.use(cors(corsOptions));
+
+app.use("/images", express.static(`${__dirname}/files/posters`));
 
 Object.keys(routes).map(route => app.use(routes[route]));
 

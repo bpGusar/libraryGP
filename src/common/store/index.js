@@ -7,18 +7,20 @@ export const PARAMS = {
   USER_INFO: "information about logged user",
   MENU: "menu",
   BOOK: "book",
-  IS_BOOK_DATA_LOADED: "is book data loaded to store?"
+  IS_BOOK_DATA_LOADED: "is book data loaded to store?",
+  GLOBAL_PAGE_LOADER: "is some data is loading?"
 };
 
 export const store = new Baobab({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
+  [PARAMS.GLOBAL_PAGE_LOADER]: true, // true = some data is loading
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.USER_INFO]: {},
   [PARAMS.MENU]: {},
   [PARAMS.IS_BOOK_DATA_LOADED]: false,
   [PARAMS.BOOK]: {
-    userIdWhoAddedInDb: "",
+    userIdWhoAddedBookInDb: "",
     dateAdded: "",
     bookInfo: {
       title: "",
@@ -42,8 +44,7 @@ export const store = new Baobab({
       imageLinks: {
         poster: ""
       },
-      language: "",
-      linkToWebStore: ""
+      language: ""
     },
     stockInfo: {
       quantityInStock: 0

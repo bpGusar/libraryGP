@@ -6,6 +6,7 @@ export function authStatus(store, status) {
 
 export function isAuthInProgress(store, status) {
   store.set(PARAMS.IS_AUTH_IN_PROGRESS, status);
+  store.set(PARAMS.GLOBAL_PAGE_LOADER, status);
 }
 
 export function setUserInfo(store, info) {
@@ -20,4 +21,8 @@ export function setBookIntoStore(store, book) {
   store.set(PARAMS.IS_BOOK_DATA_LOADED, false);
   store.set(PARAMS.BOOK, { ...book });
   store.set(PARAMS.IS_BOOK_DATA_LOADED, true);
+}
+
+export function setBookPoster(store, posterData) {
+  store.set(PARAMS.BOOK, posterData);
 }
