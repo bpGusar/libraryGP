@@ -5,7 +5,7 @@ import { branch } from "baobab-react/higher-order";
 import { Button, Image, Card } from "semantic-ui-react";
 
 import axs from "@axios";
-import { setBookPoster } from "@act";
+import { setBookData } from "@act";
 import { PARAMS } from "@store";
 
 class Poster extends React.Component {
@@ -28,7 +28,7 @@ class Poster extends React.Component {
       if (!resp.data.msg.error) {
         bookCloned.bookInfo.imageLinks.poster =
           resp.data.msg.payload.posterPath;
-        dispatch(setBookPoster, bookCloned);
+        dispatch(setBookData, bookCloned);
       }
     });
   }

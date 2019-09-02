@@ -1,13 +1,13 @@
 import express from "express";
 
-import withAuth from "../middleware";
+import withAuth from "../../middleware";
 
-import * as config from "../../DB/config";
-import { MSG } from "../../../config/msgCodes";
+import * as config from "../../../DB/config";
+import { MSG } from "../../../../config/msgCodes";
 
-import BookCategories from "../../DB/models/BookCategories";
+import BookCategories from "../../../DB/models/BookCategories";
 
-import * as BookCategoriesContr from "../../DB/controllers/BookCategories";
+import * as BookCategoriesContr from "../../../DB/controllers/BookCategories";
 
 const app = express();
 

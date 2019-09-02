@@ -23,6 +23,6 @@ export function setBookIntoStore(store, book) {
   store.set(PARAMS.IS_BOOK_DATA_LOADED, true);
 }
 
-export function setBookPoster(store, posterData) {
-  store.set(PARAMS.BOOK, posterData);
+export function setBookData(store, bookData) {
+  store.set(PARAMS.BOOK, bookData);
 }
