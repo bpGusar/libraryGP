@@ -13,11 +13,11 @@ const BookSchema = new Schema({
     description: { type: String, requiared: true },
     industryIdentifiers: [
       {
-        type: "ISBN_13",
+        type: { type: String, requiared: true },
         identifier: { type: String, requiared: true }
       },
       {
-        type: "ISBN_10",
+        type: { type: String, requiared: true },
         identifier: { type: String, requiared: true }
       }
     ],

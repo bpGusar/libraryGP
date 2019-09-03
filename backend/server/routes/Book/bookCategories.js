@@ -7,11 +7,9 @@ import { MSG } from "../../../../config/msgCodes";
 
 import BookCategories from "../../../DB/models/BookCategories";
 
-import * as BookCategoriesContr from "../../../DB/controllers/BookCategories";
-
 const app = express();
 
-app.get("/api/getBookCategories/", withAuth, (req, res) => {
+app.get("/api/bookCategories/getAll/", withAuth, (req, res) => {
   BookCategories.find({}, (err, categories) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
@@ -21,11 +19,18 @@ app.get("/api/getBookCategories/", withAuth, (req, res) => {
   });
 });
 
-app.post("/api/addNewBookCategory/", withAuth, (req, res) => {
-  BookCategoriesContr.setNewCategory(req.body.categoryName, res);
+app.post("/api/bookCategories/addOne/", withAuth, (req, res) => {
+  const category = new BookCategories({ categoryName: req.body.categoryName });
+  category.save(err => {
+    if (err) {
+      res.res.json(config.getRespData(true, MSG.cantAddNewBookCategory, err));
+    } else {
+      res.send(config.getRespData(false));
+    }
+  });
 });
 
-app.post("/api/findCategory/", withAuth, (req, res) => {
+app.post("/api/bookCategories/findOne/", withAuth, (req, res) => {
   BookCategories.findOne(
     { categoryName: req.body.categoryName },
     (err, category) => {

@@ -5,7 +5,7 @@ import { branch } from "baobab-react/higher-order";
 import { Button, Image, Card } from "semantic-ui-react";
 
 import axs from "@axios";
-import { setBookData } from "@act";
+import { storeData } from "@act";
 import { PARAMS } from "@store";
 
 class Poster extends React.Component {
@@ -24,11 +24,11 @@ class Poster extends React.Component {
     const data = new FormData();
     data.append("file", ev.target.files[0], ev.target.files[0].name);
 
-    axs.post(`uploadBookPoster`, data).then(resp => {
+    axs.post(`/upload/bookPoster`, data).then(resp => {
       if (!resp.data.msg.error) {
         bookCloned.bookInfo.imageLinks.poster =
           resp.data.msg.payload.posterPath;
-        dispatch(setBookData, bookCloned);
+        dispatch(storeData, PARAMS.BOOK, bookCloned);
       }
     });
   }

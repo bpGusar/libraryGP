@@ -15,7 +15,7 @@ import AccessDenied from "@views/AccessDenied";
 import axs from "@axios";
 
 import store, { PARAMS } from "@store";
-import { authStatus, isAuthInProgress, setUserInfo } from "@act";
+import { isAuthInProgress, storeData } from "@act";
 
 const history = createBrowserHistory();
 
@@ -37,7 +37,7 @@ class App extends React.Component {
       this.checkAuth();
       this.getUserInfo();
     } else {
-      dispatch(authStatus, false);
+      dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
       dispatch(isAuthInProgress, false);
     }
   }
@@ -47,7 +47,7 @@ class App extends React.Component {
     axs
       .post("/getUserInfo/")
       .then(res => {
-        dispatch(setUserInfo, res.data.msg.payload.user);
+        dispatch(storeData, PARAMS.USER_INFO, res.data.msg.payload.user);
       })
       .catch(err => {
         console.error(err);
@@ -57,18 +57,18 @@ class App extends React.Component {
   checkAuth() {
     const { dispatch } = this.props;
     axs
-      .post("/checkAuth/")
+      .post("/auth/checkAuth/")
       .then(res => {
         if (res.data.msg.error) {
-          dispatch(authStatus, false);
+          dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
           dispatch(isAuthInProgress, false);
         } else {
-          dispatch(authStatus, true);
+          dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, true);
           dispatch(isAuthInProgress, false);
         }
       })
       .catch(() => {
-        dispatch(authStatus, false);
+        dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
         dispatch(isAuthInProgress, false);
       });
   }

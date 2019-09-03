@@ -1,4 +1,4 @@
-import authors from "./authors";
+import authors from "./Book/bookAuthors";
 import auth from "./auth";
 import users from "./users";
 import menu from "./menu";

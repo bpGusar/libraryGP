@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
-import { getMenuFromDB } from "@act";
+import { storeData } from "@act";
 
 import axs from "@axios";
 
@@ -31,9 +31,9 @@ class Header extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    axs.post("/getMenu", { menuId: "5d0cdd7669529541dc73e657" }).then(res => {
+    axs.post("/menu/get", { menuId: "5d0cdd7669529541dc73e657" }).then(res => {
       if (!res.data.msg.error) {
-        dispatch(getMenuFromDB, res.data.msg.payload.menu);
+        dispatch(storeData, PARAMS.MENU, res.data.msg.payload.menu);
       }
     });
   }

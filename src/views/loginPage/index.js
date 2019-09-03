@@ -3,7 +3,7 @@ import { Button, Checkbox, Form } from "semantic-ui-react";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
-import { authStatus } from "@act";
+import { storeData } from "@act";
 
 import axs from "@axios";
 
@@ -31,12 +31,12 @@ class loginPage extends Component {
 
     const { dispatch } = this.props;
 
-    axs.post("/auth/", this.state, { withCredentials: true }).then(res => {
+    axs.post("/auth/login", this.state, { withCredentials: true }).then(res => {
       if (!res.data.msg.error) {
         localStorage.setItem("token", res.data.msg.payload);
         document.location.href = "/";
       } else {
-        dispatch(authStatus, false);
+        dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
         const error = new Error(res.error);
         throw error;
       }

@@ -10,7 +10,7 @@ import Users from "../../DB/models/Users";
 
 const app = express();
 
-app.post("/api/auth/", (req, res) => {
+app.post("/api/auth/login", (req, res) => {
   const { email: bodyEmail, password, rememberMe } = req.body;
   Users.findOne({ email: bodyEmail }, (err, user) => {
     if (err) {
@@ -42,7 +42,7 @@ app.post("/api/auth/", (req, res) => {
   });
 });
 
-app.post("/api/checkAuth", withAuth, (req, res) => {
+app.post("/api/auth/checkAuth", withAuth, (req, res) => {
   res.json(config.getRespData(false));
 });
 

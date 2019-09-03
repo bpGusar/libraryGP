@@ -1,32 +1,71 @@
+/* eslint-disable no-underscore-dangle */
 import React from "react";
 import { branch } from "baobab-react/higher-order";
-// import uniqid from "uniqid";
-// import _ from "lodash";
+import _ from "lodash";
 
 import { Form } from "semantic-ui-react";
 
-// import { declension } from "@utils";
-// import axs from "@axios";
+import axs from "@axios";
 
 import { PARAMS } from "@store";
-// import { setBookIntoStore } from "@act";
+import { storeData } from "@act";
 
 class CategoriesDropdown extends React.Component {
-  // constructor(props) {
-  //   super(props);
+  constructor(props) {
+    super(props);
 
-  //   this.handleChangeAuthorsDropdown = this.handleChangeAuthorsDropdown.bind(
-  //     this
-  //   );
+    this.handleChangeCategoriesDropdown = this.handleChangeCategoriesDropdown.bind(
+      this
+    );
 
-  //   this.state = {
-  //     isLoading: true
-  //   };
-  // }
+    this.state = {
+      isLoaded: false,
+      options: []
+    };
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+
+    axs.get("/bookCategories/getAll/").then(resp => {
+      if (!resp.data.msg.error) {
+        dispatch(storeData, PARAMS.CATEGORIES, resp.data.msg.payload);
+        this.handleConvertAuthorsFromBDToOptions(resp.data.msg.payload);
+      }
+    });
+  }
+
+  handleConvertAuthorsFromBDToOptions(categories) {
+    const optionsArr = [];
+
+    // eslint-disable-next-line array-callback-return
+    categories.map((cat, i) => {
+      optionsArr.push({
+        key: cat._id,
+        text: cat.categoryName,
+        value: cat._id
+      });
+      if (categories.length - 1 === i) {
+        this.setState({
+          isLoaded: true,
+          options: optionsArr
+        });
+      }
+    });
+  }
+
+  handleChangeCategoriesDropdown(e, { value }) {
+    const { dispatch, book } = this.props;
+    const bookCloned = _.cloneDeep(book);
+
+    bookCloned.bookInfo.categories.push(...value);
+
+    dispatch(storeData, PARAMS.BOOK, bookCloned);
+  }
 
   render() {
     const { book } = this.props;
-    // const { isLoading } = this.state;
+    const { options, isLoaded } = this.state;
 
     return (
       <>
@@ -36,7 +75,9 @@ class CategoriesDropdown extends React.Component {
             multiple
             search
             selection
-            onChange={this.handleChangeAuthorsDropdown}
+            loading={!isLoaded}
+            options={options}
+            onChange={this.handleChangeCategoriesDropdown}
             label="Категория"
             defaultValue={book.bookInfo.categories}
           />
@@ -48,7 +89,8 @@ class CategoriesDropdown extends React.Component {
 
 export default branch(
   {
-    book: PARAMS.BOOK
+    book: PARAMS.BOOK,
+    categories: PARAMS.CATEGORIES
   },
   CategoriesDropdown
 );

@@ -8,7 +8,9 @@ export const PARAMS = {
   MENU: "menu",
   BOOK: "book",
   IS_BOOK_DATA_LOADED: "is book data loaded to store?",
-  GLOBAL_PAGE_LOADER: "is some data is loading?"
+  GLOBAL_PAGE_LOADER: "is some data is loading?",
+  AUTHORS: "authors from db",
+  CATEGORIES: "categories from db"
 };
 
 export const store = new Baobab({
@@ -19,6 +21,8 @@ export const store = new Baobab({
   [PARAMS.USER_INFO]: {},
   [PARAMS.MENU]: {},
   [PARAMS.IS_BOOK_DATA_LOADED]: false,
+  [PARAMS.AUTHORS]: [],
+  [PARAMS.CATEGORIES]: [],
   [PARAMS.BOOK]: {
     userIdWhoAddedBookInDb: "",
     dateAdded: "",

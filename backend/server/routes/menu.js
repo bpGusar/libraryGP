@@ -7,7 +7,7 @@ import Menu from "../../DB/models/Menu";
 
 const app = express();
 
-app.post("/api/getMenu", (req, res) => {
+app.post("/api/menu/get", (req, res) => {
   Menu.findOne({ email: req.menuId }, (err, menu) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
@@ -19,7 +19,7 @@ app.post("/api/getMenu", (req, res) => {
   });
 });
 
-app.put("/api/menu", (req, res) => {
+app.put("/api/menu/update", (req, res) => {
   const newmenu = {
     menu: {
       always: [

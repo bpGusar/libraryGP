@@ -1,7 +1,7 @@
 import { PARAMS } from "./index";
 
-export function authStatus(store, status) {
-  store.set(PARAMS.IS_USER_AUTHORIZED, status);
+export function storeData(store, param, data) {
+  store.set(param, data);
 }
 
 export function isAuthInProgress(store, status) {
@@ -9,20 +9,8 @@ export function isAuthInProgress(store, status) {
   store.set(PARAMS.GLOBAL_PAGE_LOADER, status);
 }
 
-export function setUserInfo(store, info) {
-  store.set(PARAMS.USER_INFO, { ...info });
-}
-
-export function getMenuFromDB(store, menu) {
-  store.set(PARAMS.MENU, { ...menu });
-}
-
 export function setBookIntoStore(store, book) {
   store.set(PARAMS.IS_BOOK_DATA_LOADED, false);
   store.set(PARAMS.BOOK, { ...book });
   store.set(PARAMS.IS_BOOK_DATA_LOADED, true);
-}
-
-export function setBookData(store, bookData) {
-  store.set(PARAMS.BOOK, bookData);
 }

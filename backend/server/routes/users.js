@@ -7,11 +7,9 @@ import { MSG } from "../../../config/msgCodes";
 
 import Users from "../../DB/models/Users";
 
-import * as UsersContr from "../../DB/controllers/Users";
-
 const app = express();
 
-app.post("/api/getUserInfo", withAuth, (req, res) => {
+app.post("/api/getUserInfo", withAuth, (req, res) =>
   Users.findOne({ email: req.email }, (err, user) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
@@ -20,20 +18,23 @@ app.post("/api/getUserInfo", withAuth, (req, res) => {
     } else {
       res.json(
         config.getRespData(false, null, {
-          user: { login: user.login, role: user.userGroup }
+          // eslint-disable-next-line no-underscore-dangle
+          user: { login: user.login, role: user.userGroup, id: user._id }
         })
       );
     }
-  });
-});
+  })
+);
 
 app.post("/api/register", withAuth, (req, res) => {
-  UsersContr.setUserCred({
-    login: "admins",
-    email: "admin@admin.kekы",
-    password: "123412341234123",
-    userGroup: 2,
-    res
+  const { login, email, password, userGroup } = req.body;
+  const user = new Users({ login, email, password, userGroup });
+  user.save(err => {
+    if (err) {
+      res.json(config.getRespData(true, MSG.registrationError, err));
+    } else {
+      res.send(config.getRespData(false));
+    }
   });
 });
 
