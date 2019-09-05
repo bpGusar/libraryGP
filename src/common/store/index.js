@@ -10,19 +10,25 @@ export const PARAMS = {
   IS_BOOK_DATA_LOADED: "is book data loaded to store?",
   GLOBAL_PAGE_LOADER: "is some data is loading?",
   AUTHORS: "authors from db",
-  CATEGORIES: "categories from db"
+  CATEGORIES: "categories from db",
+  LANGUAGES: "languages from db",
+  PUBLISHERS: "publishers from db",
+  INFO_PAGE: "info page text"
 };
 
-export const store = new Baobab({
+export const getInitialState = () => ({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
   [PARAMS.GLOBAL_PAGE_LOADER]: true, // true = some data is loading
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.USER_INFO]: {},
+  [PARAMS.INFO_PAGE]: "",
   [PARAMS.MENU]: {},
   [PARAMS.IS_BOOK_DATA_LOADED]: false,
   [PARAMS.AUTHORS]: [],
   [PARAMS.CATEGORIES]: [],
+  [PARAMS.LANGUAGES]: [],
+  [PARAMS.PUBLISHERS]: [],
   [PARAMS.BOOK]: {
     userIdWhoAddedBookInDb: "",
     dateAdded: "",
@@ -55,6 +61,8 @@ export const store = new Baobab({
     }
   }
 });
+
+export const store = new Baobab(getInitialState());
 
 if (process.env.NODE_ENV === "development") {
   store.on("update", e => {

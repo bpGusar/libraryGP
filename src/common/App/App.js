@@ -12,6 +12,7 @@ import Header from "@views/Header";
 import FindBookPage from "@views/AddBookPage";
 import AddBookForm from "@views/AddBookPage/AddBookForm/index";
 import AccessDenied from "@views/AccessDenied";
+import InfoPage from "@views/InfoPage";
 import axs from "@axios";
 
 import store, { PARAMS } from "@store";
@@ -47,7 +48,7 @@ class App extends React.Component {
     axs
       .post("/getUserInfo/")
       .then(res => {
-        dispatch(storeData, PARAMS.USER_INFO, res.data.msg.payload.user);
+        dispatch(storeData, PARAMS.USER_INFO, res.data.payload.user);
       })
       .catch(err => {
         console.error(err);
@@ -59,7 +60,7 @@ class App extends React.Component {
     axs
       .post("/auth/checkAuth/")
       .then(res => {
-        if (res.data.msg.error) {
+        if (res.data.error) {
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
           dispatch(isAuthInProgress, false);
         } else {
@@ -128,6 +129,7 @@ class App extends React.Component {
                 <div className="m-3">
                   <Route exact path="/" component={MainPage} />
                   <Route exact path="/login" component={LoginPage} />
+                  <Route exact path="/infoPage" component={InfoPage} />
                   <PrivateRoute
                     exact
                     path="/secret"

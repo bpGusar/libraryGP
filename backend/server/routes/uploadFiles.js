@@ -11,7 +11,7 @@ const app = express();
 
 const pathToPostersFolder = path.join(__dirname, "../files/posters/");
 
-app.post("/api/upload/bookPoster", (req, res) => {
+app.post("/api/upload/book/poster", (req, res) => {
   const imageFile = req.files.file;
   const uploadFile = () => {
     imageFile.mv(`${pathToPostersFolder}${req.files.file.md5}.png`, err => {

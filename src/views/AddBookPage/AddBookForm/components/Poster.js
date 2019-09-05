@@ -24,10 +24,9 @@ class Poster extends React.Component {
     const data = new FormData();
     data.append("file", ev.target.files[0], ev.target.files[0].name);
 
-    axs.post(`/upload/bookPoster`, data).then(resp => {
-      if (!resp.data.msg.error) {
-        bookCloned.bookInfo.imageLinks.poster =
-          resp.data.msg.payload.posterPath;
+    axs.post(`/upload/book/poster`, data).then(resp => {
+      if (!resp.data.error) {
+        bookCloned.bookInfo.imageLinks.poster = resp.data.payload.posterPath;
         dispatch(storeData, PARAMS.BOOK, bookCloned);
       }
     });
@@ -36,7 +35,7 @@ class Poster extends React.Component {
   render() {
     const { book } = this.props;
     return (
-      <Card>
+      <Card width="100%">
         <Image src={book.bookInfo.imageLinks.poster} wrapped ui={false} />
         <Card.Content extra>
           <Button

@@ -2,6 +2,9 @@
   "extends": ["airbnb", "prettier", "prettier/react"],
   "plugins": ["react", "prettier"],
   "rules": {
+    "no-underscore-dangle": "off",
+    "consistent-return": "off",
+    "array-callback-return": "off",
     "react/jsx-filename-extension": [
       1,
       {

@@ -8,7 +8,7 @@ const BookSchema = new Schema({
   bookInfo: {
     title: { type: String, requiared: true },
     authors: [{ type: String, requiared: true }],
-    publisher: { type: String, requiared: true },
+    publisher: [{ type: String, requiared: true }],
     publishedDate: { type: String, requiared: true },
     description: { type: String, requiared: true },
     industryIdentifiers: [
@@ -27,7 +27,7 @@ const BookSchema = new Schema({
     imageLinks: {
       poster: { type: String, requiared: true }
     },
-    language: { type: String, requiared: true }
+    language: [{ type: String, requiared: true }]
   },
   stockInfo: {
     quantityInStock: { type: Number, default: 0, requiared: true }

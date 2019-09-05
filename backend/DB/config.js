@@ -20,10 +20,8 @@ export function buildModel(schemaName, schemaTypes) {
 
 export function getRespData(error, msgCode = null, payload = null) {
   return {
-    msg: {
-      error,
-      message: msgCode === null ? null : msgCode[process.env.APP_LANG],
-      payload
-    }
+    error,
+    message: msgCode === null ? null : msgCode[process.env.APP_LANG],
+    payload
   };
 }

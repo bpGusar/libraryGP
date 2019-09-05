@@ -59,5 +59,13 @@ export const MSG = {
   cannotUploadPoster: {
     ru: "Ошибка загрузки постера.",
     en: ""
+  },
+  bookAddedSuccessfully: {
+    ru: "Книга успешно добавлена.",
+    en: ""
+  },
+  cantAddNewBook: {
+    ru: "Произошла ошибка при добавлении книги.",
+    en: ""
   }
 };
