@@ -45,14 +45,9 @@ class App extends React.Component {
 
   getUserInfo() {
     const { dispatch } = this.props;
-    axs
-      .post("/getUserInfo/")
-      .then(res => {
-        dispatch(storeData, PARAMS.USER_INFO, res.data.payload.user);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    axs.post("/getUserInfo/").then(res => {
+      dispatch(storeData, PARAMS.USER_INFO, res.data.payload.user);
+    });
   }
 
   checkAuth() {

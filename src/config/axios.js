@@ -7,10 +7,7 @@ const axs = axios.create({
 axs.interceptors.request.use(
   config => {
     if (localStorage.getItem("token") !== null) {
-      config.params = {
-        ...config.params,
-        token: localStorage.getItem("token")
-      };
+      config.headers["x-access-token"] = localStorage.getItem("token");
     }
     return config;
   },

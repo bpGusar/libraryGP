@@ -37,8 +37,6 @@ class loginPage extends Component {
         document.location.href = "/";
       } else {
         dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
-        const error = new Error(res.error);
-        throw error;
       }
     });
   }

@@ -5,6 +5,8 @@ import _ from "lodash";
 
 import { Form, Message, Button, Icon } from "semantic-ui-react";
 
+import AddNew from "./AddNew";
+
 import axs from "@axios";
 
 import { PARAMS } from "@store";
@@ -28,18 +30,20 @@ class UniqueDropdown extends React.Component {
   }
 
   handleGetAll() {
-    const { dispatch, axsGetLink, param, axsQuery } = this.props;
+    const { dispatch, axsGetLink, storeParam, axsQuery } = this.props;
 
     this.setState({
+      isLoaded: false,
       error: ""
     });
 
     axs.get(axsGetLink, !_.isUndefined(axsQuery) ? axsQuery : {}).then(resp => {
       if (!resp.data.error) {
-        dispatch(storeData, param, resp.data.payload);
+        dispatch(storeData, storeParam, resp.data.payload);
         this.handleConvertDataFromDBToOptions(resp.data.payload);
       } else {
         this.setState({
+          isLoaded: true,
           error: resp.data.message
         });
       }
@@ -47,14 +51,14 @@ class UniqueDropdown extends React.Component {
   }
 
   handleConvertDataFromDBToOptions(dataArray) {
-    const { convertDataName } = this.props;
+    const { dropdownValueName } = this.props;
     const optionsArr = [];
 
     // eslint-disable-next-line array-callback-return
     dataArray.map((el, i) => {
       optionsArr.push({
         key: el._id,
-        text: el[convertDataName],
+        text: el[dropdownValueName],
         value: el._id
       });
       if (dataArray.length - 1 === i) {
@@ -67,10 +71,10 @@ class UniqueDropdown extends React.Component {
   }
 
   handleOnChangeDropdown(e, { value }) {
-    const { dispatch, book, onChangeBookInfoProp } = this.props;
+    const { dispatch, book, onChangeBookInfoObjectProperty } = this.props;
     const bookCloned = _.cloneDeep(book);
 
-    bookCloned.bookInfo[onChangeBookInfoProp] = value;
+    bookCloned.bookInfo[onChangeBookInfoObjectProperty] = value;
 
     dispatch(storeData, PARAMS.BOOK, bookCloned);
   }
@@ -79,9 +83,12 @@ class UniqueDropdown extends React.Component {
     const {
       book,
       label,
-      onChangeBookInfoProp,
+      onChangeBookInfoObjectProperty,
       multiple,
-      required
+      required,
+      axsPostLink,
+      showAddNewField,
+      dropdownValueName
     } = this.props;
     const { options, isLoaded, error } = this.state;
 
@@ -95,11 +102,18 @@ class UniqueDropdown extends React.Component {
             search
             selection
             loading={!isLoaded}
-            options={options}
+            options={_.sortBy(options, ["text"])}
             onChange={this.handleOnChangeDropdown}
             label={label}
-            defaultValue={book.bookInfo[onChangeBookInfoProp]}
+            defaultValue={book.bookInfo[onChangeBookInfoObjectProperty]}
           />
+          {showAddNewField && (
+            <AddNew
+              axsPostLink={axsPostLink}
+              functionOnSuccess={() => this.handleGetAll()}
+              dropdownValueName={dropdownValueName}
+            />
+          )}
           {error !== "" && (
             <Message negative>
               <Message.Header>{error}</Message.Header>

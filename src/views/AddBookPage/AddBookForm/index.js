@@ -7,7 +7,7 @@ import { DateInput } from "semantic-ui-calendar-react";
 
 import { Form, Button, Message } from "semantic-ui-react";
 
-import UniqueDropdown from "./components/UniqueDropdown";
+import UniqueDropdown from "./components/UniqueDropdown/UniqueDropdown";
 import Poster from "./components/Poster";
 
 import { PARAMS, getInitialState } from "@store";
@@ -129,35 +129,43 @@ class AddBookForm extends React.Component {
             <UniqueDropdown
               axsGetLink="/authors/get"
               axsQuery={{ params: { howMuch: "all" } }}
-              param={PARAMS.AUTHORS}
+              axsPostLink="/authors/add/one"
+              storeParam={PARAMS.AUTHORS}
               multiple
               required
-              onChangeBookInfoProp="authors"
+              onChangeBookInfoObjectProperty="authors"
               label="Автор"
               book={book}
-              convertDataName="authorName"
+              dropdownValueName="authorName"
+              showAddNewField
             />
             <UniqueDropdown
-              axsGetLink="/bookPublishers/get/all/"
-              param={PARAMS.PUBLISHERS}
+              axsGetLink="/bookPublishers/get"
+              axsQuery={{ params: { howMuch: "all" } }}
+              axsPostLink="/bookPublishers/add/one/"
+              storeParam={PARAMS.PUBLISHERS}
               multiple
               required
-              onChangeBookInfoProp="publisher"
+              onChangeBookInfoObjectProperty="publisher"
               label="Издательство"
               book={book}
-              convertDataName="publisherName"
+              dropdownValueName="publisherName"
+              showAddNewField
             />
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/bookCategories/getAll/"
-              param={PARAMS.CATEGORIES}
+              axsGetLink="/bookCategories/get"
+              axsQuery={{ params: { howMuch: "all" } }}
+              axsPostLink="/bookCategories/add/one/"
+              storeParam={PARAMS.CATEGORIES}
               multiple
               required
-              onChangeBookInfoProp="categories"
+              onChangeBookInfoObjectProperty="categories"
               label="Категория"
               book={book}
-              convertDataName="categoryName"
+              dropdownValueName="categoryName"
+              showAddNewField
             />
             <Form.Input
               fluid
@@ -193,14 +201,16 @@ class AddBookForm extends React.Component {
             />
             <UniqueDropdown
               axsGetLink="/bookLanguages/get"
-              param={PARAMS.LANGUAGES}
+              storeParam={PARAMS.LANGUAGES}
               axsQuery={{ params: { howMuch: "all" } }}
+              axsPostLink="/bookLanguages/add/one/"
               multiple
               required
-              onChangeBookInfoProp="language"
+              onChangeBookInfoObjectProperty="language"
               label="Язык"
               book={book}
-              convertDataName="languageName"
+              dropdownValueName="languageName"
+              showAddNewField
             />
           </Form.Group>
           <Form.Group widths="equal">

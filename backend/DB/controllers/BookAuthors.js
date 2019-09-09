@@ -25,7 +25,11 @@ function addOneAuthor(authorName, res) {
   const author = new Authors(authorName);
   author.save(err => {
     if (err) {
-      res.json(config.getRespData(true, MSG.cantAddAuthor, err));
+      if (err.code === 11000) {
+        res.json(config.getRespData(true, MSG.authorMustBeUnique, err));
+      } else {
+        res.json(config.getRespData(true, MSG.cantAddAuthor, err));
+      }
     } else {
       res.send(config.getRespData(false));
     }

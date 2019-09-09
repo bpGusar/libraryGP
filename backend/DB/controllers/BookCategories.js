@@ -3,10 +3,10 @@ import _ from "lodash";
 import { MSG } from "../../../config/msgCodes";
 import * as config from "../config";
 
-import BookLanguages from "../models/BookLanguages";
+import BookCategories from "../models/BookCategories";
 
-function findBookLanguage(res, data = {}) {
-  BookLanguages.find(
+function findCategories(res, data = {}) {
+  BookCategories.find(
     _.isEmpty(data) ? {} : JSON.parse(data),
     (err, categories) => {
       if (err) {
@@ -18,14 +18,14 @@ function findBookLanguage(res, data = {}) {
   );
 }
 
-function addOneLang(languageName, res) {
-  const language = new BookLanguages(languageName);
-  language.save(err => {
+function addOneCategory(categoryName, res) {
+  const category = new BookCategories({ categoryName });
+  category.save(err => {
     if (err) {
       if (err.code === 11000) {
-        res.json(config.getRespData(true, MSG.languageMustBeUnique, err));
+        res.json(config.getRespData(true, MSG.categoryNameMustBeUnique, err));
       } else {
-        res.json(config.getRespData(true, MSG.cantAddNewBookLanguage, err));
+        res.json(config.getRespData(true, MSG.cantAddNewBookCategory, err));
       }
     } else {
       res.send(config.getRespData(false));
@@ -33,4 +33,4 @@ function addOneLang(languageName, res) {
   });
 }
 
-export default { findBookLanguage, addOneLang };
+export default { findCategories, addOneCategory };

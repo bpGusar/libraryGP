@@ -4,7 +4,8 @@ const { Schema } = Mongoose;
 
 const BookPublishersSchema = new Schema({
   publisherName: {
-    type: String
+    type: String,
+    unique: true
   }
 });
 

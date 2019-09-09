@@ -4,7 +4,8 @@ const { Schema } = Mongoose;
 
 const BookCategoriesSchema = new Schema({
   categoryName: {
-    type: String
+    type: String,
+    unique: true
   }
 });
 

@@ -52,8 +52,28 @@ export const MSG = {
     ru: "Ошибка добавления автора.",
     en: ""
   },
+  authorMustBeUnique: {
+    ru: "Имя автора должно быть уникальным. Такой автор уже существует.",
+    en: ""
+  },
+  categoryNameMustBeUnique: {
+    ru: "Имя категории должно быть уникальным.",
+    en: ""
+  },
+  languageMustBeUnique: {
+    ru: "Новый язык должен быть уникальным.",
+    en: ""
+  },
+  publisherMustBeUnique: {
+    ru: "Имя издательства должно быть уникальным.",
+    en: ""
+  },
   cantAddNewBookCategory: {
     ru: "Ошибка добавления категории книги.",
+    en: ""
+  },
+  cantAddNewBookLanguage: {
+    ru: "Ошибка добавления языка книги.",
     en: ""
   },
   cannotUploadPoster: {

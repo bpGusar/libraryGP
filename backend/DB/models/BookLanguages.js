@@ -4,7 +4,8 @@ const { Schema } = Mongoose;
 
 const BookLanguagesSchema = new Schema({
   languageName: {
-    type: String
+    type: String,
+    unique: true
   }
 });
 

@@ -29,51 +29,33 @@ export default class MainPage extends React.Component {
         }
       })
       .then(() => {
-        booksArr.map((book, i) => {
-          promises.push(
-            axs
-              .get("/authors/get", {
-                params: {
-                  howMuch: "some",
-                  authorsArr: {
-                    _id: {
-                      $in: book.bookInfo.authors
-                    }
-                  }
-                }
-              })
-              .then(authorsResp => {
-                book.bookInfo.authors = authorsResp.data.payload;
-              })
-          );
-
-          promises.push(
-            axs
-              .get("/bookLanguages/get", {
-                params: {
-                  howMuch: "some",
-                  authorsArr: {
-                    _id: {
-                      $in: book.bookInfo.categories
-                    }
-                  }
-                }
-              })
-              .then(authorsResp => {
-                book.bookInfo.categories = authorsResp.data.payload;
-              })
-          );
-
-          // доделать загрузки по остальным айдишникам
-
-          if (booksArr.length - 1 === i) {
-            Promise.all(promises).finally(() => {
-              this.setState({
-                isLoaded: true,
-                books: [...booksArr]
+        promises.push(
+          axs
+            .get("/authors/get", {
+              params: {
+                howMuch: "all"
+              }
+            })
+            .then(authorsResp => {
+              booksArr.map(book => {
+                const authorsObjs = [];
+                book.bookInfo.authors.map(bookAuthor => {
+                  authorsObjs.push(
+                    authorsResp.data.payload.find(
+                      authorObj => authorObj._id === bookAuthor
+                    )
+                  );
+                  book.bookInfo.authors = authorsObjs;
+                });
               });
-            });
-          }
+            })
+        );
+
+        Promise.all(promises).finally(() => {
+          this.setState({
+            isLoaded: true,
+            books: [...booksArr]
+          });
         });
       });
   }
@@ -87,7 +69,7 @@ export default class MainPage extends React.Component {
         </Button>
         <Divider />
         {isLoaded && (
-          <Card.Group>
+          <Card.Group itemsPerRow={4}>
             {books.map(book => (
               <Card>
                 <Image
@@ -99,7 +81,7 @@ export default class MainPage extends React.Component {
                   <Card.Header>{book.bookInfo.title}</Card.Header>
                   <Card.Meta>
                     <span className="date">
-                      {book.bookInfo.authors.map(el => el.authorName)}
+                      {book.bookInfo.authors.map(el => `${el.authorName}, `)}
                     </span>
                   </Card.Meta>
                 </Card.Content>

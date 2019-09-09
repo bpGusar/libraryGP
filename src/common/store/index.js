@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Baobab from "baobab";
 
 export const PARAMS = {
@@ -54,7 +55,7 @@ export const getInitialState = () => ({
       imageLinks: {
         poster: ""
       },
-      language: ""
+      language: []
     },
     stockInfo: {
       quantityInStock: 0
