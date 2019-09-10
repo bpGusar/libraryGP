@@ -17,12 +17,12 @@ class Poster extends React.Component {
     this.posterInputRef = React.createRef();
   }
 
-  uploadPoster(ev) {
+  uploadPoster(e) {
     const { book, dispatch } = this.props;
     const bookCloned = _.cloneDeep(book);
 
     const data = new FormData();
-    data.append("file", ev.target.files[0], ev.target.files[0].name);
+    data.append("file", e.target.files[0], e.target.files[0].name);
 
     axs.post(`/upload/book/poster`, data).then(resp => {
       if (!resp.data.error) {
@@ -36,13 +36,23 @@ class Poster extends React.Component {
     const { book } = this.props;
     return (
       <Card width="100%">
-        <Image src={book.bookInfo.imageLinks.poster} wrapped ui={false} />
+        <Image
+          src={
+            book.bookInfo.imageLinks.poster ||
+            "http://localhost:5000/placeholder/imagePlaceholder.png"
+          }
+          wrapped
+          ui={false}
+        />
         <Card.Content extra>
           <Button
             content="Выберите постер"
             labelPosition="left"
             icon="file"
-            onClick={() => this.posterInputRef.current.click()}
+            onClick={e => {
+              e.preventDefault();
+              this.posterInputRef.current.click();
+            }}
           />
           <input
             type="file"

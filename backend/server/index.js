@@ -24,6 +24,7 @@ app.use(fileUpload());
 app.use(cors(corsOptions));
 
 app.use("/posters", express.static(`${__dirname}/files/posters`));
+app.use("/placeholder", express.static(`${__dirname}/files/placeholders`));
 
 Object.keys(routes).map(route => app.use(routes[route]));
 

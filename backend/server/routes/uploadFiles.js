@@ -14,14 +14,16 @@ const pathToPostersFolder = path.join(__dirname, "../files/posters/");
 app.post("/api/upload/book/poster", (req, res) => {
   const imageFile = req.files.file;
   const uploadFile = () => {
-    imageFile.mv(`${pathToPostersFolder}${req.files.file.md5}.png`, err => {
+    const imageName = `${req.files.file.md5}_${Date.now()}`;
+
+    imageFile.mv(`${pathToPostersFolder}${imageName}.png`, err => {
       if (err) {
         return res.json(config.getRespData(true, MSG.cannotUploadPoster, err));
       }
 
       return res.json(
         config.getRespData(false, null, {
-          posterPath: `http://localhost:5000/posters/${req.files.file.md5}.png`
+          posterPath: `http://localhost:5000/posters/${imageName}.png`
         })
       );
     });
