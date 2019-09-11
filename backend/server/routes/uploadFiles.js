@@ -5,7 +5,7 @@ import mkdirp from "mkdirp";
 import fs from "fs";
 
 import * as config from "../../DB/config";
-import { MSG } from "../../../config/msgCodes";
+import MSG from "../config/msgCodes";
 
 const app = express();
 

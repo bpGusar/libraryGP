@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import { MSG } from "../../config/msgCodes";
+import { MSG } from "./config/msgCodes";
 import { getRespData } from "../DB/config";
 
 const withAuth = (req, res, next) => {

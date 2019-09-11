@@ -19,7 +19,7 @@ class AddNew extends React.Component {
     this.state = {
       isLoaded: true,
       accordionActive: false,
-      inputValue: "Русский",
+      inputValue: "",
       error: false,
       errorMsg: ""
     };

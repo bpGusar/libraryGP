@@ -1,7 +1,7 @@
 import express from "express";
 
 import * as config from "../../DB/config";
-import { MSG } from "../../../config/msgCodes";
+import MSG from "../config/msgCodes";
 
 import Menu from "../../DB/models/Menu";
 

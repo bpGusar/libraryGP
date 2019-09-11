@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { MSG } from "../../../config/msgCodes";
+import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
 
 import Authors from "../models/Authors";

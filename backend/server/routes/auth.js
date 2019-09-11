@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import withAuth from "../middleware";
 
 import * as config from "../../DB/config";
-import { MSG } from "../../../config/msgCodes";
+import MSG from "../config/msgCodes";
 
 import Users from "../../DB/models/Users";
 

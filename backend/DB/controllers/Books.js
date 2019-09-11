@@ -1,6 +1,6 @@
 import Book from "../models/Book";
 
-import { MSG } from "../../../config/msgCodes";
+import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
 
 function findBooks(res, data = {}) {

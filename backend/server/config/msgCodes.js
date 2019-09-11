@@ -1,4 +1,4 @@
-export const MSG = {
+const MSG = {
   errorToken1: {
     ru: "Токен не был получен.",
     en: ""
@@ -89,3 +89,5 @@ export const MSG = {
     en: ""
   }
 };
+
+export default { MSG };
