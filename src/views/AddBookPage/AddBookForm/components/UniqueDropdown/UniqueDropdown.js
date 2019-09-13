@@ -76,7 +76,7 @@ class UniqueDropdown extends React.Component {
 
     bookCloned.bookInfo[onChangeBookInfoObjectProperty] = value;
 
-    dispatch(storeData, PARAMS.BOOK, bookCloned);
+    dispatch(storeData, PARAMS.BOOK_TO_DB, bookCloned);
   }
 
   render() {

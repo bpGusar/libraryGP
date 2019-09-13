@@ -73,6 +73,8 @@ export default class MainPage extends React.Component {
             {books.map(book => (
               <Card>
                 <Image
+                  as={Link}
+                  to={`/book-${book._id}`}
                   src={book.bookInfo.imageLinks.poster}
                   wrapped
                   ui={false}

@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Menu,
-  Segment,
-  Dimmer,
-  Loader,
-  Image,
-  Dropdown
-} from "semantic-ui-react";
+import { Menu, Segment, Dropdown, Container } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 import { branch } from "baobab-react/higher-order";
@@ -24,7 +17,7 @@ class Header extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { activeItem: "home" };
+    this.state = { activeItem: "Главная" };
 
     this.handleItemClick = this.handleItemClick.bind(this);
   }
@@ -76,16 +69,9 @@ class Header extends React.Component {
   render() {
     const { isUserAuthorized, isAuthInProgress, userInfo } = this.props;
     return (
-      <Segment inverted>
-        <Menu secondary inverted>
-          {isAuthInProgress ? (
-            <>
-              <Dimmer active>
-                <Loader />
-              </Dimmer>
-              <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" />
-            </>
-          ) : (
+      <Segment inverted loading={isAuthInProgress}>
+        <Menu inverted pointing secondary>
+          <Container>
             <>
               {this.generateMenu().map(el => el)}
               {isUserAuthorized ? (
@@ -100,7 +86,7 @@ class Header extends React.Component {
                 ""
               )}
             </>
-          )}
+          </Container>
         </Menu>
       </Segment>
     );

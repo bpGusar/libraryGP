@@ -10,7 +10,7 @@ app.post("/api/authors/add/one", withAuth, (req, res) => {
   BookAuthorsContr.addOneAuthor({ authorName: req.body.authorName }, res);
 });
 
-app.get("/api/authors/get", withAuth, (req, res) => {
+app.get("/api/authors/get", (req, res) => {
   const { howMuch, authorsArr } = req.query;
   if (howMuch === "all") {
     BookAuthorsContr.findAuthors(res);

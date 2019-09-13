@@ -2,7 +2,14 @@ import React from "react";
 import _ from "lodash";
 import { root, branch } from "baobab-react/higher-order";
 import { Switch, Route, Router } from "react-router";
-import { Segment, Dimmer, Loader, Image, Container } from "semantic-ui-react";
+import {
+  Segment,
+  Dimmer,
+  Loader,
+  Image,
+  Responsive,
+  Container
+} from "semantic-ui-react";
 import { createBrowserHistory } from "history";
 import "dotenv/config";
 
@@ -13,6 +20,8 @@ import FindBookPage from "@views/AddBookPage";
 import AddBookForm from "@views/AddBookPage/AddBookForm/index";
 import AccessDenied from "@views/AccessDenied";
 import InfoPage from "@views/InfoPage";
+import BookPage from "@views/BookPage";
+
 import axs from "@axios";
 
 import store, { PARAMS } from "@store";
@@ -108,44 +117,53 @@ class App extends React.Component {
         <Dimmer active={globalPageLoader} page inverted>
           <Loader />
         </Dimmer>
-        <Container style={{ margin: 20 }}>
-          <Header />
-          <Segment>
-            <Switch>
-              {isAuthInProgresStored || pageLoaded ? (
-                <Segment>
-                  <Dimmer active>
-                    <Loader />
-                  </Dimmer>
-
-                  <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" />
-                </Segment>
-              ) : (
-                <div className="m-3">
-                  <Route exact path="/" component={MainPage} />
-                  <Route exact path="/login" component={LoginPage} />
-                  <Route exact path="/infoPage" component={InfoPage} />
-                  <PrivateRoute
-                    exact
-                    path="/secret"
-                    component={() => <div>секретная страница</div>}
-                  />
-                  <PrivateRoute
-                    exact
-                    accessRole={roles.admin}
-                    path="/findBook"
-                    component={FindBookPage}
-                  />
-                  <PrivateRoute
-                    exact
-                    accessRole={roles.admin}
-                    path="/addBook"
-                    component={AddBookForm}
-                  />
-                </div>
-              )}
-            </Switch>
+        <Responsive>
+          <Segment
+            inverted
+            textAlign="center"
+            style={{ padding: "1em 0em" }}
+            vertical
+          >
+            <Header />
           </Segment>
+        </Responsive>
+        <Container style={{ marginTop: "20px" }}>
+          <Switch>
+            {isAuthInProgresStored || pageLoaded ? (
+              <Segment>
+                <Dimmer active>
+                  <Loader />
+                </Dimmer>
+
+                <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" />
+              </Segment>
+            ) : (
+              <div className="m-3">
+                // TODO: сделать отдельные вьюхи для главной и книги
+                <Route exact path="/" component={MainPage} />
+                <Route exact path="/login" component={LoginPage} />
+                <Route exact path="/infoPage" component={InfoPage} />
+                <Route exact path="/book-:id" component={BookPage} />
+                <PrivateRoute
+                  exact
+                  path="/secret"
+                  component={() => <div>секретная страница</div>}
+                />
+                <PrivateRoute
+                  exact
+                  accessRole={roles.admin}
+                  path="/findBook"
+                  component={FindBookPage}
+                />
+                <PrivateRoute
+                  exact
+                  accessRole={roles.admin}
+                  path="/addBook"
+                  component={AddBookForm}
+                />
+              </div>
+            )}
+          </Switch>
           ФУТЕР
         </Container>
       </Router>

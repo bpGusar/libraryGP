@@ -7,6 +7,7 @@ export const PARAMS = {
   IS_USER_AUTHORIZED: "is user authorized?",
   USER_INFO: "information about logged user",
   MENU: "menu",
+  BOOK_TO_DB: "book to db",
   BOOK: "book",
   IS_BOOK_DATA_LOADED: "is book data loaded to store?",
   GLOBAL_PAGE_LOADER: "is some data is loading?",
@@ -23,14 +24,18 @@ export const getInitialState = () => ({
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.USER_INFO]: {},
-  [PARAMS.INFO_PAGE]: "",
+  [PARAMS.INFO_PAGE]: {
+    text: "",
+    type: ""
+  },
   [PARAMS.MENU]: {},
   [PARAMS.IS_BOOK_DATA_LOADED]: false,
   [PARAMS.AUTHORS]: [],
   [PARAMS.CATEGORIES]: [],
   [PARAMS.LANGUAGES]: [],
   [PARAMS.PUBLISHERS]: [],
-  [PARAMS.BOOK]: {
+  [PARAMS.BOOK]: {},
+  [PARAMS.BOOK_TO_DB]: {
     userIdWhoAddedBookInDb: "",
     dateAdded: "",
     bookInfo: {

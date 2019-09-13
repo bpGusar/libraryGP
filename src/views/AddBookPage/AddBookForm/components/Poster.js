@@ -27,7 +27,7 @@ class Poster extends React.Component {
     axs.post(`/upload/book/poster`, data).then(resp => {
       if (!resp.data.error) {
         bookCloned.bookInfo.imageLinks.poster = resp.data.payload.posterPath;
-        dispatch(storeData, PARAMS.BOOK, bookCloned);
+        dispatch(storeData, PARAMS.BOOK_TO_DB, bookCloned);
       }
     });
   }
@@ -66,4 +66,4 @@ class Poster extends React.Component {
   }
 }
 
-export default branch({ book: PARAMS.BOOK }, Poster);
+export default branch({ book: PARAMS.BOOK_TO_DB }, Poster);

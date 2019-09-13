@@ -39,7 +39,7 @@ class AddBookForm extends React.Component {
     _.set(bookClone, "userIdWhoAddedBookInDb", user.id);
     _.set(bookClone, "dateAdded", `${dd}.${mm}.${yyyy}`);
 
-    dispatch(storeData, PARAMS.BOOK, bookClone);
+    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
 
   handleSubmit() {
@@ -60,8 +60,11 @@ class AddBookForm extends React.Component {
           isFormLoaded: true
         });
 
-        dispatch(storeData, PARAMS.INFO_PAGE, resp.data.message);
-        dispatch(storeData, PARAMS.BOOK, getInitialState().book);
+        dispatch(storeData, PARAMS.INFO_PAGE, {
+          text: resp.data.message,
+          type: "success"
+        });
+        dispatch(storeData, PARAMS.BOOK_TO_DB, getInitialState().book);
 
         history.push("/infoPage");
       } else {
@@ -82,7 +85,7 @@ class AddBookForm extends React.Component {
 
     _.set(bookClone, e.name, e.value);
 
-    dispatch(storeData, PARAMS.BOOK, bookClone);
+    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
 
   handleChangeISBN(e) {
@@ -99,7 +102,7 @@ class AddBookForm extends React.Component {
       }
     });
 
-    dispatch(storeData, PARAMS.BOOK, bookClone);
+    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
 
   render() {
@@ -259,7 +262,7 @@ class AddBookForm extends React.Component {
 
 export default branch(
   {
-    book: PARAMS.BOOK,
+    book: PARAMS.BOOK_TO_DB,
     user: PARAMS.USER_INFO,
     isBookDataLoaded: PARAMS.IS_BOOK_DATA_LOADED
   },

@@ -10,10 +10,12 @@ app.post("/api/books/add", withAuth, (req, res) => {
   BooksContr.addBook(req, res);
 });
 
-app.get("/api/books/get", withAuth, (req, res) => {
-  const { howMuch } = req.query;
+app.get("/api/books/get", (req, res) => {
+  const { howMuch, id } = req.query;
   if (howMuch === "all") {
     BooksContr.findBooks(res);
+  } else if (howMuch === "one") {
+    BooksContr.findBooks(res, { _id: id });
   }
 });
 

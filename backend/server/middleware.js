@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import { MSG } from "./config/msgCodes";
+import MSG from "./config/msgCodes";
 import { getRespData } from "../DB/config";
 
 const withAuth = (req, res, next) => {
@@ -9,6 +9,7 @@ const withAuth = (req, res, next) => {
     req.query.token ||
     req.headers["x-access-token"] ||
     req.cookies.token;
+  // TODO: сделать проверку доступа на основе списка разрешенных URL из базы данных
 
   if (!token) {
     res.json(getRespData(true, MSG.errorToken1));

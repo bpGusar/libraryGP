@@ -11,6 +11,6 @@ export function isAuthInProgress(store, status) {
 
 export function setBookIntoStore(store, book) {
   store.set(PARAMS.IS_BOOK_DATA_LOADED, false);
-  store.set(PARAMS.BOOK, { ...book });
+  store.set(PARAMS.BOOK_TO_DB, { ...book });
   store.set(PARAMS.IS_BOOK_DATA_LOADED, true);
 }
