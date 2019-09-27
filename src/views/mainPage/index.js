@@ -62,6 +62,7 @@ export default class MainPage extends React.Component {
 
   render() {
     const { books, isLoaded } = this.state;
+
     return (
       <div>
         <Button as={Link} to="/findBook" color="blue">
@@ -71,7 +72,7 @@ export default class MainPage extends React.Component {
         {isLoaded && (
           <Card.Group itemsPerRow={4}>
             {books.map(book => (
-              <Card>
+              <Card key={book._id}>
                 <Image
                   as={Link}
                   to={`/book-${book._id}`}

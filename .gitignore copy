@@ -7,7 +7,6 @@
 
 # folders
 /backend/server/files/
-/backend/node_modules
 /.vscode
 
 # testing

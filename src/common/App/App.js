@@ -2,20 +2,15 @@ import React from "react";
 import _ from "lodash";
 import { root, branch } from "baobab-react/higher-order";
 import { Switch, Route, Router } from "react-router";
-import {
-  Segment,
-  Dimmer,
-  Loader,
-  Image,
-  Responsive,
-  Container
-} from "semantic-ui-react";
+import { Segment, Dimmer, Loader, Image } from "semantic-ui-react";
 import { createBrowserHistory } from "history";
 import "dotenv/config";
 
+import MainLayout from "@views/Layouts/Main";
+import BookTemplate from "@views/Layouts/Book";
+
 import LoginPage from "@views/LoginPage";
 import MainPage from "@views/MainPage";
-import Header from "@views/Header";
 import FindBookPage from "@views/AddBookPage";
 import AddBookForm from "@views/AddBookPage/AddBookForm/index";
 import AccessDenied from "@views/AccessDenied";
@@ -89,7 +84,11 @@ class App extends React.Component {
 
     const { roles } = this.state;
 
-    const PrivateRoute = ({ component: Component, ...rest }) => {
+    const PrivateRoute = ({
+      component: Component,
+      layout: Layout,
+      ...rest
+    }) => {
       let accessGranted = true;
       return (
         <Route
@@ -104,68 +103,94 @@ class App extends React.Component {
             }
 
             return isUserAuthorized && accessGranted ? (
-              <Component {...props} />
+              <Layout>
+                <Component {...props} />
+              </Layout>
             ) : (
-              <AccessDenied />
+              <Layout>
+                <AccessDenied />
+              </Layout>
             );
           }}
         />
       );
     };
+
+    const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
+      <Route
+        {...rest}
+        render={props => (
+          <Layout>
+            <Component {...props} />
+          </Layout>
+        )}
+      />
+    );
+
     return (
       <Router history={history}>
         <Dimmer active={globalPageLoader} page inverted>
           <Loader />
         </Dimmer>
-        <Responsive>
-          <Segment
-            inverted
-            textAlign="center"
-            style={{ padding: "1em 0em" }}
-            vertical
-          >
-            <Header />
-          </Segment>
-        </Responsive>
-        <Container style={{ marginTop: "20px" }}>
-          <Switch>
-            {isAuthInProgresStored || pageLoaded ? (
-              <Segment>
-                <Dimmer active>
-                  <Loader />
-                </Dimmer>
+        {isAuthInProgresStored || pageLoaded ? (
+          <Segment>
+            <Dimmer active>
+              <Loader />
+            </Dimmer>
 
-                <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" />
-              </Segment>
-            ) : (
-              <div className="m-3">
-                // TODO: сделать отдельные вьюхи для главной и книги
-                <Route exact path="/" component={MainPage} />
-                <Route exact path="/login" component={LoginPage} />
-                <Route exact path="/infoPage" component={InfoPage} />
-                <Route exact path="/book-:id" component={BookPage} />
-                <PrivateRoute
-                  exact
-                  path="/secret"
-                  component={() => <div>секретная страница</div>}
-                />
-                <PrivateRoute
-                  exact
-                  accessRole={roles.admin}
-                  path="/findBook"
-                  component={FindBookPage}
-                />
-                <PrivateRoute
-                  exact
-                  accessRole={roles.admin}
-                  path="/addBook"
-                  component={AddBookForm}
-                />
-              </div>
-            )}
-          </Switch>
-          ФУТЕР
-        </Container>
+            <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" />
+          </Segment>
+        ) : (
+          <>
+            <Switch>
+              <AppRoute
+                exact
+                path="/"
+                layout={MainLayout}
+                component={MainPage}
+              />
+              <PrivateRoute
+                exact
+                layout={MainLayout}
+                accessRole={roles.admin}
+                path="/addBook"
+                component={AddBookForm}
+              />
+              <AppRoute
+                exact
+                path="/login"
+                layout={MainLayout}
+                component={LoginPage}
+              />
+              <AppRoute
+                exact
+                path="/infoPage"
+                layout={MainLayout}
+                component={InfoPage}
+              />
+              <PrivateRoute
+                exact
+                layout={MainLayout}
+                path="/secret"
+                component={() => <div>секретная страница</div>}
+              />
+              <PrivateRoute
+                exact
+                layout={MainLayout}
+                accessRole={roles.admin}
+                path="/findBook"
+                component={FindBookPage}
+              />
+              <AppRoute
+                exact
+                path="/book-:id"
+                layout={BookTemplate}
+                component={BookPage}
+              />
+            </Switch>
+          </>
+        )}
+        ФУТЕР
       </Router>
     );
   }

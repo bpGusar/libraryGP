@@ -67,9 +67,14 @@ class Header extends React.Component {
   }
 
   render() {
-    const { isUserAuthorized, isAuthInProgress, userInfo } = this.props;
+    const {
+      isUserAuthorized,
+      isAuthInProgress,
+      userInfo,
+      segmentClassName
+    } = this.props;
     return (
-      <Segment inverted loading={isAuthInProgress}>
+      <Segment inverted loading={isAuthInProgress} className={segmentClassName}>
         <Menu inverted pointing secondary>
           <Container>
             <>
