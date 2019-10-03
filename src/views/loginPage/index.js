@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Button, Checkbox, Form } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Header,
+  Image,
+  Message,
+  Segment
+} from "semantic-ui-react";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
@@ -13,7 +22,12 @@ class loginPage extends Component {
     this.state = {
       email: "",
       password: "",
-      rememberMe: true
+      rememberMe: true,
+      isError: {
+        msg: "",
+        error: false
+      },
+      isLoginInProcess: false
     };
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -31,11 +45,22 @@ class loginPage extends Component {
 
     const { dispatch } = this.props;
 
+    this.setState({
+      isError: { error: false, msg: "" },
+      isLoginInProcess: true
+    });
+
     axs.post("/auth/login", this.state, { withCredentials: true }).then(res => {
       if (!res.data.error) {
         localStorage.setItem("token", res.data.payload);
+        // здесь можно было бы сделать редирект внутри реакт роутера
+        // но жесткая перезагрузка нужна что бы проверка входа прошла корректно
         document.location.href = "/";
       } else {
+        this.setState({
+          isError: { error: true, msg: res.data.message },
+          isLoginInProcess: false
+        });
         dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
       }
     });
@@ -50,49 +75,81 @@ class loginPage extends Component {
   }
 
   render() {
-    const { email, password, rememberMe } = this.state;
+    const {
+      email,
+      password,
+      rememberMe,
+      isError,
+      isLoginInProcess
+    } = this.state;
     return (
-      <Form onSubmit={this.onSubmit}>
-        <Form.Field>
-          <label htmlFor="email">
-            Email адрес
-            <input
+      <>
+        <Header as="h2" color="blue" textAlign="center">
+          <Image src="https://react.semantic-ui.com/logo.png" /> Войти в свой
+          аккаунт
+        </Header>
+        {isError.error && (
+          <Message negative attached header="Ошибка" content={isError.msg} />
+        )}
+        <Form attached onSubmit={this.onSubmit} size="large">
+          <Segment stacked>
+            <Form.Input
+              error={isError.error}
+              disabled={isLoginInProcess}
               type="email"
               id="email"
               value={email}
-              placeholder="Enter email"
               name="email"
               onChange={e => this.handleInputChange(e)}
               required
+              fluid
+              icon="user"
+              iconPosition="left"
+              placeholder="E-mail"
             />
-          </label>
-        </Form.Field>
-        <Form.Field>
-          <label htmlFor="password">
-            Пароль
-            <input
+            <Form.Input
+              error={isError.error}
+              disabled={isLoginInProcess}
               type="password"
               id="password"
               value={password}
-              placeholder="Password"
               name="password"
               onChange={e => this.handleInputChange(e)}
               required
+              fluid
+              icon="lock"
+              iconPosition="left"
+              placeholder="Пароль"
             />
-          </label>
-        </Form.Field>
 
-        <Form.Field>
-          <Checkbox
-            name="rememberMe"
-            checked={rememberMe}
-            type="checkbox"
-            label="Запомнить меня"
-            onChange={() => this.setState({ rememberMe: !rememberMe })}
-          />
-        </Form.Field>
-        <Button type="submit">Войти</Button>
-      </Form>
+            <Form.Field>
+              <Checkbox
+                name="rememberMe"
+                checked={rememberMe}
+                type="checkbox"
+                label="Запомнить меня"
+                onChange={() => this.setState({ rememberMe: !rememberMe })}
+              />
+            </Form.Field>
+            <Button
+              type="submit"
+              color="blue"
+              fluid
+              size="large"
+              disabled={isLoginInProcess}
+            >
+              Войти
+            </Button>
+          </Segment>
+        </Form>
+        <Message>
+          Не зарегистрированы? <br />
+          <br />
+          <Button href="#" to="/signup" color="green" as={Link}>
+            Создать новый аккаунт
+          </Button>
+        </Message>
+      </>
     );
   }
 }

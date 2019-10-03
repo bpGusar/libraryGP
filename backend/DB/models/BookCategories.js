@@ -6,6 +6,10 @@ const BookCategoriesSchema = new Schema({
   categoryName: {
     type: String,
     unique: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now()
   }
 });
 

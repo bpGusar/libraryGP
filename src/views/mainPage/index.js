@@ -65,7 +65,7 @@ export default class MainPage extends React.Component {
 
     return (
       <div>
-        <Button as={Link} to="/findBook" color="blue">
+        <Button as={Link} to="/dashboard/findBook" color="blue">
           Добавить книгу
         </Button>
         <Divider />

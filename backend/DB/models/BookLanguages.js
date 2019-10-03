@@ -6,6 +6,10 @@ const BookLanguagesSchema = new Schema({
   languageName: {
     type: String,
     unique: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now()
   }
 });
 

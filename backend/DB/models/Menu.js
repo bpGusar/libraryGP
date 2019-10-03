@@ -4,6 +4,10 @@ const { Schema } = Mongoose;
 
 const MenuSchema = new Schema({
   menu: {
+    createdAt: {
+      type: Date,
+      default: Date.now()
+    },
     always: [
       {
         to: String,

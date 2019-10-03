@@ -1,0 +1,16 @@
+{
+  "Axios get": {
+    "prefix": "axsget",
+    "body": [
+      "axs.get(\"/$1\", { params: { $2 } }).then(res=>{ if(!res.data.error){ } else { } });"
+    ],
+    "description": "Axios get"
+  },
+  "Axios Post": {
+    "prefix": "axspost",
+    "body": [
+      "axs.post(\"/$1\").then(res=>{ if(!res.data.error){ } else { } });"
+    ],
+    "description": "Axios  post"
+  }
+}

@@ -7,6 +7,10 @@ const AuthorsSchema = new Schema({
     type: String,
     requiared: true,
     unique: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now()
   }
 });
 

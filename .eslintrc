@@ -6,6 +6,7 @@
     "no-underscore-dangle": "off",
     "consistent-return": "off",
     "array-callback-return": "off",
+    "func-names": "off",
     "react/jsx-filename-extension": [
       1,
       {

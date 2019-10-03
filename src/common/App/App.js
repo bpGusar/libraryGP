@@ -8,14 +8,17 @@ import "dotenv/config";
 
 import MainLayout from "@views/Layouts/Main";
 import BookTemplate from "@views/Layouts/Book";
+import LoginAndRegister from "@views/Layouts/LoginAndRegister";
 
 import LoginPage from "@views/LoginPage";
+import RegistrationPage from "@views/RegistrationPage";
 import MainPage from "@views/MainPage";
 import FindBookPage from "@views/AddBookPage";
 import AddBookForm from "@views/AddBookPage/AddBookForm/index";
 import AccessDenied from "@views/AccessDenied";
 import InfoPage from "@views/InfoPage";
 import BookPage from "@views/BookPage";
+import EmailVerify from "@views/EmailVerify";
 
 import axs from "@axios";
 
@@ -31,6 +34,7 @@ class App extends React.Component {
     this.state = {
       roles: {
         notLogged: "notLogged",
+        user: 0,
         admin: 1
       }
     };
@@ -149,18 +153,30 @@ class App extends React.Component {
                 layout={MainLayout}
                 component={MainPage}
               />
+              <AppRoute
+                exact
+                path="/emailVerify"
+                layout={MainLayout}
+                component={EmailVerify}
+              />
               <PrivateRoute
                 exact
                 layout={MainLayout}
                 accessRole={roles.admin}
-                path="/addBook"
+                path="/dashboard/addBook"
                 component={AddBookForm}
               />
               <AppRoute
                 exact
                 path="/login"
-                layout={MainLayout}
+                layout={LoginAndRegister}
                 component={LoginPage}
+              />
+              <AppRoute
+                exact
+                path="/signup"
+                layout={LoginAndRegister}
+                component={RegistrationPage}
               />
               <AppRoute
                 exact
@@ -171,14 +187,8 @@ class App extends React.Component {
               <PrivateRoute
                 exact
                 layout={MainLayout}
-                path="/secret"
-                component={() => <div>секретная страница</div>}
-              />
-              <PrivateRoute
-                exact
-                layout={MainLayout}
                 accessRole={roles.admin}
-                path="/findBook"
+                path="/dashboard/findBook"
                 component={FindBookPage}
               />
               <AppRoute
@@ -190,7 +200,6 @@ class App extends React.Component {
             </Switch>
           </>
         )}
-        ФУТЕР
       </Router>
     );
   }

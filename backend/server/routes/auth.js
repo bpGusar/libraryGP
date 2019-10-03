@@ -6,18 +6,18 @@ import withAuth from "../middleware";
 import * as config from "../../DB/config";
 import MSG from "../config/msgCodes";
 
-import Users from "../../DB/models/Users";
+import User from "../../DB/models/User";
 
 const app = express();
 
 app.post("/api/auth/login", (req, res) => {
   const { email: bodyEmail, password, rememberMe } = req.body;
-  Users.findOne({ email: bodyEmail }, (err, user) => {
+  User.findOne({ email: bodyEmail }, (err, user) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
     } else if (!user) {
       res.json(config.getRespData(true, MSG.wrongAuthCred));
-    } else {
+    } else if (user.emailVerified) {
       user.isCorrectPassword(
         password,
         user.password,
@@ -38,6 +38,8 @@ app.post("/api/auth/login", (req, res) => {
           }
         }
       );
+    } else {
+      res.json(config.getRespData(true, MSG.wrongAuthCred));
     }
   });
 });

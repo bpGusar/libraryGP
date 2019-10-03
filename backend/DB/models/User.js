@@ -3,11 +3,26 @@ import bcrypt from "bcryptjs";
 
 const { Schema } = Mongoose;
 
-const UsersSchema = new Schema({
+const UserSchema = new Schema({
+  createdAt: {
+    type: Date,
+    default: Date.now()
+  },
   login: {
     type: String,
     requiared: true,
     unique: true
+  },
+  firstName: {
+    type: String,
+    requiared: true
+  },
+  lastName: {
+    type: String,
+    requiared: true
+  },
+  patronymic: {
+    type: String
   },
   email: {
     type: String,
@@ -20,11 +35,16 @@ const UsersSchema = new Schema({
   },
   userGroup: {
     type: Number,
-    required: true
+    required: true,
+    default: 0
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false
   }
 });
 
-UsersSchema.pre("save", next => {
+UserSchema.pre("save", function(next) {
   if (this.isNew || this.isModified("password")) {
     const document = this;
     bcrypt.hash(
@@ -44,7 +64,7 @@ UsersSchema.pre("save", next => {
   }
 });
 
-UsersSchema.methods.isCorrectPassword = (bodyPass, userPass, cb) => {
+UserSchema.methods.isCorrectPassword = function(bodyPass, userPass, cb) {
   bcrypt.compare(bodyPass, userPass, (err, same) => {
     if (err) {
       cb(err);
@@ -54,4 +74,4 @@ UsersSchema.methods.isCorrectPassword = (bodyPass, userPass, cb) => {
   });
 };
 
-export default Mongoose.model("Users", UsersSchema);
+export default Mongoose.model("User", UserSchema);
