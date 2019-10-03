@@ -78,6 +78,9 @@ const MSG = {
   emailSuccessfullyVerified: {
     ru:
       "Email адрес успешно подтвержден. Теперь вы можете войти в свой аккаунт."
+  },
+  emailAlreadyVerified: {
+    ru: "Email адрес уже был успешно подтвержден ранее."
   }
 };
 

@@ -86,20 +86,27 @@ app.get("/api/doesUserWithThatCredsExist", (req, res) => {
 
 app.get("/api/emailVerification", (req, res) => {
   const { verifyToken } = req.query;
-
-  User.findOneAndUpdate(
-    { _id: verifyToken },
-    { emailVerified: true },
-    (err, user) => {
-      if (err) {
-        res.json(config.getRespData(true, MSG.internalErr500, err));
-      } else if (!user) {
-        res.json(config.getRespData(true, MSG.cantVerifyEmailByToken));
-      } else {
-        res.json(config.getRespData(false, MSG.emailSuccessfullyVerified));
-      }
+  User.findOne({ _id: verifyToken }, (findOneError, user) => {
+    if (findOneError) {
+      res.json(config.getRespData(true, MSG.internalErr500, findOneError));
+    } else if (!user) {
+      res.json(config.getRespData(false, MSG.thisCredsAreFree));
+    } else if (!user.emailVerified) {
+      User.findOneAndUpdate(
+        { _id: verifyToken },
+        { emailVerified: true },
+        err => {
+          if (err) {
+            res.json(config.getRespData(true, MSG.internalErr500, err));
+          } else {
+            res.json(config.getRespData(false, MSG.emailSuccessfullyVerified));
+          }
+        }
+      );
+    } else {
+      res.json(config.getRespData(true, MSG.emailAlreadyVerified));
     }
-  );
+  });
 });
 
 export default app;
