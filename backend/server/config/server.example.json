@@ -1,0 +1,9 @@
+{
+  "emailConfig": {
+    "service": "Смотрите список сервисов https://nodemailer.com/smtp/well-known/",
+    "auth": {
+      "user": "example@email.com",
+      "pass": "pass"
+    }
+  }
+}

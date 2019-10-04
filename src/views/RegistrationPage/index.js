@@ -17,13 +17,16 @@ import axs from "@axios";
 class SignUpPage extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      email: "bpgusar@gmail.com",
-      password: "123",
-      login: "bpgusar",
-      firstName: "edfasdf",
-      lastName: "asdfasdf",
-      patronymic: "asdfasd",
+      regData: {
+        email: "",
+        password: "",
+        login: "",
+        firstName: "",
+        lastName: "",
+        patronymic: ""
+      },
       errors: {
         login: false,
         email: false
@@ -37,6 +40,7 @@ class SignUpPage extends Component {
 
   componentDidUpdate() {
     const { isUserAuthorized, history } = this.props;
+
     if (isUserAuthorized) {
       history.push("/");
     }
@@ -45,22 +49,25 @@ class SignUpPage extends Component {
   onSubmit(e) {
     e.preventDefault();
 
-    this.setState({
-      regInProgress: true
-    });
+    const { regData, errors } = this.state;
 
-    axs.post("/signup", this.state, { withCredentials: true }).then(regRes => {
-      if (!regRes.data.error) {
-        this.setState({
-          regStatus: true,
-          regInProgress: false
-        });
-      }
-    });
+    if (!errors.email && !errors.login) {
+      this.setState({
+        regInProgress: true
+      });
+      axs.post("/signup", regData, { withCredentials: true }).then(regRes => {
+        if (!regRes.data.error) {
+          this.setState({
+            regStatus: true,
+            regInProgress: false
+          });
+        }
+      });
+    }
   }
 
-  checkUnique(e) {
-    const { value, name } = e.target;
+  checkUnique(target) {
+    const { value, name } = target;
     const { errors } = this.state;
 
     if (value !== "") {
@@ -76,32 +83,21 @@ class SignUpPage extends Component {
 
   handleInputChange(e) {
     const { value, name } = e.target;
-    const { errors } = this.state;
+    const { regData } = this.state;
 
     this.setState({
-      [name]: value,
-      errors: { ...errors, [name]: false }
+      regData: { ...regData, [name]: value }
     });
   }
 
   render() {
-    const {
-      email,
-      password,
-      login,
-      firstName,
-      lastName,
-      patronymic,
-      errors,
-      regInProgress,
-      regStatus
-    } = this.state;
+    const { regData, errors, regInProgress, regStatus } = this.state;
     return (
       <>
         {regStatus ? (
           <Segment stacked>
             Регистрация прошла успешно. <br /> На указанную почту отправлено
-            подтверждение.
+            письмо подтверждение.
           </Segment>
         ) : (
           <>
@@ -109,7 +105,13 @@ class SignUpPage extends Component {
               <Image src="https://react.semantic-ui.com/logo.png" /> Регистрация
               нового аккаунта
             </Header>
-            <Form onSubmit={this.onSubmit} size="large">
+            <Form
+              onSubmit={this.onSubmit}
+              size="large"
+              style={{
+                textAlign: "left"
+              }}
+            >
               <Segment stacked>
                 <Form.Input
                   error={
@@ -120,51 +122,53 @@ class SignUpPage extends Component {
                   }
                   type="text"
                   id="login"
-                  value={login}
+                  value={regData.login}
                   name="login"
-                  onChange={e => this.handleInputChange(e)}
+                  onChange={e => [
+                    this.handleInputChange(e),
+                    this.checkUnique(e.target)
+                  ]}
                   required
-                  onBlur={e => this.checkUnique(e)}
                   fluid
                   icon="user"
                   iconPosition="left"
-                  placeholder="Логин"
+                  label="Логин"
                 />
                 <Form.Input
                   type="text"
                   id="firstName"
-                  value={firstName}
+                  value={regData.firstName}
                   name="firstName"
                   onChange={e => this.handleInputChange(e)}
                   required
                   fluid
-                  icon="lock"
+                  icon="user"
                   iconPosition="left"
-                  placeholder="Имя"
+                  label="Имя"
                 />
                 <Form.Input
                   type="text"
                   id="lastName"
-                  value={lastName}
+                  value={regData.lastName}
                   name="lastName"
                   onChange={e => this.handleInputChange(e)}
                   required
                   fluid
-                  icon="lock"
+                  icon="user"
                   iconPosition="left"
-                  placeholder="Фамилия"
+                  label="Фамилия"
                 />
                 <Form.Input
                   type="text"
                   id="patronymic"
-                  value={patronymic}
+                  value={regData.patronymic}
                   name="patronymic"
                   onChange={e => this.handleInputChange(e)}
                   required
                   fluid
-                  icon="lock"
+                  icon="user"
                   iconPosition="left"
-                  placeholder="Отчество"
+                  label="Отчество"
                 />
                 <Form.Input
                   error={
@@ -175,34 +179,36 @@ class SignUpPage extends Component {
                   }
                   type="email"
                   id="email"
-                  value={email}
+                  value={regData.email}
                   name="email"
-                  onChange={e => this.handleInputChange(e)}
-                  onBlur={e => this.checkUnique(e)}
+                  onChange={e => [
+                    this.handleInputChange(e),
+                    this.checkUnique(e.target)
+                  ]}
                   required
                   fluid
-                  icon="lock"
+                  icon="mail"
                   iconPosition="left"
-                  placeholder="E-mail"
+                  label="E-mail"
                 />
                 <Form.Input
                   type="password"
                   id="password"
-                  value={password}
+                  value={regData.password}
                   name="password"
                   onChange={e => this.handleInputChange(e)}
                   required
                   fluid
                   icon="lock"
                   iconPosition="left"
-                  placeholder="Пароль"
+                  label="Пароль"
                 />
                 <Button
                   type="submit"
                   color="blue"
                   fluid
                   size="large"
-                  disabled={regInProgress}
+                  disabled={regInProgress || (errors.login || errors.email)}
                   loading={regInProgress}
                 >
                   Регистрация

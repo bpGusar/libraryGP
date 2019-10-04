@@ -39,7 +39,7 @@ app.post("/api/auth/login", (req, res) => {
         }
       );
     } else {
-      res.json(config.getRespData(true, MSG.wrongAuthCred));
+      res.json(config.getRespData(true, MSG.userFoundButNotVerified));
     }
   });
 });

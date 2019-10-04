@@ -92,7 +92,14 @@ class loginPage extends Component {
         {isError.error && (
           <Message negative attached header="Ошибка" content={isError.msg} />
         )}
-        <Form attached onSubmit={this.onSubmit} size="large">
+        <Form
+          attached
+          onSubmit={this.onSubmit}
+          size="large"
+          style={{
+            textAlign: "left"
+          }}
+        >
           <Segment stacked>
             <Form.Input
               error={isError.error}
@@ -106,7 +113,7 @@ class loginPage extends Component {
               fluid
               icon="user"
               iconPosition="left"
-              placeholder="E-mail"
+              label="E-mail"
             />
             <Form.Input
               error={isError.error}
@@ -120,7 +127,7 @@ class loginPage extends Component {
               fluid
               icon="lock"
               iconPosition="left"
-              placeholder="Пароль"
+              label="Пароль"
             />
 
             <Form.Field>

@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Divider, Card, Image } from "semantic-ui-react";
 
+import CustomLoader from "@views/Loader";
+
 import axs from "@axios";
 
 export default class MainPage extends React.Component {
@@ -18,6 +20,7 @@ export default class MainPage extends React.Component {
     this.getBooks();
   }
 
+  // TODO: переделать главную
   getBooks() {
     const promises = [];
     let booksArr = [];
@@ -69,7 +72,9 @@ export default class MainPage extends React.Component {
           Добавить книгу
         </Button>
         <Divider />
-        {isLoaded && (
+        {!isLoaded ? (
+          <CustomLoader />
+        ) : (
           <Card.Group itemsPerRow={4}>
             {books.map(book => (
               <Card key={book._id}>
@@ -81,7 +86,9 @@ export default class MainPage extends React.Component {
                   ui={false}
                 />
                 <Card.Content>
-                  <Card.Header>{book.bookInfo.title}</Card.Header>
+                  <Card.Header as={Link} to={`/book-${book._id}`}>
+                    {book.bookInfo.title}
+                  </Card.Header>
                   <Card.Meta>
                     <span className="date">
                       {book.bookInfo.authors.map(el => `${el.authorName}, `)}

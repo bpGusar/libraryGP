@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import MSG from "./config/msgCodes";
 import { getRespData } from "../DB/config";
 
+import User from "../DB/models/User";
+
 const withAuth = (req, res, next) => {
   const token =
     req.body.token ||
@@ -11,6 +13,9 @@ const withAuth = (req, res, next) => {
     req.cookies.token;
   // TODO: сделать проверку доступа на основе списка разрешенных URL из базы данных
 
+  // присутствует проверка на существование пользователя в БД
+  // изза того что в local storage мог храниться валидный токен а сам пользователь из базы удален
+  // могла возникать ошибка
   if (!token) {
     res.json(getRespData(true, MSG.errorToken1));
   } else {
@@ -18,9 +23,17 @@ const withAuth = (req, res, next) => {
       if (err) {
         res.json(getRespData(true, MSG.errorToken2, err));
       } else {
-        req.email = decoded.email;
-        req.accessRole = decoded.userGroup;
-        next();
+        User.findOne({ email: decoded.email }, (findUserErr, user) => {
+          if (findUserErr) {
+            res.json(getRespData(true, MSG.internalErr500, findUserErr));
+          } else if (!user) {
+            res.json(getRespData(true, MSG.wrongEmail));
+          } else {
+            req.email = decoded.email;
+            req.accessRole = decoded.userGroup;
+            next();
+          }
+        });
       }
     });
   }

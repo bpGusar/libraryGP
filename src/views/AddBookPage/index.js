@@ -127,7 +127,10 @@ class FindBookPage extends React.Component {
                   <Icon name="pencil alternate" />
                   Ввести данные вручную
                 </Header>
-                <Button primary onClick={() => history.push("/addBook")}>
+                <Button
+                  primary
+                  onClick={() => history.push("/dashboard/addBook")}
+                >
                   Ввести
                 </Button>
               </Grid.Column>

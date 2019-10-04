@@ -8,21 +8,20 @@ import MSG from "../config/msgCodes";
 
 import User from "../../DB/models/User";
 
+import serverJson from "../config/server.json";
+
+import { EmailVerifyTemplate } from "../emailTemplates/EmailVerify";
+
 const app = express();
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "bpgusar@gmail.com",
-    pass: "6V311w5f"
-  }
-});
+const transporter = nodemailer.createTransport(serverJson.emailConfig);
 
 app.post("/api/getUserInfo", withAuth, (req, res) =>
   User.findOne({ email: req.email }, (err, user) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
     } else if (!user) {
+      console.log(user);
       res.json(config.getRespData(true, MSG.wrongEmail));
     } else {
       res.json(
@@ -49,25 +48,22 @@ app.post("/api/signup", (req, res) => {
     if (saveError) {
       res.json(config.getRespData(true, MSG.registrationError, saveError));
     } else {
-      const mailOptions = {
-        from: "libraryGPbot@libraryGP.com",
-        to: email,
-        subject: "LibraryGP. Подтверждение e-mail адреса.",
-        text: `Для подтверждения адреса перейдите по данной ссылке: ${process.env.CORS_LINK}/emailVerify?token=${newUser._id}`
-      };
-      transporter.sendMail(mailOptions, function(emailSentError) {
-        if (emailSentError) {
-          User.find({ _id: newUser._id }).remove();
-          res.json(
-            config.getRespData(true, MSG.registrationError, {
-              saveError,
-              emailSentError
-            })
-          );
-        } else {
-          res.send(config.getRespData(false));
+      transporter.sendMail(
+        EmailVerifyTemplate(email, process.env, newUser._id),
+        function(emailSentError) {
+          if (emailSentError) {
+            User.find({ _id: newUser._id }).remove();
+            res.json(
+              config.getRespData(true, MSG.registrationError, {
+                saveError,
+                emailSentError
+              })
+            );
+          } else {
+            res.send(config.getRespData(false));
+          }
         }
-      });
+      );
     }
   });
 });

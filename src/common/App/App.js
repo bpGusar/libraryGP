@@ -51,10 +51,22 @@ class App extends React.Component {
     }
   }
 
+  /**
+   * если в localStorage лежит токен и он валидный
+   * то будет произведена его проверка
+   * и если пользователя подходящего под токен в базе нет
+   * то токен будет удален из localStorage
+   *
+   * такое бывает если пользователя удалили и он не разлогинился до этого
+   */
   getUserInfo() {
     const { dispatch } = this.props;
     axs.post("/getUserInfo/").then(res => {
-      dispatch(storeData, PARAMS.USER_INFO, res.data.payload.user);
+      if (res.data.payload !== null) {
+        dispatch(storeData, PARAMS.USER_INFO, res.data.payload.user);
+      } else {
+        localStorage.removeItem("token");
+      }
     });
   }
 
