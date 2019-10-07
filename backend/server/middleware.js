@@ -1,18 +1,42 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-export const withAuth = function(req, res, next) {
-  const token = req.body.token || req.query.token || req.headers['x-access-token'] || req.cookies.token;
+import MSG from "./config/msgCodes";
+import { getRespData } from "../DB/config";
 
+import User from "../DB/models/User";
+
+const withAuth = (req, res, next) => {
+  const token =
+    req.body.token ||
+    req.query.token ||
+    req.headers["x-access-token"] ||
+    req.cookies.token;
+  // TODO: сделать проверку доступа на основе списка разрешенных URL из базы данных
+
+  // присутствует проверка на существование пользователя в БД
+  // изза того что в local storage мог храниться валидный токен а сам пользователь из базы удален
+  // могла возникать ошибка
   if (!token) {
-    res.status(401).json({ errorCode: 'ERR_ACCESS_BY_TOKEN_1' });
+    res.json(getRespData(true, MSG.errorToken1));
   } else {
-    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        res.status(401).json({ errorCode: 'ERR_ACCESS_BY_TOKEN_2', err });
+        res.json(getRespData(true, MSG.errorToken2, err));
       } else {
-        req.email = decoded.email;
-        next();
+        User.findOne({ email: decoded.email }, (findUserErr, user) => {
+          if (findUserErr) {
+            res.json(getRespData(true, MSG.internalErr500, findUserErr));
+          } else if (!user) {
+            res.json(getRespData(true, MSG.wrongEmail));
+          } else {
+            req.email = decoded.email;
+            req.accessRole = decoded.userGroup;
+            next();
+          }
+        });
       }
     });
   }
 };
+
+export default withAuth;

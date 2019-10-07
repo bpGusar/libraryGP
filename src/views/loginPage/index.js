@@ -1,95 +1,168 @@
-import React, { Component } from 'react';
-import { Row, Col, Form, Button } from 'react-bootstrap';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Header,
+  Image,
+  Message,
+  Segment
+} from "semantic-ui-react";
 
-import { branch } from 'baobab-react/higher-order';
-import { PARAMS } from '@store';
-import { authStatus, setUserInfo } from '@act';
+import { branch } from "baobab-react/higher-order";
+import { PARAMS } from "@store";
+import { storeData } from "@act";
 
-import { axs } from '@axios';
+import axs from "@axios";
 
 class loginPage extends Component {
-  state = {
-    email: '',
-    password: '',
-    rememberMe: true,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: "",
+      rememberMe: true,
+      isError: {
+        msg: "",
+        error: false
+      },
+      isLoginInProcess: false
+    };
 
-  componentDidMount() {
-    if (this.props.isUserAuthorized) {
-      this.props.history.push('/');
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentDidUpdate() {
+    const { isUserAuthorized, history } = this.props;
+    if (isUserAuthorized) {
+      history.push("/");
     }
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    const { dispatch } = this.props;
+
+    this.setState({
+      isError: { error: false, msg: "" },
+      isLoginInProcess: true
+    });
+
+    axs.post("/auth/login", this.state, { withCredentials: true }).then(res => {
+      if (!res.data.error) {
+        localStorage.setItem("token", res.data.payload);
+        // здесь можно было бы сделать редирект внутри реакт роутера
+        // но жесткая перезагрузка нужна что бы проверка входа прошла корректно
+        // TODO: изучить возможность редиректа внутри реакт роутера
+        document.location.href = "/";
+      } else {
+        this.setState({
+          isError: { error: true, msg: res.data.message },
+          isLoginInProcess: false
+        });
+        dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
+      }
+    });
   }
 
   handleInputChange(e) {
     const { value, name } = e.target;
 
     this.setState({
-      [name]: value,
+      [name]: value
     });
   }
 
-  onSubmit = (e) => {
-    e.preventDefault();
-
-    axs.post('/auth/', this.state, { withCredentials: true }).then((res) => {
-      console.log(res);
-      if (res.status === 200) {
-        localStorage.setItem('token', res.data.token);
-        this.props.dispatch(authStatus, true);
-        document.location.href = '/';
-      } else {
-        this.props.dispatch(authStatus, false);
-        const error = new Error(res.error);
-        throw error;
-      }
-    });
-  };
-
   render() {
+    const {
+      email,
+      password,
+      rememberMe,
+      isError,
+      isLoginInProcess
+    } = this.state;
     return (
-      <Row className='justify-content-md-center'>
-        <Col md='auto'>
-          <Form onSubmit={this.onSubmit}>
-            <Form.Group controlId='formBasicEmail'>
-              <Form.Label>Email адрес</Form.Label>
-              <Form.Control
-                type='email'
-                value={this.state.email}
-                placeholder='Enter email'
-                name='email'
-                onChange={(e) => this.handleInputChange(e)}
-                required
-              />
-            </Form.Group>
+      <>
+        <Header as="h2" color="blue" textAlign="center">
+          <Image src="https://react.semantic-ui.com/logo.png" /> Войти в свой
+          аккаунт
+        </Header>
+        {isError.error && (
+          <Message negative attached header="Ошибка" content={isError.msg} />
+        )}
+        <Form
+          attached
+          onSubmit={this.onSubmit}
+          size="large"
+          style={{
+            textAlign: "left"
+          }}
+        >
+          <Segment stacked>
+            <Form.Input
+              error={isError.error}
+              disabled={isLoginInProcess}
+              type="email"
+              id="email"
+              value={email}
+              name="email"
+              onChange={e => this.handleInputChange(e)}
+              required
+              fluid
+              icon="user"
+              iconPosition="left"
+              label="E-mail"
+            />
+            <Form.Input
+              error={isError.error}
+              disabled={isLoginInProcess}
+              type="password"
+              id="password"
+              value={password}
+              name="password"
+              onChange={e => this.handleInputChange(e)}
+              required
+              fluid
+              icon="lock"
+              iconPosition="left"
+              label="Пароль"
+            />
 
-            <Form.Group controlId='formBasicPassword'>
-              <Form.Label>Пароль</Form.Label>
-              <Form.Control
-                type='password'
-                value={this.state.password}
-                placeholder='Password'
-                name='password'
-                onChange={(e) => this.handleInputChange(e)}
-                required
+            <Form.Field>
+              <Checkbox
+                name="rememberMe"
+                checked={rememberMe}
+                type="checkbox"
+                label="Запомнить меня"
+                onChange={() => this.setState({ rememberMe: !rememberMe })}
               />
-            </Form.Group>
-            <Form.Group controlId='formBasicChecbox'>
-              <Form.Check
-                name='rememberMe'
-                checked={this.state.rememberMe}
-                type='checkbox'
-                label='Запомнить меня'
-                onChange={(e) => this.setState({ [e.currentTarget.name]: !this.state.rememberMe })}
-              />
-            </Form.Group>
-            <Button variant='primary' type='submit'>
+            </Form.Field>
+            <Button
+              type="submit"
+              color="blue"
+              fluid
+              size="large"
+              disabled={isLoginInProcess}
+            >
               Войти
             </Button>
-          </Form>
-        </Col>
-      </Row>
+          </Segment>
+        </Form>
+        <Message>
+          Не зарегистрированы? <br />
+          <br />
+          <Button href="#" to="/signup" color="green" as={Link}>
+            Создать новый аккаунт
+          </Button>
+        </Message>
+      </>
     );
   }
 }
 
-export default branch({ isUserAuthorized: PARAMS.IS_USER_AUTHORIZED }, loginPage);
+export default branch(
+  { isUserAuthorized: PARAMS.IS_USER_AUTHORIZED },
+  loginPage
+);
