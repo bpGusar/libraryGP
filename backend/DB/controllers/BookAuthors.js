@@ -36,6 +36,12 @@ function addOneAuthor(authorName, res) {
   });
 }
 
+/**
+ * Возвращает массив авторов
+ * @param res {Object} Response
+ * @param data {Object} Либо {} (или не передавать ничего в аргумент data) если нужно взять всех авторов,
+ * либо массив с авторами вида { _id: { $in: ["1", "2", ...] }
+ */
 function findAuthors(res, data = {}) {
   Authors.find(_.isEmpty(data) ? {} : JSON.parse(data), (err, author) => {
     if (err) {

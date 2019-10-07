@@ -22,44 +22,15 @@ export default class MainPage extends React.Component {
 
   // TODO: переделать главную
   getBooks() {
-    const promises = [];
-    let booksArr = [];
     axs
-      .get("/books/get", { params: { howMuch: "all" } })
+      .get("/books/get", { params: { howMuch: "all", fullBookInfo: true } })
       .then(resp => {
         if (!resp.data.error) {
-          booksArr = resp.data.payload;
-        }
-      })
-      .then(() => {
-        promises.push(
-          axs
-            .get("/authors/get", {
-              params: {
-                howMuch: "all"
-              }
-            })
-            .then(authorsResp => {
-              booksArr.map(book => {
-                const authorsObjs = [];
-                book.bookInfo.authors.map(bookAuthor => {
-                  authorsObjs.push(
-                    authorsResp.data.payload.find(
-                      authorObj => authorObj._id === bookAuthor
-                    )
-                  );
-                  book.bookInfo.authors = authorsObjs;
-                });
-              });
-            })
-        );
-
-        Promise.all(promises).finally(() => {
           this.setState({
             isLoaded: true,
-            books: [...booksArr]
+            books: [...resp.data.payload]
           });
-        });
+        }
       });
   }
 

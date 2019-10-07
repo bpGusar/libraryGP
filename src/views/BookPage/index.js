@@ -12,8 +12,11 @@ import MSG from "@msg";
 class BookPage extends React.Component {
   componentDidMount() {
     const { match, history, dispatch } = this.props;
+
     axs
-      .get("/books/get", { params: { howMuch: "one", id: match.params.id } })
+      .get("/books/get", {
+        params: { howMuch: "one", id: match.params.id, fullBookInfo: true }
+      })
       .then(resp => {
         if (!resp.data.error) {
           dispatch(storeData, PARAMS.BOOK, ...resp.data.payload);
@@ -26,6 +29,11 @@ class BookPage extends React.Component {
           history.push("/infoPage");
         }
       });
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch(storeData, PARAMS.BOOK, {});
   }
 
   render() {

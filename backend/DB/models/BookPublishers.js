@@ -13,4 +13,8 @@ const BookPublishersSchema = new Schema({
   }
 });
 
-export default Mongoose.model("BookPublishers", BookPublishersSchema);
+export default Mongoose.model(
+  "BookPublishers",
+  BookPublishersSchema,
+  "bookpublishers"
+);

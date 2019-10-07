@@ -13,4 +13,8 @@ const BookCategoriesSchema = new Schema({
   }
 });
 
-export default Mongoose.model("BookCategories", BookCategoriesSchema);
+export default Mongoose.model(
+  "BookCategories",
+  BookCategoriesSchema,
+  "bookcategories"
+);

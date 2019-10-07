@@ -71,11 +71,16 @@ class Header extends React.Component {
       isUserAuthorized,
       isAuthInProgress,
       userInfo,
-      segmentClassName
+      headerSegmentStyle,
+      headerMenuStyle
     } = this.props;
     return (
-      <Segment inverted loading={isAuthInProgress} className={segmentClassName}>
-        <Menu inverted pointing secondary>
+      <Segment
+        inverted
+        loading={isAuthInProgress}
+        className={headerSegmentStyle}
+      >
+        <Menu inverted pointing secondary className={headerMenuStyle}>
           <Container>
             <>
               {this.generateMenu().map(el => el)}

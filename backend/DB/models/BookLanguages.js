@@ -13,4 +13,8 @@ const BookLanguagesSchema = new Schema({
   }
 });
 
-export default Mongoose.model("BookLanguages", BookLanguagesSchema);
+export default Mongoose.model(
+  "BookLanguages",
+  BookLanguagesSchema,
+  "booklanguages"
+);
