@@ -3,6 +3,8 @@ import _ from "lodash";
 import { root, branch } from "baobab-react/higher-order";
 import { Switch, Route, Router } from "react-router";
 import { Segment, Dimmer, Loader, Image } from "semantic-ui-react";
+import { SemanticToastContainer } from "react-semantic-toasts";
+import "react-semantic-toasts/styles/react-semantic-alert.css";
 import { createBrowserHistory } from "history";
 import "dotenv/config";
 
@@ -95,7 +97,8 @@ class App extends React.Component {
       isUserAuthorized,
       pageLoaded,
       globalPageLoader,
-      isAuthInProgresStored
+      isAuthInProgresStored,
+      globalPageLoaderByAction
     } = this.props;
 
     const { roles } = this.state;
@@ -145,7 +148,7 @@ class App extends React.Component {
 
     return (
       <Router history={history}>
-        <Dimmer active={globalPageLoader} page inverted>
+        <Dimmer active={globalPageLoader || globalPageLoaderByAction} page>
           <Loader />
         </Dimmer>
         {isAuthInProgresStored || pageLoaded ? (
@@ -212,6 +215,7 @@ class App extends React.Component {
             </Switch>
           </>
         )}
+        <SemanticToastContainer position="top-right" />
       </Router>
     );
   }
@@ -223,6 +227,7 @@ export default root(
     {
       isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,
       globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
+      globalPageLoaderByAction: PARAMS.GLOBAL_PAGE_LOADER_BY_ACTION,
       pageLoaded: PARAMS.LOADED,
       isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
       user: PARAMS.USER_INFO

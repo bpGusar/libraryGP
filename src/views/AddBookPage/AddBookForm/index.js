@@ -15,6 +15,8 @@ import { storeData } from "@act";
 
 import axs from "@axios";
 
+import s from "./index.module.scss";
+
 class AddBookForm extends React.Component {
   constructor(props) {
     super(props);
@@ -104,7 +106,7 @@ class AddBookForm extends React.Component {
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
-
+  // TODO: проверить работу новых полей
   render() {
     const { book } = this.props;
     const { isFormLoaded, msg } = this.state;
@@ -233,11 +235,27 @@ class AddBookForm extends React.Component {
               fluid
               required
               type="number"
-              label="Количество книг в наличии"
-              name="stockInfo.quantityInStock"
+              label="Максимальное количество экземпляров в библиотеке"
+              name="stockInfo.maxAvailableBooks"
               onChange={e => this.handleChangeBookInfo(e.currentTarget)}
-              defaultValue={book.stockInfo.quantityInStock}
+              defaultValue={book.stockInfo.maxAvailableBooks}
             />
+            <Form.Field>
+              <Form.Input
+                fluid
+                required
+                type="number"
+                label="Количество экземпляров доступное для выдачи"
+                name="stockInfo.freeForBooking"
+                onChange={e => this.handleChangeBookInfo(e.currentTarget)}
+                max={book.stockInfo.maxAvailableBooks}
+                value={book.stockInfo.freeForBooking}
+              />
+              <p className={s.fieldSubText}>
+                Не может превышать значение в поле Максимальное количество
+                экземпляров в библиотеке
+              </p>
+            </Form.Field>
           </Form.Group>
           <Form.Field>
             <label htmlFor={uniqid(`description_`)}>

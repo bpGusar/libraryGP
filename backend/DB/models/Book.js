@@ -30,7 +30,12 @@ const BookSchema = new Schema({
     language: [{ type: String, requiared: true, ref: "BookLanguages" }]
   },
   stockInfo: {
-    quantityInStock: { type: Number, default: 0, requiared: true }
+    freeForBooking: { type: Number, default: 0, requiared: true },
+    maxAvailableBooks: {
+      type: Number,
+      default: 0,
+      requiared: true
+    }
   }
 });
 

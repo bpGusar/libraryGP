@@ -21,7 +21,6 @@ app.post("/api/getUserInfo", withAuth, (req, res) =>
     if (err) {
       res.json(config.getRespData(true, MSG.internalErr500, err));
     } else if (!user) {
-      console.log(user);
       res.json(config.getRespData(true, MSG.wrongEmail));
     } else {
       res.json(
