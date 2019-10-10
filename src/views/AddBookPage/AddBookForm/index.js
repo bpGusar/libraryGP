@@ -8,7 +8,7 @@ import { DateInput } from "semantic-ui-calendar-react";
 import { Form, Button, Message } from "semantic-ui-react";
 
 import UniqueDropdown from "./components/UniqueDropdown/UniqueDropdown";
-import Poster from "./components/Poster";
+import Poster from "./components/Poster/Poster";
 
 import { PARAMS, getInitialState } from "@store";
 import { storeData } from "@act";
@@ -66,7 +66,12 @@ class AddBookForm extends React.Component {
           text: resp.data.message,
           type: "success"
         });
-        dispatch(storeData, PARAMS.BOOK_TO_DB, getInitialState().book);
+
+        dispatch(
+          storeData,
+          PARAMS.BOOK_TO_DB,
+          getInitialState()[PARAMS.BOOK_TO_DB]
+        );
 
         history.push("/infoPage");
       } else {
@@ -106,6 +111,7 @@ class AddBookForm extends React.Component {
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
+
   // TODO: проверить работу новых полей
   render() {
     const { book } = this.props;
@@ -122,14 +128,27 @@ class AddBookForm extends React.Component {
 
         <Form loading={!isFormLoaded} onSubmit={() => this.handleSubmit()}>
           <Poster />
-          <Form.Input
-            fluid
-            required
-            label="Название"
-            name="bookInfo.title"
-            onChange={e => this.handleChangeBookInfo(e.currentTarget)}
-            defaultValue={bookInfo.title}
-          />
+          <Form.Group widths="equal">
+            <Form.Input
+              fluid
+              required
+              label="Название"
+              name="bookInfo.title"
+              onChange={e => this.handleChangeBookInfo(e.currentTarget)}
+              defaultValue={bookInfo.title}
+            />
+            <DateInput
+              name="bookInfo.publishedDate"
+              label="Дата публикации"
+              required
+              animation="off"
+              value={bookInfo.publishedDate}
+              iconPosition="left"
+              onChange={(e, { name, value }) =>
+                this.handleChangeBookInfo({ name, value })
+              }
+            />
+          </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
               axsGetLink="/authors/get"
@@ -219,18 +238,6 @@ class AddBookForm extends React.Component {
             />
           </Form.Group>
           <Form.Group widths="equal">
-            <DateInput
-              name="bookInfo.publishedDate"
-              label="Дата публикации"
-              required
-              animation="off"
-              value={bookInfo.publishedDate}
-              iconPosition="left"
-              // eslint-disable-next-line react/jsx-no-bind
-              onChange={(e, { name, value }) =>
-                this.handleChangeBookInfo({ name, value })
-              }
-            />
             <Form.Input
               fluid
               required

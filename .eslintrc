@@ -1,6 +1,7 @@
 {
   "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
   "plugins": ["react", "prettier"],
+  "parser": "babel-eslint",
   "rules": {
     "react/jsx-props-no-spreading": "off",
     "no-underscore-dangle": "off",
