@@ -9,7 +9,8 @@ import {
   Modal,
   Header,
   Icon,
-  Message
+  Message,
+  Label
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 
@@ -38,35 +39,88 @@ class TopInfoBlock extends React.Component {
     this.handleOpenCloseModal = this.handleOpenCloseModal.bind(this);
 
     this.state = {
-      isBookDataLoading: false,
-      modalOpen: false
+      isButtonLoading: false,
+      modalOpen: false,
+      isThisBookBooked: false,
+      isBookButtonDisabled: false
     };
+  }
+
+  componentDidMount() {
+    this.checkIfBookAlreadyBooked();
+  }
+
+  // TODO: блокировать кнопку если забронированных книг и книг на руках в сумме 5
+
+  checkIfBookAlreadyBooked() {
+    const { userInfo, bookProps } = this.props;
+
+    this.setState({
+      isButtonLoading: true
+    });
+
+    axs
+      .get("/bookedBooks/get", {
+        params: {
+          howMuch: "one",
+          getQuery: {
+            userId: userInfo.id,
+            bookId: bookProps.match.params.id
+          }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          if (resp.data.payload.length !== 0) {
+            this.setState({
+              isThisBookBooked: true,
+              isButtonLoading: false
+            });
+          } else {
+            this.setState({
+              isButtonLoading: false
+            });
+          }
+        } else {
+          toast(MSG.errorWhenFindBookedBooks(resp.data.message));
+        }
+      });
   }
 
   orderBook() {
     const { dispatch, bookProps, userInfo } = this.props;
 
     this.setState({
-      isBookDataLoading: true
+      isButtonLoading: true
     });
 
     axs
-      .post("/books/bookABook", {
+      .post("/bookedBooks/add/one", {
         id: bookProps.match.params.id,
         userId: userInfo.id
       })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
-            isBookDataLoading: false
+            isButtonLoading: false
           });
 
           dispatch(storeData, PARAMS.BOOK, ...resp.data.payload.books);
           if (resp.data.payload.bookBooked) {
+            this.setState({
+              isThisBookBooked: true
+            });
             this.handleOpenCloseModal();
           } else {
-            toast(MSG.bookDoesntAvailableAnymore);
+            this.checkIfBookAlreadyBooked();
+            toast(MSG.bookDoesntAvailableAnymore(resp.data.message));
           }
+        } else {
+          this.setState({
+            isButtonLoading: false,
+            isBookButtonDisabled: true
+          });
+          toast(MSG.bookDoesntAvailableAnymore(resp.data.message));
         }
       });
   }
@@ -80,7 +134,12 @@ class TopInfoBlock extends React.Component {
 
   render() {
     const { book, isUserAuthorized } = this.props;
-    const { isBookDataLoading, modalOpen } = this.state;
+    const {
+      isButtonLoading,
+      modalOpen,
+      isThisBookBooked,
+      isBookButtonDisabled
+    } = this.state;
     const bookAvailability = book.stockInfo.freeForBooking === 0;
     return (
       <div className={s.topInfoBlock}>
@@ -127,19 +186,28 @@ class TopInfoBlock extends React.Component {
                   <Modal
                     closeIcon
                     trigger={
-                      <Button
-                        disabled={
-                          bookAvailability ||
-                          isBookDataLoading ||
-                          modalOpen ||
-                          !isUserAuthorized
-                        }
-                        loading={isBookDataLoading}
-                        primary
-                        onClick={this.orderBook}
-                      >
-                        Взять в аренду
-                      </Button>
+                      <>
+                        <Button
+                          disabled={
+                            bookAvailability ||
+                            isButtonLoading ||
+                            modalOpen ||
+                            !isUserAuthorized ||
+                            isThisBookBooked ||
+                            isBookButtonDisabled
+                          }
+                          loading={isButtonLoading}
+                          primary
+                          onClick={this.orderBook}
+                        >
+                          Взять в аренду
+                        </Button>
+                        {isThisBookBooked && (
+                          <Label color="green">
+                            <Icon name="check" /> Забронировано
+                          </Label>
+                        )}
+                      </>
                     }
                     open={modalOpen}
                     onClose={this.handleOpenCloseModal}

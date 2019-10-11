@@ -2,12 +2,11 @@ import path from "path";
 import fs from "fs";
 
 import Book from "../models/Book";
-import BookedBooks from "../models/BookedBooks";
 
 import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
 
-import serverConfig from "../../server/config/server.json";
+import servConf from "../../server/config/server.json";
 
 /**
  * @param {Object} res Response
@@ -23,7 +22,7 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
       .populate("bookInfo.language")
       .exec((err, books) => {
         if (err) {
-          res.json(config.getRespData(true, MSG.internalErr500, err));
+          res.json(config.getRespData(true, MSG.bookNotFound, err));
         } else {
           res.json(config.getRespData(false, null, books));
         }
@@ -31,7 +30,7 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
   } else {
     Book.find(data, (err, books) => {
       if (err) {
-        res.json(config.getRespData(true, MSG.internalErr500, err));
+        res.json(config.getRespData(true, MSG.bookNotFound, err));
       } else {
         res.json(config.getRespData(false, null, books));
       }
@@ -39,85 +38,10 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
   }
 }
 
-// TODO: сделать проверку - смотреть сколько книг уже на руках у пользователя и сколько он уже забронировал и если в сумме больше 5ти то выдавать ошибку
-function bookABook(req, res) {
-  const { id: bookId, userId } = req.body;
-  let bookedAndOrderedBooksArr = 0;
-
-  Book.find({ _id: bookId }, (findError, books) => {
-    if (findError) {
-      res.json(config.getRespData(true, MSG.internalErr500, findError));
-    } else {
-      const book = books[0];
-
-      if (book.stockInfo.freeForBooking === 0) {
-        res.json(
-          config.getRespData(true, MSG.bookOutOfStock, {
-            bookBooked: false,
-            books
-          })
-        );
-      } else {
-        BookedBooks.countDocuments(
-          { userId },
-          (bookedBooksrr, countBookedBooks) => {
-            if (bookedBooksrr) throw bookedBooksrr;
-            bookedAndOrderedBooksArr += countBookedBooks;
-          }
-        );
-        setTimeout(() => {
-          console.log(bookedAndOrderedBooksArr);
-        }, 1000);
-
-        Book.findOneAndUpdate(
-          { _id: bookId },
-          {
-            stockInfo: { freeForBooking: book.stockInfo.freeForBooking - 1 }
-          },
-          { new: true }
-        )
-          .populate("bookInfo.authors")
-          .populate("bookInfo.categories")
-          .populate("bookInfo.publisher")
-          .populate("bookInfo.language")
-          .exec((findOneAndUpdateError, findOneAndUpdateBookObj) => {
-            if (findOneAndUpdateError) {
-              res.json(
-                config.getRespData(
-                  true,
-                  MSG.internalErr500,
-                  findOneAndUpdateError
-                )
-              );
-            } else {
-              const BookedBook = new BookedBooks({
-                bookId,
-                userId
-              });
-
-              BookedBook.save(err => {
-                if (err) {
-                  res.json(config.getRespData(true, MSG.cantAddNewBook, err));
-                } else {
-                  res.json(
-                    config.getRespData(false, MSG.bookBooked, {
-                      bookBooked: true,
-                      books: [findOneAndUpdateBookObj]
-                    })
-                  );
-                }
-              });
-            }
-          });
-      }
-    }
-  });
-}
-
 /**
- * Функция принимает в себя данные о книге с фронта.
+ * Функция принимает в себя данные о книге.
  * В процессе она перемещает постер, загруженный предварительно во временную папку с постерами, в постоянную папку.
- * Если приходит placeholder вместо постера то в базу будет добавлена именно ссылка на placeholder.
+ * Если в поле постер приходит пустое поле, по сути placeholder,то в базу будет добавлена именно ссылка на placeholder.
  * @param {Object} req Request
  * @param {Object} res Response
  */
@@ -127,12 +51,12 @@ function addBook(req, res) {
   const posterSplitedLink = bodyBook.bookInfo.imageLinks.poster.split("/");
   const pathToTempPoster = path.join(
     __dirname,
-    `../../server/${serverConfig.filesPaths.bookPoster.tempFolder}`,
+    `../../server/${servConf.filesPaths.bookPoster.tempFolder}`,
     posterSplitedLink[posterSplitedLink.length - 1]
   );
   const pathToPostersFolder = path.join(
     __dirname,
-    `../../server/${serverConfig.filesPaths.bookPoster.mainFolder}`,
+    `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
     posterSplitedLink[posterSplitedLink.length - 1]
   );
 
@@ -150,7 +74,7 @@ function addBook(req, res) {
 
   const clonedBookObj = { ...bodyBook };
   if (bodyBook.bookInfo.imageLinks.poster === "") {
-    clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${process.env.BACK_PORT}${serverConfig.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
+    clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${process.env.BACK_PORT}${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
 
     saveBook(clonedBookObj);
   } else {
@@ -160,7 +84,7 @@ function addBook(req, res) {
       } else {
         clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${
           process.env.BACK_PORT
-        }${serverConfig.filesPaths.bookPoster.urlToPoster}/${
+        }${servConf.filesPaths.bookPoster.urlToPoster}/${
           posterSplitedLink[posterSplitedLink.length - 1]
         }`;
 
@@ -170,4 +94,4 @@ function addBook(req, res) {
   }
 }
 
-export default { findBooks, addBook, bookABook };
+export default { findBooks, addBook };

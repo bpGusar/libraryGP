@@ -1,17 +1,13 @@
 import express from "express";
 
-import withAuth from "../../middleware";
+import withAuth from "../middleware";
 
-import BooksContr from "../../../DB/controllers/Books";
+import BooksContr from "../../DB/controllers/Books";
 
 const app = express();
 
 app.post("/api/books/add", withAuth, (req, res) => {
   BooksContr.addBook(req, res);
-});
-
-app.post("/api/books/bookABook", withAuth, (req, res) => {
-  BooksContr.bookABook(req, res);
 });
 
 app.get("/api/books/get", (req, res) => {

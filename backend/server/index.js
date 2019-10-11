@@ -7,9 +7,9 @@ import "dotenv/config";
 import cron from "node-cron";
 
 import * as dbConfig from "../DB/config";
-import * as routes from "./routes/routesPaths";
 import cronFunctions from "./config/cron";
 import staticUrls from "./config/staticUrl";
+import generateRoutes from "./routes/routesGenerator";
 
 const app = express();
 
@@ -42,7 +42,7 @@ Object.keys(staticUrls).forEach(prop =>
 );
 
 /** routes builder */
-Object.keys(routes).forEach(route => app.use(routes[route]));
+generateRoutes(app);
 
 /** server starter */
 app.listen(process.env.BACK_PORT, () => {

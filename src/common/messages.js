@@ -1,14 +1,25 @@
 import React from "react";
 
 const MSG = {
-  bookNotFound: "Такой книги не существует",
-  bookDoesntAvailableAnymore: {
+  serverError: {
     type: "error",
-    title: "Свободных книг больше нет",
+    title: "Ошибка загрузки данных!",
     description: <p>Попробуйте позже</p>,
-    time: 10000,
+    time: 100000,
     onDismiss: () => true
   },
+  bookDoesntAvailableAnymore: title => ({
+    type: "error",
+    title,
+    time: 10000,
+    onDismiss: () => true
+  }),
+  errorWhenFindBookedBooks: title => ({
+    type: "error",
+    title,
+    time: 60000,
+    onDismiss: () => true
+  }),
   bookDoesntAvailableRibbon: {
     color: "red",
     content: "Нет в наличии",

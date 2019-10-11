@@ -6,14 +6,14 @@ import fs from "fs";
 
 import * as config from "../../DB/config";
 import MSG from "../config/msgCodes";
-import serverConfig from "../config/server.json";
+import servConf from "../config/server.json";
 import withAuth from "../middleware";
 
 const app = express();
 
 const pathToPostersFolder = path.join(
   __dirname,
-  `../${serverConfig.filesPaths.bookPoster.tempFolder}`
+  `../${servConf.filesPaths.bookPoster.tempFolder}`
 );
 
 app.post("/api/upload/book/poster/temp", withAuth, (req, res) => {
@@ -28,7 +28,7 @@ app.post("/api/upload/book/poster/temp", withAuth, (req, res) => {
 
       return res.json(
         config.getRespData(false, null, {
-          posterPath: `http://localhost:${process.env.BACK_PORT}${serverConfig.filesPaths.bookPoster.urlToPostersTemp}/${imageName}`
+          posterPath: `http://localhost:${process.env.BACK_PORT}${servConf.filesPaths.bookPoster.urlToPostersTemp}/${imageName}`
         })
       );
     });

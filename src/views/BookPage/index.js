@@ -10,8 +10,6 @@ import axs from "@axios";
 import { PARAMS } from "@store";
 import { storeData } from "@act";
 
-import MSG from "@msg";
-
 import s from "./index.module.scss";
 
 class BookPage extends React.Component {
@@ -27,7 +25,7 @@ class BookPage extends React.Component {
           dispatch(storeData, PARAMS.BOOK, ...resp.data.payload);
         } else {
           dispatch(storeData, PARAMS.INFO_PAGE, {
-            text: MSG.bookNotFound,
+            text: resp.data.message,
             type: "error"
           });
 

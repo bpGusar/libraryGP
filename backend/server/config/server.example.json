@@ -1,4 +1,5 @@
 {
+  "maxBooksPerOneUserBookedAndOrderedAtTheSameTime": 5,
   "emailConfig": {
     "service": "Смотрите список сервисов https://nodemailer.com/smtp/well-known/",
     "auth": {

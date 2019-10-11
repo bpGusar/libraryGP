@@ -1,8 +1,8 @@
 import express from "express";
 
-import withAuth from "../../middleware";
+import withAuth from "../middleware";
 
-import BookAuthorsContr from "../../../DB/controllers/BookAuthors";
+import BookAuthorsContr from "../../DB/controllers/BookAuthors";
 
 const app = express();
 
