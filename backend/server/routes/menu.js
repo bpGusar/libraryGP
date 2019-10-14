@@ -10,7 +10,7 @@ const app = express();
 app.post("/api/menu/get", (req, res) => {
   Menu.findOne({ email: req.menuId }, (err, menu) => {
     if (err) {
-      res.json(config.getRespData(true, MSG.internalErr500, err));
+      res.json(config.getRespData(true, MSG.internalServerErr, err));
     } else if (!menu) {
       res.json(config.getRespData(true, MSG.cannotFindMenu));
     } else {

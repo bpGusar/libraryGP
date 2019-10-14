@@ -11,6 +11,7 @@ const BookedBooksSchema = new Schema({
     type: String,
     ref: "User"
   },
+  readerId: Number,
   createdAt: {
     type: Date,
     default: Date.now()

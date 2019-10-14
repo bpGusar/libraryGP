@@ -10,12 +10,15 @@ app.post("/api/bookedBooks/add/one", withAuth, (req, res) => {
   BookedBooksContr.bookABook(req, res);
 });
 
+/**
+ * Роут для получения информации по забронированным книгам.
+ * Принимает request query
+ * @param {Object} req.query.getQuery Определяет по каким параметрам искать книги.
+ */
 app.get("/api/bookedBooks/get", withAuth, (req, res) => {
-  const { howMuch, getQuery } = req.query;
+  const { getQuery } = req.query;
 
-  if (howMuch === "one") {
-    BookedBooksContr.findBookedBooks(res, getQuery);
-  }
+  BookedBooksContr.findBookedBooks(res, getQuery);
 });
 
 export default app;

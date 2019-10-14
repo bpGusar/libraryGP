@@ -11,12 +11,9 @@ app.post("/api/books/add", withAuth, (req, res) => {
 });
 
 app.get("/api/books/get", (req, res) => {
-  const { howMuch, id, getFullBookInfo } = req.query;
-  if (howMuch === "all") {
-    BooksContr.findBooks(res, {}, getFullBookInfo);
-  } else if (howMuch === "one") {
-    BooksContr.findBooks(res, { _id: id }, getFullBookInfo);
-  }
+  const { getFullBookInfo, booksQuery } = req.query;
+
+  BooksContr.findBooks(res, booksQuery, getFullBookInfo);
 });
 
 export default app;

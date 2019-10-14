@@ -47,7 +47,11 @@ class TopInfoBlock extends React.Component {
   }
 
   componentDidMount() {
-    this.checkIfBookAlreadyBooked();
+    const { isUserAuthorized } = this.props;
+
+    if (isUserAuthorized) {
+      this.checkIfBookAlreadyBooked();
+    }
   }
 
   // TODO: блокировать кнопку если забронированных книг и книг на руках в сумме 5
@@ -62,7 +66,6 @@ class TopInfoBlock extends React.Component {
     axs
       .get("/bookedBooks/get", {
         params: {
-          howMuch: "one",
           getQuery: {
             userId: userInfo.id,
             bookId: bookProps.match.params.id
@@ -97,7 +100,8 @@ class TopInfoBlock extends React.Component {
     axs
       .post("/bookedBooks/add/one", {
         id: bookProps.match.params.id,
-        userId: userInfo.id
+        userId: userInfo._id,
+        readerId: userInfo.readerId
       })
       .then(resp => {
         if (!resp.data.error) {

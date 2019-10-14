@@ -14,7 +14,7 @@ app.post("/api/auth/login", (req, res) => {
   const { email: bodyEmail, password, rememberMe } = req.body;
   User.findOne({ email: bodyEmail }, (err, user) => {
     if (err) {
-      res.json(config.getRespData(true, MSG.internalErr500, err));
+      res.json(config.getRespData(true, MSG.internalServerErr, err));
     } else if (!user) {
       res.json(config.getRespData(true, MSG.wrongAuthCred));
     } else if (user.emailVerified) {
@@ -24,7 +24,7 @@ app.post("/api/auth/login", (req, res) => {
         (incorrectPassERR, same) => {
           if (incorrectPassERR) {
             res.json(
-              config.getRespData(true, MSG.internalErr500, incorrectPassERR)
+              config.getRespData(true, MSG.internalServerErr, incorrectPassERR)
             );
           } else if (!same) {
             res.json(config.getRespData(true, MSG.wrongAuthCred));

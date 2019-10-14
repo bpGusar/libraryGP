@@ -1,0 +1,15 @@
+$headerBackground: #406a94;
+
+.headerMenuStyle {
+  background: $headerBackground !important;
+  border: none !important;
+}
+
+.headerSegmentStyle {
+  background: $headerBackground !important;
+}
+
+.dashboardLayoutHeaderSegment {
+  padding: "1em 0em";
+  background: $headerBackground !important;
+}

@@ -1,5 +1,6 @@
 {
   "maxBooksPerOneUserBookedAndOrderedAtTheSameTime": 5,
+  "theRaderCanTakeTheBookForDays": 30,
   "emailConfig": {
     "service": "Смотрите список сервисов https://nodemailer.com/smtp/well-known/",
     "auth": {

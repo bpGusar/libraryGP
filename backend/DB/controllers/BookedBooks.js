@@ -11,7 +11,7 @@ import servConf from "../../server/config/server.json";
 // TODO: сделать проверку - смотреть сколько книг уже на руках у пользователя и сколько он уже забронировал и если в сумме 5 то выдавать ошибку
 // СДЕЛАНА ПРОВЕРКА ЗАБРОНИРОВАННЫХ КНИГ
 function bookABook(req, res) {
-  const { id: bookId, userId } = req.body;
+  const { id: bookId, userId, readerId } = req.body;
 
   Book.find({ _id: bookId })
     .populate("bookInfo.authors")
@@ -20,7 +20,7 @@ function bookABook(req, res) {
     .populate("bookInfo.language")
     .exec((findError, books) => {
       if (findError) {
-        res.json(config.getRespData(true, MSG.internalErr500, findError));
+        res.json(config.getRespData(true, MSG.internalServerErr, findError));
       } else {
         const book = books[0];
 
@@ -37,7 +37,7 @@ function bookABook(req, res) {
             (asyncErr, results) => {
               if (asyncErr) {
                 res.json(
-                  config.getRespData(true, MSG.internalErr500, asyncErr)
+                  config.getRespData(true, MSG.internalServerErr, asyncErr)
                 );
               } else if (
                 results[0] <
@@ -62,14 +62,15 @@ function bookABook(req, res) {
                       res.json(
                         config.getRespData(
                           true,
-                          MSG.internalErr500,
+                          MSG.internalServerErr,
                           findOneAndUpdateError
                         )
                       );
                     } else {
                       const BookedBook = new BookedBooks({
                         bookId,
-                        userId
+                        userId,
+                        readerId
                       });
 
                       BookedBook.save(err => {
@@ -108,9 +109,19 @@ function bookABook(req, res) {
 }
 
 function findBookedBooks(res, data = {}) {
-  BookedBooks.find(
-    _.isEmpty(data) ? {} : JSON.parse(data),
-    (findOneErr, foundBookedBooks) => {
+  BookedBooks.find(_.isEmpty(data) ? {} : JSON.parse(data))
+    .populate(
+      "userId",
+      "-password -emailVerified -userGroup -createdAt -readerId"
+    )
+    .populate({
+      path: "bookId",
+      populate: {
+        path:
+          "bookInfo.authors bookInfo.categories bookInfo.publisher bookInfo.language"
+      }
+    })
+    .exec((findOneErr, foundBookedBooks) => {
       if (findOneErr) {
         res.json(config.getRespData(true, MSG.errorWhenFindBookedBooks, {}));
       } else {
@@ -122,8 +133,7 @@ function findBookedBooks(res, data = {}) {
           )
         );
       }
-    }
-  );
+    });
 }
 
 export default { bookABook, findBookedBooks };

@@ -24,7 +24,7 @@ class Header extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    axs.post("/menu/get", { menuId: "5d0cdd7669529541dc73e657" }).then(res => {
+    axs.post("/menu/get", { menuName: "topMenu" }).then(res => {
       if (!res.data.error) {
         dispatch(storeData, PARAMS.MENU, res.data.payload.menu);
       }
@@ -87,6 +87,9 @@ class Header extends React.Component {
               {isUserAuthorized ? (
                 <Dropdown item text={userInfo.login}>
                   <Dropdown.Menu>
+                    <Dropdown.Item as={Link} to="/dashboard">
+                      Dashboard
+                    </Dropdown.Item>
                     <Dropdown.Item onClick={() => Header.handleLogOut()}>
                       Выход
                     </Dropdown.Item>

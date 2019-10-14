@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import _ from "lodash";
 
 import Book from "../models/Book";
 
@@ -15,7 +16,7 @@ import servConf from "../../server/config/server.json";
  */
 function findBooks(res, data = {}, getFullBookInfo = false) {
   if (getFullBookInfo === "true") {
-    Book.find(data)
+    Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
       .populate("bookInfo.authors")
       .populate("bookInfo.categories")
       .populate("bookInfo.publisher")
@@ -28,7 +29,7 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
         }
       });
   } else {
-    Book.find(data, (err, books) => {
+    Book.find(_.isEmpty(data) ? {} : JSON.parse(data), (err, books) => {
       if (err) {
         res.json(config.getRespData(true, MSG.bookNotFound, err));
       } else {

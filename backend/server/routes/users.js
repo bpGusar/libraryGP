@@ -1,5 +1,6 @@
 import express from "express";
 import nodemailer from "nodemailer";
+import _ from "lodash";
 
 import withAuth from "../middleware";
 
@@ -17,20 +18,18 @@ const app = express();
 const transporter = nodemailer.createTransport(serverJson.emailConfig);
 
 app.post("/api/getUserInfo", withAuth, (req, res) =>
-  User.findOne({ email: req.email }, (err, user) => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.internalErr500, err));
-    } else if (!user) {
-      res.json(config.getRespData(true, MSG.wrongEmail));
-    } else {
-      res.json(
-        config.getRespData(false, null, {
-          // eslint-disable-next-line no-underscore-dangle
-          user: { login: user.login, role: user.userGroup, id: user._id }
-        })
-      );
-    }
-  })
+  User.findOne({ email: req.email })
+    .select("-password")
+    .select("-emailVerified")
+    .exec((err, user) => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.internalServerErr, err));
+      } else if (!user) {
+        res.json(config.getRespData(true, MSG.wrongEmail));
+      } else {
+        res.json(config.getRespData(false, null, user));
+      }
+    })
 );
 
 app.post("/api/signup", (req, res) => {
@@ -70,7 +69,7 @@ app.post("/api/signup", (req, res) => {
 app.get("/api/doesUserWithThatCredsExist", (req, res) => {
   User.findOne(req.query, (err, user) => {
     if (err) {
-      res.json(config.getRespData(true, MSG.internalErr500, err));
+      res.json(config.getRespData(true, MSG.internalServerErr, err));
     } else if (!user) {
       res.json(config.getRespData(false, MSG.thisCredsAreFree));
     } else {
@@ -83,7 +82,7 @@ app.get("/api/emailVerification", (req, res) => {
   const { verifyToken } = req.query;
   User.findOne({ _id: verifyToken }, (findOneError, user) => {
     if (findOneError) {
-      res.json(config.getRespData(true, MSG.internalErr500, findOneError));
+      res.json(config.getRespData(true, MSG.internalServerErr, findOneError));
     } else if (!user) {
       res.json(config.getRespData(false, MSG.thisCredsAreFree));
     } else if (!user.emailVerified) {
@@ -92,7 +91,7 @@ app.get("/api/emailVerification", (req, res) => {
         { emailVerified: true },
         err => {
           if (err) {
-            res.json(config.getRespData(true, MSG.internalErr500, err));
+            res.json(config.getRespData(true, MSG.internalServerErr, err));
           } else {
             res.json(config.getRespData(false, MSG.emailSuccessfullyVerified));
           }

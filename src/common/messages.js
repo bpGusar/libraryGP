@@ -3,12 +3,18 @@ import React from "react";
 const MSG = {
   serverError: {
     type: "error",
-    title: "Ошибка загрузки данных!",
-    description: <p>Попробуйте позже</p>,
+    title: "Ошибка сервера.",
+    description: <p>Попробуйте запрос позже, либо свяжитесь с поддержкой.</p>,
     time: 100000,
     onDismiss: () => true
   },
   bookDoesntAvailableAnymore: title => ({
+    type: "error",
+    title,
+    time: 10000,
+    onDismiss: () => true
+  }),
+  toastClassicError: title => ({
     type: "error",
     title,
     time: 10000,
@@ -27,10 +33,10 @@ const MSG = {
   },
   orderBookModalInfo: {
     messageHeader:
-      "Ваш уникальный идентификатор бронирования книги это ваше Ф.И.О",
-    messageText: "Назовите его в библиотеке для получения книги",
+      "Ваш уникальный идентификатор бронирования книги это ваш читательский номер.",
+    messageText: "Назовите его в библиотеке для получения книги.",
     messageSubText:
-      "Вы также можете посмотреть все свои брони и выданные книги в личном кабинете",
+      "Вы также можете посмотреть все свои брони и выданные книги в личном кабинете.",
     modalHeader: "Бронирование книги",
     contentHeader: "Книга успешно забронирована.",
     contentText:

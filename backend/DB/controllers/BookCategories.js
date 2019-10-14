@@ -10,7 +10,7 @@ function findCategories(res, data = {}) {
     _.isEmpty(data) ? {} : JSON.parse(data),
     (err, categories) => {
       if (err) {
-        res.json(config.getRespData(true, MSG.internalErr500, err));
+        res.json(config.getRespData(true, MSG.internalServerErr, err));
       } else {
         res.json(config.getRespData(false, null, categories));
       }

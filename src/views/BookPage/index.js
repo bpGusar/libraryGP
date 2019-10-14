@@ -18,7 +18,10 @@ class BookPage extends React.Component {
 
     axs
       .get("/books/get", {
-        params: { howMuch: "one", id: match.params.id, getFullBookInfo: true }
+        params: {
+          booksQuery: { _id: match.params.id },
+          getFullBookInfo: true
+        }
       })
       .then(resp => {
         if (!resp.data.error) {

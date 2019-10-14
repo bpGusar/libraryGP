@@ -8,6 +8,9 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now()
   },
+  readerId: {
+    type: Number
+  },
   login: {
     type: String,
     requiared: true,
@@ -47,6 +50,7 @@ const UserSchema = new Schema({
 UserSchema.pre("save", function(next) {
   if (this.isNew || this.isModified("password")) {
     const document = this;
+    document.readerId = new Date().getTime();
     bcrypt.hash(
       document.password,
       Number(process.env.BCRYPT_SALT),

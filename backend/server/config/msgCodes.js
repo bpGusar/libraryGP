@@ -5,7 +5,7 @@ const MSG = {
   errorToken2: {
     ru: "Не удалось проверить токен."
   },
-  internalErr500: {
+  internalServerErr: {
     ru: "Произошла ошибка. Пожалуйста, попробуйте еще раз."
   },
   wrongAuthCred: {
