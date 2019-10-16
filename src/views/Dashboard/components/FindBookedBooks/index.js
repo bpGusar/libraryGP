@@ -14,10 +14,13 @@ import {
   Icon
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
+import _ from "lodash";
 
 import axs from "@axios";
 import * as util from "@utils";
 import MSG from "@msg";
+
+import s from "./index.module.scss";
 
 export default class FindBookedBooks extends Component {
   constructor(props) {
@@ -30,8 +33,15 @@ export default class FindBookedBooks extends Component {
       books: [],
       isDataLoading: false,
       emptyResults: { empty: false, readerId: "" },
-      orderedBooks: {},
-      orderingInProgress: {}
+      actionWithReservationInProgress: {},
+      ordering: {
+        successfullyOrderedBooks: {}
+      },
+      rejecting: {
+        rejectMsgs: {},
+        successfullyRejected: {},
+        rejectingInProgress: {}
+      }
     };
   }
 
@@ -68,30 +78,35 @@ export default class FindBookedBooks extends Component {
   }
 
   handleOrderBook(bookedBook) {
-    const { orderingInProgress, orderedBooks } = this.state;
+    const { ordering, actionWithReservationInProgress } = this.state;
 
     this.setState({
-      orderingInProgress: {
-        ...orderingInProgress,
+      actionWithReservationInProgress: {
+        ...actionWithReservationInProgress,
         [bookedBook._id]: true
       }
     });
-    // TODO: сделать кнопку отказать
+
     axs
       .post("/orderedBooks/add", {
-        bookId: bookedBook.bookId._id,
-        userId: bookedBook.userId._id,
-        readerId: bookedBook.readerId
+        bookedBookInfo: {
+          ...bookedBook
+        },
+        status: "ordered",
+        comment: ""
       })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
-            orderedBooks: {
-              ...orderedBooks,
-              [bookedBook._id]: true
+            ordering: {
+              ...ordering,
+              successfullyOrderedBooks: {
+                ...ordering.successfullyOrderedBooks,
+                [bookedBook._id]: true
+              }
             },
-            orderingInProgress: {
-              ...orderingInProgress,
+            actionWithReservationInProgress: {
+              ...actionWithReservationInProgress,
               [bookedBook._id]: false
             }
           });
@@ -101,22 +116,43 @@ export default class FindBookedBooks extends Component {
       });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   handleRejectOrdering(bookedBook) {
-    console.log(bookedBook);
+    const { rejecting, actionWithReservationInProgress } = this.state;
+
+    this.setState({
+      actionWithReservationInProgress: {
+        ...actionWithReservationInProgress,
+        [bookedBook._id]: true
+      }
+    });
+
     axs
-      .post("/ordersArchive/add", {
-        orderType: "booking",
-        orderDetails: {
-          orderInfo: {
-            ...bookedBook,
-            orderedAt: bookedBook.createdAt
-          }
-        }
+      .post("/bookedBooksArchive/rejectOrdering", {
+        bookedBookInfo: {
+          ...bookedBook
+        },
+        status: "rejected",
+        comment: _.isUndefined(rejecting.rejectMsgs[`${bookedBook._id}-msg`])
+          ? ""
+          : rejecting.rejectMsgs[`${bookedBook._id}-msg`]
       })
       .then(resp => {
         if (!resp.data.error) {
-          console.log("object");
+          this.setState({
+            actionWithReservationInProgress: {
+              ...actionWithReservationInProgress,
+              [bookedBook._id]: false
+            },
+            rejecting: {
+              ...rejecting,
+              successfullyRejected: {
+                ...rejecting.successfullyRejected,
+                [bookedBook._id]: true
+              }
+            }
+          });
+        } else {
+          toast(MSG.toastClassicError(resp.data.message));
         }
       });
   }
@@ -129,8 +165,9 @@ export default class FindBookedBooks extends Component {
       books,
       isDataLoading,
       emptyResults,
-      orderedBooks,
-      orderingInProgress
+      ordering,
+      rejecting,
+      actionWithReservationInProgress
     } = this.state;
 
     return (
@@ -169,19 +206,26 @@ export default class FindBookedBooks extends Component {
                     <Card key={bookedBook._id}>
                       <Dimmer
                         active={
-                          orderingInProgress[bookedBook._id] ||
-                          orderedBooks[bookedBook._id]
+                          actionWithReservationInProgress[bookedBook._id] ||
+                          ordering.successfullyOrderedBooks[bookedBook._id] ||
+                          rejecting.successfullyRejected[bookedBook._id]
                         }
-                        inverted={!orderedBooks[bookedBook._id]}
                       >
-                        {orderingInProgress[bookedBook._id] && (
+                        {actionWithReservationInProgress[bookedBook._id] && (
                           <Loader>Выполняется</Loader>
                         )}
-                        {orderedBooks[bookedBook._id] && (
+                        {ordering.successfullyOrderedBooks[bookedBook._id] && (
                           <>
                             <Header as="h5" icon inverted>
                               <Icon name="check" />
                               Книга добавлена в выданные
+                            </Header>
+                          </>
+                        )}
+                        {rejecting.successfullyRejected[bookedBook._id] && (
+                          <>
+                            <Header as="h5" icon inverted>
+                              <Icon name="close" />В выдаче книги отказано
                             </Header>
                           </>
                         )}
@@ -204,31 +248,115 @@ export default class FindBookedBooks extends Component {
                           Дата брони: {util.convertDate(bookedBook.createdAt)}
                         </Card.Meta>
                         <Card.Description>
-                          Бронировал: {user.lastName} {user.firstName}{" "}
+                          Бронь на имя: {user.lastName} {user.firstName}{" "}
                           {user.patronymic} <br />
                         </Card.Description>
                       </Card.Content>
-                      <Card.Content extra>
-                        <div className="ui two buttons">
-                          <Button
-                            basic
-                            color="green"
-                            onClick={() => this.handleOrderBook(bookedBook)}
-                            disabled={orderedBooks[bookedBook._id]}
-                          >
-                            Выдать
-                          </Button>
-                          <Button
-                            basic
-                            color="red"
-                            onClick={() =>
-                              this.handleRejectOrdering(bookedBook)
-                            }
-                            disabled={orderedBooks[bookedBook._id]}
-                          >
-                            Отказать
-                          </Button>
-                        </div>
+                      <Card.Content
+                        extra
+                        className={
+                          rejecting.rejectingInProgress[bookedBook._id]
+                            ? s.rejectBlock
+                            : ""
+                        }
+                      >
+                        {rejecting.rejectingInProgress[bookedBook._id] && (
+                          <>
+                            <Header as="h5">Отказ в выдаче</Header>
+                            <Form.Input
+                              label="Введите комментарий или оставьте поле пустым."
+                              className={s.rejectInput}
+                              onChange={(e, { value }) =>
+                                this.setState({
+                                  rejecting: {
+                                    ...rejecting,
+                                    rejectMsgs: {
+                                      ...rejecting.rejectMsgs,
+                                      [`${bookedBook._id}-msg`]: value
+                                    }
+                                  }
+                                })
+                              }
+                            />
+                            <div className="ui two buttons">
+                              <Button
+                                basic
+                                color="red"
+                                onClick={() =>
+                                  this.handleRejectOrdering(bookedBook)
+                                }
+                                // disabled={
+                                //   ordering.successfullyOrderedBooks[
+                                //     bookedBook._id
+                                //   ]
+                                // }
+                              >
+                                Отказать
+                              </Button>
+                              <Button
+                                basic
+                                color="grey"
+                                onClick={() =>
+                                  this.setState({
+                                    rejecting: {
+                                      ...rejecting,
+                                      rejectingInProgress: {
+                                        ...rejecting.rejectingInProgress,
+                                        [bookedBook._id]: false
+                                      }
+                                    }
+                                  })
+                                }
+                                // disabled={
+                                //   ordering.successfullyOrderedBooks[
+                                //     bookedBook._id
+                                //   ]
+                                // }
+                              >
+                                Отмена
+                              </Button>
+                            </div>
+                          </>
+                        )}
+
+                        {!rejecting.rejectingInProgress[bookedBook._id] && (
+                          <div className="ui two buttons">
+                            <Button
+                              basic
+                              color="green"
+                              onClick={() => this.handleOrderBook(bookedBook)}
+                              disabled={
+                                ordering.successfullyOrderedBooks[
+                                  bookedBook._id
+                                ]
+                              }
+                            >
+                              Выдать
+                            </Button>
+                            <Button
+                              basic
+                              color="red"
+                              onClick={() =>
+                                this.setState({
+                                  rejecting: {
+                                    ...rejecting,
+                                    rejectingInProgress: {
+                                      ...rejecting.rejectingInProgress,
+                                      [bookedBook._id]: true
+                                    }
+                                  }
+                                })
+                              }
+                              disabled={
+                                ordering.successfullyOrderedBooks[
+                                  bookedBook._id
+                                ]
+                              }
+                            >
+                              Отказать
+                            </Button>
+                          </div>
+                        )}
                       </Card.Content>
                     </Card>
                   );

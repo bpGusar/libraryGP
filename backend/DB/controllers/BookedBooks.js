@@ -63,10 +63,7 @@ function bookABook(req, res) {
                 Book.findOneAndUpdate(
                   { _id: bookId },
                   {
-                    stockInfo: {
-                      ...book.stockInfo,
-                      freeForBooking: book.stockInfo.freeForBooking - 1
-                    }
+                    $inc: { "stockInfo.freeForBooking": -1 }
                   },
                   { new: true }
                 )

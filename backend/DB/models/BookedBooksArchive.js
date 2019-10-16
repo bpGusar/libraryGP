@@ -3,7 +3,11 @@ import Mongoose from "mongoose";
 const { Schema } = Mongoose;
 
 const BookedBooksArchiveSchema = new Schema({
-  orderInfo: {
+  createdAt: {
+    type: Date,
+    default: Date.now()
+  },
+  bookedBookInfo: {
     bookId: {
       type: String,
       ref: "Book"
@@ -17,13 +21,10 @@ const BookedBooksArchiveSchema = new Schema({
     },
     createdAt: Date
   },
-  createdAt: {
-    type: Date,
-    default: Date.now()
-  },
   status: {
     type: String,
-    enum: ["rejected"]
+    required: true,
+    enum: ["rejected", "ordered"]
   },
   comment: {
     type: String,

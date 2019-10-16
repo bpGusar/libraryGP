@@ -18,6 +18,7 @@ import BookPage from "@views/BookPage";
 import EmailVerify from "@views/EmailVerify";
 import DashboardPage from "@views/Dashboard";
 import FindBookedBooks from "@views/Dashboard/components/FindBookedBooks";
+import FindOrderedBooks from "@views/Dashboard/components/FindOrderedBooks";
 
 export default class AppRotes extends React.Component {
   constructor(props) {
@@ -95,6 +96,13 @@ export default class AppRotes extends React.Component {
           accessRole={roles.admin}
           path="/dashboard/addBook"
           component={AddBookForm}
+        />
+        <PrivateRoute
+          exact
+          layout={Dashboard}
+          accessRole={roles.admin}
+          path="/dashboard/ordersManagement"
+          component={FindOrderedBooks}
         />
         <PrivateRoute
           exact

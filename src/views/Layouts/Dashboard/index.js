@@ -35,6 +35,9 @@ export default function MainLayout(props) {
               <Dropdown.Item as={Link} to="/dashboard/bookingManagement">
                 Управление бронированием
               </Dropdown.Item>
+              <Dropdown.Item as={Link} to="/dashboard/ordersManagement">
+                Управление выданными книгами
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
           <Menu.Item

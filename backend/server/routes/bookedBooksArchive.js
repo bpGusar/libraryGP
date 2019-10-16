@@ -6,8 +6,8 @@ import BookedBooksArchiveContr from "../../DB/controllers/BookedBooksArchive";
 
 const app = express();
 
-app.post("/api/bookedBooksArchive/add", withAuth, (req, res) => {
-  BookedBooksArchiveContr.addBookedBookInAchive(req.body, res);
+app.post("/api/bookedBooksArchive/rejectOrdering", withAuth, (req, res) => {
+  BookedBooksArchiveContr.rejectOrdering(req.body, res);
 });
 
 export default app;
