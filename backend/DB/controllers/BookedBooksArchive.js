@@ -1,13 +1,14 @@
 import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
 
-import OrderedBooks from "../models/OrderedBooks";
+import BookedBooksArchive from "../models/BookedBooksArchive";
 import BookedBooks from "../models/BookedBooks";
+// TODO: доделать архивацию бронирований
 
-function addOrderedBook(orderBookData, res) {
-  const newOrderedBook = new OrderedBooks({ ...orderBookData });
+function addBookedBookInAchive(orderData, res) {
+  const newArchivedOrder = new BookedBooksArchive({ ...orderData });
 
-  newOrderedBook.save(saveErr => {
+  newArchivedOrder.save(saveErr => {
     if (saveErr) {
       res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
     } else {
@@ -27,4 +28,4 @@ function addOrderedBook(orderBookData, res) {
   });
 }
 
-export default { addOrderedBook };
+export default { addBookedBookInAchive };

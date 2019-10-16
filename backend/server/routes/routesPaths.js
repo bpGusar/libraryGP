@@ -2,6 +2,7 @@ import auth from "./auth";
 import bookAuthors from "./bookAuthors";
 import bookCategories from "./bookCategories";
 import bookedBooks from "./bookedBooks";
+import bookedBooksArchive from "./bookedBooksArchive";
 import bookLanguages from "./bookLanguages";
 import bookPublishers from "./bookPublishers";
 import books from "./books";
@@ -16,6 +17,7 @@ export {
   bookAuthors,
   bookCategories,
   bookedBooks,
+  bookedBooksArchive,
   bookLanguages,
   bookPublishers,
   books,

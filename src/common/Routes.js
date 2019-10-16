@@ -5,7 +5,7 @@ import _ from "lodash";
 import MainLayout from "@views/Layouts/Main";
 import BookTemplate from "@views/Layouts/Book";
 import LoginAndRegister from "@views/Layouts/LoginAndRegister";
-import Dashboard from "@views/Layouts/Dashboard";
+import Dashboard from "@views/Layouts/Dashboard/index";
 
 import LoginPage from "@views/LoginPage";
 import RegistrationPage from "@views/RegistrationPage";
@@ -17,6 +17,7 @@ import InfoPage from "@views/InfoPage";
 import BookPage from "@views/BookPage";
 import EmailVerify from "@views/EmailVerify";
 import DashboardPage from "@views/Dashboard";
+import FindBookedBooks from "@views/Dashboard/components/FindBookedBooks";
 
 export default class AppRotes extends React.Component {
   constructor(props) {
@@ -94,6 +95,13 @@ export default class AppRotes extends React.Component {
           accessRole={roles.admin}
           path="/dashboard/addBook"
           component={AddBookForm}
+        />
+        <PrivateRoute
+          exact
+          layout={Dashboard}
+          accessRole={roles.admin}
+          path="/dashboard/bookingManagement"
+          component={FindBookedBooks}
         />
         <PrivateRoute
           exact

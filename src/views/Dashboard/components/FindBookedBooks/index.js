@@ -7,7 +7,11 @@ import {
   Header,
   Divider,
   Card,
-  Image
+  Image,
+  Message,
+  Dimmer,
+  Loader,
+  Icon
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 
@@ -24,7 +28,10 @@ export default class FindBookedBooks extends Component {
     this.state = {
       readerId: "",
       books: [],
-      isDataLoading: false
+      isDataLoading: false,
+      emptyResults: { empty: false, readerId: "" },
+      orderedBooks: {},
+      orderingInProgress: {}
     };
   }
 
@@ -48,7 +55,11 @@ export default class FindBookedBooks extends Component {
         if (!resp.data.error) {
           this.setState({
             books: resp.data.payload,
-            isDataLoading: false
+            isDataLoading: false,
+            emptyResults: {
+              empty: resp.data.payload.length === 0,
+              readerId
+            }
           });
         } else {
           toast(MSG.toastClassicError(resp.data.message));
@@ -56,13 +67,16 @@ export default class FindBookedBooks extends Component {
       });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   handleOrderBook(bookedBook) {
+    const { orderingInProgress, orderedBooks } = this.state;
+
     this.setState({
-      isDataLoading: true
+      orderingInProgress: {
+        ...orderingInProgress,
+        [bookedBook._id]: true
+      }
     });
-    // TODO: сделать вывод сообщения об успешной выдаче книги
-    // TODO: сделать вывод сообщения на странице книги что книга уже у чела на руках
+    // TODO: сделать кнопку отказать
     axs
       .post("/orderedBooks/add", {
         bookId: bookedBook.bookId._id,
@@ -72,7 +86,14 @@ export default class FindBookedBooks extends Component {
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
-            isDataLoading: false
+            orderedBooks: {
+              ...orderedBooks,
+              [bookedBook._id]: true
+            },
+            orderingInProgress: {
+              ...orderingInProgress,
+              [bookedBook._id]: false
+            }
           });
         } else {
           toast(MSG.toastClassicError(resp.data.message));
@@ -80,10 +101,37 @@ export default class FindBookedBooks extends Component {
       });
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  handleRejectOrdering(bookedBook) {
+    console.log(bookedBook);
+    axs
+      .post("/ordersArchive/add", {
+        orderType: "booking",
+        orderDetails: {
+          orderInfo: {
+            ...bookedBook,
+            orderedAt: bookedBook.createdAt
+          }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          console.log("object");
+        }
+      });
+  }
+
   // TODO: сделать ссылку на профиль пользователя
 
   render() {
-    const { readerId, books, isDataLoading } = this.state;
+    const {
+      readerId,
+      books,
+      isDataLoading,
+      emptyResults,
+      orderedBooks,
+      orderingInProgress
+    } = this.state;
 
     return (
       <>
@@ -118,12 +166,33 @@ export default class FindBookedBooks extends Component {
                   const { bookId: bookedBookInfo, userId: user } = bookedBook;
 
                   return (
-                    <Card>
+                    <Card key={bookedBook._id}>
+                      <Dimmer
+                        active={
+                          orderingInProgress[bookedBook._id] ||
+                          orderedBooks[bookedBook._id]
+                        }
+                        inverted={!orderedBooks[bookedBook._id]}
+                      >
+                        {orderingInProgress[bookedBook._id] && (
+                          <Loader>Выполняется</Loader>
+                        )}
+                        {orderedBooks[bookedBook._id] && (
+                          <>
+                            <Header as="h5" icon inverted>
+                              <Icon name="check" />
+                              Книга добавлена в выданные
+                            </Header>
+                          </>
+                        )}
+                      </Dimmer>
                       <Card.Content>
                         <Image
                           floated="right"
                           size="mini"
                           src={bookedBookInfo.bookInfo.imageLinks.poster}
+                          as={Link}
+                          to={`/book-${bookedBookInfo._id}`}
                         />
                         <Card.Header
                           as={Link}
@@ -145,10 +214,18 @@ export default class FindBookedBooks extends Component {
                             basic
                             color="green"
                             onClick={() => this.handleOrderBook(bookedBook)}
+                            disabled={orderedBooks[bookedBook._id]}
                           >
                             Выдать
                           </Button>
-                          <Button basic color="red">
+                          <Button
+                            basic
+                            color="red"
+                            onClick={() =>
+                              this.handleRejectOrdering(bookedBook)
+                            }
+                            disabled={orderedBooks[bookedBook._id]}
+                          >
                             Отказать
                           </Button>
                         </div>
@@ -158,6 +235,14 @@ export default class FindBookedBooks extends Component {
                 })}
               </Card.Group>
             </>
+          )}
+          {emptyResults.empty && (
+            <Message info>
+              <Message.Header>
+                Забронированные книги для билета № {emptyResults.readerId}{" "}
+                отсутствуют
+              </Message.Header>
+            </Message>
           )}
         </Segment>
       </>

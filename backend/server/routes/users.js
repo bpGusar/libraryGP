@@ -1,106 +1,24 @@
 import express from "express";
-import nodemailer from "nodemailer";
-import _ from "lodash";
 
 import withAuth from "../middleware";
-
-import * as config from "../../DB/config";
-import MSG from "../config/msgCodes";
-
-import User from "../../DB/models/User";
-
-import serverJson from "../config/server.json";
-
-import { EmailVerifyTemplate } from "../emailTemplates/EmailVerify";
+import UsersContr from "../../DB/controllers/Users";
 
 const app = express();
 
-const transporter = nodemailer.createTransport(serverJson.emailConfig);
-
 app.post("/api/getUserInfo", withAuth, (req, res) =>
-  User.findOne({ email: req.email })
-    .select("-password")
-    .select("-emailVerified")
-    .exec((err, user) => {
-      if (err) {
-        res.json(config.getRespData(true, MSG.internalServerErr, err));
-      } else if (!user) {
-        res.json(config.getRespData(true, MSG.wrongEmail));
-      } else {
-        res.json(config.getRespData(false, null, user));
-      }
-    })
+  UsersContr.findUser(res, { email: req.email })
 );
 
 app.post("/api/signup", (req, res) => {
-  const { email, password, login, firstName, lastName, patronymic } = req.body;
-  const UserModel = new User({
-    email,
-    password,
-    login,
-    firstName,
-    lastName,
-    patronymic
-  });
-  UserModel.save((saveError, newUser) => {
-    if (saveError) {
-      res.json(config.getRespData(true, MSG.registrationError, saveError));
-    } else {
-      transporter.sendMail(
-        EmailVerifyTemplate(email, process.env, newUser._id),
-        function(emailSentError) {
-          if (emailSentError) {
-            User.find({ _id: newUser._id }).remove();
-            res.json(
-              config.getRespData(true, MSG.registrationError, {
-                saveError,
-                emailSentError
-              })
-            );
-          } else {
-            res.send(config.getRespData(false));
-          }
-        }
-      );
-    }
-  });
+  UsersContr.addNewUser(req, res);
 });
 
 app.get("/api/doesUserWithThatCredsExist", (req, res) => {
-  User.findOne(req.query, (err, user) => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.internalServerErr, err));
-    } else if (!user) {
-      res.json(config.getRespData(false, MSG.thisCredsAreFree));
-    } else {
-      res.json(config.getRespData(true, MSG.weFindSameCreds));
-    }
-  });
+  UsersContr.doesUserWithThatCredsExist(req, res);
 });
 
 app.get("/api/emailVerification", (req, res) => {
-  const { verifyToken } = req.query;
-  User.findOne({ _id: verifyToken }, (findOneError, user) => {
-    if (findOneError) {
-      res.json(config.getRespData(true, MSG.internalServerErr, findOneError));
-    } else if (!user) {
-      res.json(config.getRespData(false, MSG.thisCredsAreFree));
-    } else if (!user.emailVerified) {
-      User.findOneAndUpdate(
-        { _id: verifyToken },
-        { emailVerified: true },
-        err => {
-          if (err) {
-            res.json(config.getRespData(true, MSG.internalServerErr, err));
-          } else {
-            res.json(config.getRespData(false, MSG.emailSuccessfullyVerified));
-          }
-        }
-      );
-    } else {
-      res.json(config.getRespData(true, MSG.emailAlreadyVerified));
-    }
-  });
+  UsersContr.emailVerification(req, res);
 });
 
 export default app;

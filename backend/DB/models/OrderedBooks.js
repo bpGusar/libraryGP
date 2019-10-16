@@ -23,7 +23,6 @@ const OrderedBooksSchema = new Schema({
   orderedUntil: Date
 });
 
-// TODO: сделать крон для отправки имейла за 3 дня до даты сдачи книги
 // TODO: сделать крон для отправки имейла если книга просрочена
 OrderedBooksSchema.pre("save", function(next) {
   const document = this;

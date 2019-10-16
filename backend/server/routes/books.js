@@ -16,4 +16,10 @@ app.get("/api/books/get", (req, res) => {
   BooksContr.findBooks(res, booksQuery, getFullBookInfo);
 });
 
+app.get("/api/books/thisBookOrderedOrBooked", withAuth, (req, res) => {
+  const { booksQuery } = req.query;
+
+  BooksContr.thisBookOrderedOrBooked(res, booksQuery);
+});
+
 export default app;

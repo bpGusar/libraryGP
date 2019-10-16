@@ -112,7 +112,6 @@ class AddBookForm extends React.Component {
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
 
-  // TODO: проверить работу новых полей
   render() {
     const { book } = this.props;
     const { isFormLoaded, msg } = this.state;

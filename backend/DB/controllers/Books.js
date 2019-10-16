@@ -1,8 +1,11 @@
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
+import parallel from "async/parallel";
 
 import Book from "../models/Book";
+import BookedBooks from "../models/BookedBooks";
+import OrderedBooks from "../models/OrderedBooks";
 
 import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
@@ -49,16 +52,16 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
 function addBook(req, res) {
   const { book: bodyBook } = req.body;
 
-  const posterSplitedLink = bodyBook.bookInfo.imageLinks.poster.split("/");
+  const splitedLinkToPoster = bodyBook.bookInfo.imageLinks.poster.split("/");
   const pathToTempPoster = path.join(
     __dirname,
     `../../server/${servConf.filesPaths.bookPoster.tempFolder}`,
-    posterSplitedLink[posterSplitedLink.length - 1]
+    splitedLinkToPoster[splitedLinkToPoster.length - 1]
   );
   const pathToPostersFolder = path.join(
     __dirname,
     `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
-    posterSplitedLink[posterSplitedLink.length - 1]
+    splitedLinkToPoster[splitedLinkToPoster.length - 1]
   );
 
   const saveBook = book => {
@@ -86,7 +89,7 @@ function addBook(req, res) {
         clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${
           process.env.BACK_PORT
         }${servConf.filesPaths.bookPoster.urlToPoster}/${
-          posterSplitedLink[posterSplitedLink.length - 1]
+          splitedLinkToPoster[splitedLinkToPoster.length - 1]
         }`;
 
         saveBook(clonedBookObj);
@@ -95,4 +98,20 @@ function addBook(req, res) {
   }
 }
 
-export default { findBooks, addBook };
+function thisBookOrderedOrBooked(res, query) {
+  parallel(
+    [
+      callback => BookedBooks.findOne(JSON.parse(query), callback),
+      callback => OrderedBooks.findOne(JSON.parse(query), callback)
+    ],
+    (asyncErr, results) => {
+      if (asyncErr) {
+        res.json(config.getRespData(true, MSG.internalServerErr, asyncErr));
+      } else {
+        res.json(config.getRespData(false, null, results));
+      }
+    }
+  );
+}
+
+export default { findBooks, addBook, thisBookOrderedOrBooked };

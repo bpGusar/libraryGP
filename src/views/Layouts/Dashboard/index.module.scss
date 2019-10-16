@@ -1,0 +1,30 @@
+$sidebarWidth: 300px;
+
+.dashboardWrapper {
+  display: flex;
+  height: 100vh;
+  .sideBarWrapper {
+    width: $sidebarWidth;
+    display: inline-flex;
+    height: 100%;
+    .sidebar {
+      position: relative;
+      width: $sidebarWidth !important;
+      overflow: visible !important;
+      background: #19537e !important;
+      .menuItem {
+        text-align: left !important;
+      }
+      .backtoToSite {
+        position: absolute;
+        width: 100%;
+        background: #24608c !important;
+        bottom: 0;
+      }
+    }
+  }
+  .mainContainer {
+    padding: 20px;
+    width: 1100px !important;
+  }
+}

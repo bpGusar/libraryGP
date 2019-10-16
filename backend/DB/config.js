@@ -12,14 +12,6 @@ export function setUpConnection() {
   );
 }
 
-export function buildModel(schemaName, schemaTypes) {
-  const { Schema } = Mongoose;
-
-  const newSchema = new Schema(schemaTypes);
-
-  Mongoose.model(schemaName, newSchema);
-}
-
 export function getRespData(error, msgCode = null, payload = null) {
   return {
     error,

@@ -20,6 +20,7 @@ import { PARAMS } from "@store";
 import { storeData } from "@act";
 
 import MSG from "@msg";
+import * as utils from "@utils";
 
 import axs from "@axios";
 
@@ -35,13 +36,17 @@ class TopInfoBlock extends React.Component {
 
   constructor(props) {
     super(props);
-    this.orderBook = this.orderBook.bind(this);
+    this.bookABook = this.bookABook.bind(this);
     this.handleOpenCloseModal = this.handleOpenCloseModal.bind(this);
 
     this.state = {
       isButtonLoading: false,
       modalOpen: false,
       isThisBookBooked: false,
+      isThisBookOrdered: {
+        ordered: false,
+        until: ""
+      },
       isBookButtonDisabled: false
     };
   }
@@ -50,13 +55,13 @@ class TopInfoBlock extends React.Component {
     const { isUserAuthorized } = this.props;
 
     if (isUserAuthorized) {
-      this.checkIfBookAlreadyBooked();
+      this.checkIfBookAlreadyBookedOrOrdered();
     }
   }
 
-  // TODO: блокировать кнопку если забронированных книг и книг на руках в сумме 5
+  // TODO: сделать удаление книг из забронированных если прошло 3 дня с момента брони и книгу еще не забрали
 
-  checkIfBookAlreadyBooked() {
+  checkIfBookAlreadyBookedOrOrdered() {
     const { userInfo, bookProps } = this.props;
 
     this.setState({
@@ -64,20 +69,28 @@ class TopInfoBlock extends React.Component {
     });
 
     axs
-      .get("/bookedBooks/get", {
+      .get("/books/thisBookOrderedOrBooked", {
         params: {
-          getQuery: {
-            userId: userInfo.id,
+          booksQuery: {
+            userId: userInfo._id,
             bookId: bookProps.match.params.id
           }
         }
       })
       .then(resp => {
         if (!resp.data.error) {
-          if (resp.data.payload.length !== 0) {
+          if (resp.data.payload[0] !== null) {
             this.setState({
-              isThisBookBooked: true,
-              isButtonLoading: false
+              isButtonLoading: false,
+              isThisBookBooked: true
+            });
+          } else if (resp.data.payload[1] !== null) {
+            this.setState({
+              isButtonLoading: false,
+              isThisBookOrdered: {
+                ordered: true,
+                until: utils.convertDate(resp.data.payload[1].orderedUntil)
+              }
             });
           } else {
             this.setState({
@@ -85,12 +98,15 @@ class TopInfoBlock extends React.Component {
             });
           }
         } else {
+          this.setState({
+            isButtonLoading: false
+          });
           toast(MSG.errorWhenFindBookedBooks(resp.data.message));
         }
       });
   }
 
-  orderBook() {
+  bookABook() {
     const { dispatch, bookProps, userInfo } = this.props;
 
     this.setState({
@@ -116,7 +132,7 @@ class TopInfoBlock extends React.Component {
             });
             this.handleOpenCloseModal();
           } else {
-            this.checkIfBookAlreadyBooked();
+            this.checkIfBookAlreadyBookedOrOrdered();
             toast(MSG.bookDoesntAvailableAnymore(resp.data.message));
           }
         } else {
@@ -142,7 +158,8 @@ class TopInfoBlock extends React.Component {
       isButtonLoading,
       modalOpen,
       isThisBookBooked,
-      isBookButtonDisabled
+      isBookButtonDisabled,
+      isThisBookOrdered
     } = this.state;
     const bookAvailability = book.stockInfo.freeForBooking === 0;
     return (
@@ -198,17 +215,21 @@ class TopInfoBlock extends React.Component {
                             modalOpen ||
                             !isUserAuthorized ||
                             isThisBookBooked ||
+                            isThisBookOrdered.ordered ||
                             isBookButtonDisabled
                           }
                           loading={isButtonLoading}
                           primary
-                          onClick={this.orderBook}
+                          onClick={this.bookABook}
                         >
                           Взять в аренду
                         </Button>
-                        {isThisBookBooked && (
+                        {(isThisBookBooked || isThisBookOrdered.ordered) && (
                           <Label color="green">
-                            <Icon name="check" /> Забронировано
+                            <Icon name="check" />{" "}
+                            {isThisBookOrdered.ordered &&
+                              `Книга у Вас на руках до ${isThisBookOrdered.until}`}
+                            {isThisBookBooked && "Забронировано"}
                           </Label>
                         )}
                       </>

@@ -30,10 +30,14 @@ app.use(cors(corsOptions));
 
 /** cron tasks builder */
 Object.keys(cronFunctions).forEach(task =>
-  cron.schedule(cronFunctions[task].time, cronFunctions[task].function, {
-    scheduled: true,
-    timezone: "Europe/Moscow"
-  })
+  cron.schedule(
+    cronFunctions[task].cron.time,
+    cronFunctions[task].cron.function,
+    {
+      scheduled: true,
+      timezone: "Europe/Moscow"
+    }
+  )
 );
 
 /** static url's to folders builder */
