@@ -44,7 +44,7 @@ app.post("/api/auth/login", (req, res) => {
   });
 });
 
-app.post("/api/auth/checkAuth", withAuth, (req, res) => {
+app.post("/api/auth/status", withAuth, (req, res) => {
   res.json(config.getRespData(false));
 });
 

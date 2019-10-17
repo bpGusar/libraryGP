@@ -6,11 +6,11 @@ import BookAuthorsContr from "../../DB/controllers/BookAuthors";
 
 const app = express();
 
-app.post("/api/authors/add/one", withAuth, (req, res) => {
+app.post("/api/authors", withAuth, (req, res) => {
   BookAuthorsContr.addOneAuthor({ authorName: req.body.authorName }, res);
 });
 
-app.get("/api/authors/get", (req, res) => {
+app.get("/api/authors", (req, res) => {
   const { howMuch, authorsArr } = req.query;
   if (howMuch === "all") {
     BookAuthorsContr.findAuthors(res);

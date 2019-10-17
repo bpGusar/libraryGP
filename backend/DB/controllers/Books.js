@@ -44,24 +44,18 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
 
 /**
  * Функция принимает в себя данные о книге.
- * В процессе она перемещает постер, загруженный предварительно во временную папку с постерами, в постоянную папку.
- * Если в поле постер приходит пустое поле, по сути placeholder,то в базу будет добавлена именно ссылка на placeholder.
+ * В процессе конвертирует постер из base64 в png.
+ * Если в поле постер приходит пустое поле (постер не был выбран),то в базу будет добавлена ссылка на placeholder.
  * @param {Object} req Request
  * @param {Object} res Response
  */
 function addBook(req, res) {
   const { book: bodyBook } = req.body;
 
-  const splitedLinkToPoster = bodyBook.bookInfo.imageLinks.poster.split("/");
-  const pathToTempPoster = path.join(
-    __dirname,
-    `../../server/${servConf.filesPaths.bookPoster.tempFolder}`,
-    splitedLinkToPoster[splitedLinkToPoster.length - 1]
-  );
-  const pathToPostersFolder = path.join(
+  const pathToNewPoster = path.join(
     __dirname,
     `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
-    splitedLinkToPoster[splitedLinkToPoster.length - 1]
+    `book_poster_${Date.now()}.png`
   );
 
   const saveBook = book => {
@@ -82,15 +76,16 @@ function addBook(req, res) {
 
     saveBook(clonedBookObj);
   } else {
-    fs.rename(pathToTempPoster, pathToPostersFolder, movePosterErr => {
-      if (movePosterErr) {
-        res.json(config.getRespData(true, MSG.cantAddNewBook, movePosterErr));
+    const base64Poster = clonedBookObj.bookInfo.imageLinks.poster.replace(
+      /^data:image\/png;base64,/,
+      ""
+    );
+
+    fs.writeFile(pathToNewPoster, base64Poster, "base64", err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantAddNewBook, err));
       } else {
-        clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${
-          process.env.BACK_PORT
-        }${servConf.filesPaths.bookPoster.urlToPoster}/${
-          splitedLinkToPoster[splitedLinkToPoster.length - 1]
-        }`;
+        clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${process.env.BACK_PORT}${pathToNewPoster}`;
 
         saveBook(clonedBookObj);
       }

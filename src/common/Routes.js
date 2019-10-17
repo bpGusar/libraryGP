@@ -1,6 +1,7 @@
 import React from "react";
 import { Switch, Route } from "react-router";
 import _ from "lodash";
+import { branch } from "baobab-react/higher-order";
 
 import MainLayout from "@views/Layouts/Main";
 import BookTemplate from "@views/Layouts/Book";
@@ -17,24 +18,15 @@ import InfoPage from "@views/InfoPage";
 import BookPage from "@views/BookPage";
 import EmailVerify from "@views/EmailVerify";
 import DashboardPage from "@views/Dashboard";
-import FindBookedBooks from "@views/Dashboard/components/FindBookedBooks";
-import FindOrderedBooks from "@views/Dashboard/components/FindOrderedBooks";
+import ManageBookedBooks from "@views/Dashboard/components/ManageBookedBooks";
+import ManageOrderedBooks from "@views/Dashboard/components/ManageOrderedBooks";
 
-export default class AppRotes extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      roles: {
-        notLogged: "notLogged",
-        user: 0,
-        admin: 1
-      }
-    };
-  }
+import { PARAMS } from "@store";
 
+// eslint-disable-next-line react/prefer-stateless-function
+class AppRotes extends React.Component {
   render() {
-    const { checkAuth, user, isUserAuthorized } = this.props;
-    const { roles } = this.state;
+    const { checkAuth, user, isUserAuthorized, userRoles } = this.props;
 
     const PrivateRoute = ({
       component: Component,
@@ -48,24 +40,26 @@ export default class AppRotes extends React.Component {
           render={routeProps => {
             checkAuth();
 
-            if (user.userGroup !== roles.admin) {
-              if (
-                _.has(rest, "accessRole") &&
-                rest.accessRole !== user.userGroup
-              ) {
-                accessGranted = false;
+            if (!_.isEmpty(user)) {
+              if (user.userGroup !== userRoles.admin) {
+                if (
+                  _.has(rest, "accessRole") &&
+                  rest.accessRole !== user.userGroup
+                ) {
+                  accessGranted = false;
+                }
               }
-            }
 
-            return isUserAuthorized && accessGranted ? (
-              <Layout>
-                <Component {...routeProps} />
-              </Layout>
-            ) : (
-              <Layout>
-                <AccessDenied />
-              </Layout>
-            );
+              return isUserAuthorized && accessGranted ? (
+                <Layout {...routeProps} accessGranted={accessGranted}>
+                  <Component {...routeProps} />
+                </Layout>
+              ) : (
+                <Layout {...routeProps} accessGranted={accessGranted}>
+                  <AccessDenied />
+                </Layout>
+              );
+            }
           }}
         />
       );
@@ -93,28 +87,28 @@ export default class AppRotes extends React.Component {
         <PrivateRoute
           exact
           layout={Dashboard}
-          accessRole={roles.admin}
+          accessRole={userRoles.admin}
           path="/dashboard/addBook"
           component={AddBookForm}
         />
         <PrivateRoute
           exact
           layout={Dashboard}
-          accessRole={roles.admin}
+          accessRole={userRoles.admin}
           path="/dashboard/ordersManagement"
-          component={FindOrderedBooks}
+          component={ManageOrderedBooks}
         />
         <PrivateRoute
           exact
           layout={Dashboard}
-          accessRole={roles.admin}
+          accessRole={userRoles.admin}
           path="/dashboard/bookingManagement"
-          component={FindBookedBooks}
+          component={ManageBookedBooks}
         />
         <PrivateRoute
           exact
           layout={Dashboard}
-          accessRole={roles.admin}
+          accessRole={userRoles.admin}
           path="/dashboard"
           component={DashboardPage}
         />
@@ -139,9 +133,16 @@ export default class AppRotes extends React.Component {
         <PrivateRoute
           exact
           layout={Dashboard}
-          accessRole={roles.admin}
+          accessRole={userRoles.admin}
           path="/dashboard/findBook"
           component={FindBookPage}
+        />
+        <PrivateRoute
+          exact
+          layout={MainLayout}
+          accessRole={userRoles.admin}
+          path="/secret"
+          component={() => <div>dsfdasfasd</div>}
         />
         <AppRoute
           exact
@@ -153,3 +154,10 @@ export default class AppRotes extends React.Component {
     );
   }
 }
+
+export default branch(
+  {
+    userRoles: PARAMS.USER_ROLES
+  },
+  AppRotes
+);

@@ -23,7 +23,7 @@ export default class MainPage extends React.Component {
   // TODO: переделать главную
   getBooks() {
     axs
-      .get("/books/get", { params: { booksQuery: {}, getFullBookInfo: true } })
+      .get("/books", { params: { booksQuery: {}, getFullBookInfo: true } })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({

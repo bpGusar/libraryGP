@@ -6,7 +6,7 @@ import BookedBooksContr from "../../DB/controllers/BookedBooks";
 
 const app = express();
 
-app.post("/api/bookedBooks/add/one", withAuth, (req, res) => {
+app.post("/api/bookedBooks/", withAuth, (req, res) => {
   BookedBooksContr.bookABook(req, res);
 });
 
@@ -15,7 +15,7 @@ app.post("/api/bookedBooks/add/one", withAuth, (req, res) => {
  * Принимает request query
  * @param {Object} req.query.getQuery Определяет по каким параметрам искать книги.
  */
-app.get("/api/bookedBooks/get", withAuth, (req, res) => {
+app.get("/api/bookedBooks", withAuth, (req, res) => {
   const { getQuery } = req.query;
 
   BookedBooksContr.findBookedBooks(res, getQuery);

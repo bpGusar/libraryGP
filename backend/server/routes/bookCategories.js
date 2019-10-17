@@ -6,7 +6,7 @@ import BookCategoriesContr from "../../DB/controllers/BookCategories";
 
 const app = express();
 
-app.get("/api/bookCategories/get", withAuth, (req, res) => {
+app.get("/api/bookCategories/", withAuth, (req, res) => {
   const { howMuch, categoriesArr } = req.query;
   if (howMuch === "all") {
     BookCategoriesContr.findCategories(res);
@@ -15,7 +15,7 @@ app.get("/api/bookCategories/get", withAuth, (req, res) => {
   }
 });
 
-app.post("/api/bookCategories/add/one", withAuth, (req, res) => {
+app.post("/api/bookCategories/", withAuth, (req, res) => {
   BookCategoriesContr.addOneCategory(req.body.categoryName, res);
 });
 

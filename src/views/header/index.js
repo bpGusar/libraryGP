@@ -24,7 +24,7 @@ class Header extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    axs.post("/menu/get", { menuName: "topMenu" }).then(res => {
+    axs.post("/menus", { menuName: "topMenu" }).then(res => {
       if (!res.data.error) {
         dispatch(storeData, PARAMS.MENU, res.data.payload.menu);
       }
@@ -72,8 +72,10 @@ class Header extends React.Component {
       isAuthInProgress,
       userInfo,
       headerSegmentStyle,
-      headerMenuStyle
+      headerMenuStyle,
+      userRoles
     } = this.props;
+
     return (
       <Segment
         inverted
@@ -87,9 +89,11 @@ class Header extends React.Component {
               {isUserAuthorized ? (
                 <Dropdown item text={userInfo.login}>
                   <Dropdown.Menu>
-                    <Dropdown.Item as={Link} to="/dashboard">
-                      Dashboard
-                    </Dropdown.Item>
+                    {userInfo.userGroup === userRoles.admin && (
+                      <Dropdown.Item as={Link} to="/dashboard">
+                        Dashboard
+                      </Dropdown.Item>
+                    )}
                     <Dropdown.Item onClick={() => Header.handleLogOut()}>
                       Выход
                     </Dropdown.Item>
@@ -111,7 +115,8 @@ export default branch(
     isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
     isAuthInProgress: PARAMS.IS_AUTH_IN_PROGRESS,
     userInfo: PARAMS.USER_INFO,
-    menu: PARAMS.MENU
+    menu: PARAMS.MENU,
+    userRoles: PARAMS.USER_ROLES
   },
   Header
 );

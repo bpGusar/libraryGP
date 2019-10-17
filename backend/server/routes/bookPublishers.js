@@ -6,7 +6,7 @@ import BookPublishersContr from "../../DB/controllers/BookPublishers";
 
 const app = express();
 
-app.get("/api/bookPublishers/get", withAuth, (req, res) => {
+app.get("/api/bookPublishers", withAuth, (req, res) => {
   const { howMuch, publishersArr } = req.query;
   if (howMuch === "all") {
     BookPublishersContr.findPublishers(res);
@@ -15,7 +15,7 @@ app.get("/api/bookPublishers/get", withAuth, (req, res) => {
   }
 });
 
-app.post("/api/bookPublishers/add/one/", withAuth, (req, res) =>
+app.post("/api/bookPublishers", withAuth, (req, res) =>
   BookPublishersContr.addOnePublisher(req.body.publisherName, res)
 );
 

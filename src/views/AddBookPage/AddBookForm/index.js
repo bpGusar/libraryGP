@@ -3,6 +3,7 @@ import React from "react";
 import { branch } from "baobab-react/higher-order";
 import uniqid from "uniqid";
 import _ from "lodash";
+import { DateTime } from "luxon";
 import { DateInput } from "semantic-ui-calendar-react";
 
 import { Form, Button, Message } from "semantic-ui-react";
@@ -33,13 +34,10 @@ class AddBookForm extends React.Component {
   componentDidMount() {
     const { book, user, dispatch } = this.props;
     const bookClone = _.cloneDeep(book);
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, "0");
-    const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
-    const yyyy = today.getFullYear();
+    const today = DateTime.local().toISODate();
 
-    _.set(bookClone, "userIdWhoAddedBookInDb", user.id);
-    _.set(bookClone, "dateAdded", `${dd}.${mm}.${yyyy}`);
+    _.set(bookClone, "userIdWhoAddedBookInDb", user._id);
+    _.set(bookClone, "dateAdded", today);
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
@@ -56,7 +54,7 @@ class AddBookForm extends React.Component {
       }
     });
 
-    axs.post("/books/add", { book }).then(resp => {
+    axs.post("/books", { book }).then(resp => {
       if (!resp.data.error) {
         this.setState({
           isFormLoaded: true
@@ -150,9 +148,9 @@ class AddBookForm extends React.Component {
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/authors/get"
+              axsGetLink="/authors"
               axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/authors/add/one"
+              axsPostLink="/authors"
               storeParam={PARAMS.AUTHORS}
               multiple
               required
@@ -163,9 +161,9 @@ class AddBookForm extends React.Component {
               showAddNewField
             />
             <UniqueDropdown
-              axsGetLink="/bookPublishers/get"
+              axsGetLink="/bookPublishers"
               axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookPublishers/add/one/"
+              axsPostLink="/bookPublishers"
               storeParam={PARAMS.PUBLISHERS}
               multiple
               required
@@ -178,9 +176,9 @@ class AddBookForm extends React.Component {
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/bookCategories/get"
+              axsGetLink="/bookCategories/"
               axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookCategories/add/one/"
+              axsPostLink="/bookCategories/"
               storeParam={PARAMS.CATEGORIES}
               multiple
               required
@@ -223,10 +221,10 @@ class AddBookForm extends React.Component {
               defaultValue={bookInfo.pageCount}
             />
             <UniqueDropdown
-              axsGetLink="/bookLanguages/get"
+              axsGetLink="/bookLanguages"
               storeParam={PARAMS.LANGUAGES}
               axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookLanguages/add/one/"
+              axsPostLink="/bookLanguages/"
               multiple
               required
               onChangeBookInfoObjectProperty="language"

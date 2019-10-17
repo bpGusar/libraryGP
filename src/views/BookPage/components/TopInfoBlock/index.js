@@ -69,7 +69,7 @@ class TopInfoBlock extends React.Component {
     });
 
     axs
-      .get("/books/thisBookOrderedOrBooked", {
+      .get("/books/orderStatus", {
         params: {
           booksQuery: {
             userId: userInfo._id,
@@ -114,7 +114,7 @@ class TopInfoBlock extends React.Component {
     });
 
     axs
-      .post("/bookedBooks/add/one", {
+      .post("/bookedBooks/", {
         id: bookProps.match.params.id,
         userId: userInfo._id,
         readerId: userInfo.readerId

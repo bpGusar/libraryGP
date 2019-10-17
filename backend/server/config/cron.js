@@ -1,11 +1,8 @@
-import fs from "fs";
-import path from "path";
 import nodemailer from "nodemailer";
 import { DateTime } from "luxon";
 
 import OrderedBooks from "../../DB/models/OrderedBooks";
 
-import staticUrls from "./staticUrl";
 import serverJson from "./server.json";
 
 import { BookExpiresTemplate } from "../emailTemplates/BookExpires";
@@ -46,49 +43,6 @@ const cronFunctions = {
               });
             }
           });
-      }
-    }
-  },
-  deleteFilesFromPostersTempFolder: {
-    comment:
-      "Удалит загруженный но не использованный постер из папки с временными постерами если если постеру уже 3 дня.",
-    cron: {
-      time: "* * */1 * *",
-      function: () => {
-        fs.readdir(
-          staticUrls.pathToTempPoster.pathToFolder,
-          (readdirErr, files) => {
-            if (readdirErr) throw readdirErr;
-
-            if (files.length !== 0) {
-              const todayDate = DateTime.local();
-
-              files.forEach(file => {
-                const splitedPosterName = file.split("_");
-                const posterCreatedAtPlusThreeDays = DateTime.fromMillis(
-                  Number(
-                    splitedPosterName[splitedPosterName.length - 1].split(
-                      "."
-                    )[0]
-                  )
-                ).plus({ days: 3 });
-
-                if (
-                  todayDate.hasSame(posterCreatedAtPlusThreeDays, "day") &&
-                  todayDate.hasSame(posterCreatedAtPlusThreeDays, "year") &&
-                  todayDate.hasSame(posterCreatedAtPlusThreeDays, "month")
-                ) {
-                  fs.unlink(
-                    path.join(staticUrls.pathToTempPoster.pathToFolder, file),
-                    unlinkErr => {
-                      if (unlinkErr) throw unlinkErr;
-                    }
-                  );
-                }
-              });
-            }
-          }
-        );
       }
     }
   }

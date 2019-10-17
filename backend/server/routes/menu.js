@@ -5,21 +5,15 @@ import MSG from "../config/msgCodes";
 
 import Menu from "../../DB/models/Menu";
 
+import MenusContr from "../../DB/controllers/Menus";
+
 const app = express();
 
-app.post("/api/menu/get", (req, res) => {
-  Menu.findOne({ email: req.menuId }, (err, menu) => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.internalServerErr, err));
-    } else if (!menu) {
-      res.json(config.getRespData(true, MSG.cannotFindMenu));
-    } else {
-      res.json(config.getRespData(false, null, menu));
-    }
-  });
+app.post("/api/menus", (req, res) => {
+  MenusContr.getMenus(req, res);
 });
 
-app.put("/api/menu/update", (req, res) => {
+app.put("/api/menu/:id", (req, res) => {
   const newmenu = {
     menu: {
       always: [
@@ -46,7 +40,7 @@ app.put("/api/menu/update", (req, res) => {
       ]
     }
   };
-  Menu.update({ _id: "5d0cdd7669529541dc73e657" }, { ...newmenu }, err => {
+  Menu.update({ _id: req.params.id }, { ...newmenu }, err => {
     if (err) {
       res.json(config.getRespData(true, MSG.cannotUpdateMenu, err));
     } else {

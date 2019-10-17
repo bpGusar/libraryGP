@@ -50,7 +50,7 @@ class App extends React.Component {
   checkAuth() {
     const { dispatch } = this.props;
     axs
-      .post("/auth/checkAuth/")
+      .post("/auth/status/")
       .then(res => {
         if (res.data.error) {
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);

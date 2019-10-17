@@ -16,7 +16,8 @@ export const PARAMS = {
   CATEGORIES: "categories from db",
   LANGUAGES: "languages from db",
   PUBLISHERS: "publishers from db",
-  INFO_PAGE: "info page text"
+  INFO_PAGE: "info page text",
+  USER_ROLES: "user roles"
 };
 
 export const getInitialState = () => ({
@@ -37,6 +38,11 @@ export const getInitialState = () => ({
   [PARAMS.LANGUAGES]: [],
   [PARAMS.PUBLISHERS]: [],
   [PARAMS.BOOK]: {},
+  [PARAMS.USER_ROLES]: {
+    notLogged: "notLogged",
+    user: 0,
+    admin: 1
+  },
   [PARAMS.BOOK_TO_DB]: {
     userIdWhoAddedBookInDb: "",
     dateAdded: "",

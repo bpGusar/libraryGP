@@ -7,10 +7,10 @@ import BookedBooksArchive from "../models/BookedBooksArchive";
 import BookedBooks from "../models/BookedBooks";
 import Book from "../models/Book";
 
-function rejectOrdering(bookedBookData, res) {
-  const newArchivedReservation = new BookedBooksArchive({ ...bookedBookData });
+function bookReturn(bookedBookData, res) {
+  const newArchivedOrder = new BookedBooksArchive({ ...bookedBookData });
 
-  newArchivedReservation.save(saveErr => {
+  newArchivedOrder.save(saveErr => {
     if (saveErr) {
       res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
     } else {
@@ -46,4 +46,4 @@ function rejectOrdering(bookedBookData, res) {
   });
 }
 
-export default { rejectOrdering };
+export default { bookReturn };

@@ -6,7 +6,7 @@ import OrderedBooksContr from "../../DB/controllers/OrderedBooks";
 
 const app = express();
 
-app.post("/api/orderedBooks/add", withAuth, (req, res) => {
+app.post("/api/orderedBooks", withAuth, (req, res) => {
   OrderedBooksContr.addOrderedBook(req.body, res);
 });
 

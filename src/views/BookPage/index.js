@@ -17,7 +17,7 @@ class BookPage extends React.Component {
     const { match, history, dispatch } = this.props;
 
     axs
-      .get("/books/get", {
+      .get("/books", {
         params: {
           booksQuery: { _id: match.params.id },
           getFullBookInfo: true
