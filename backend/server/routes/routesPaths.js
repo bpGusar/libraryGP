@@ -1,4 +1,3 @@
-import auth from "./auth";
 import bookAuthors from "./bookAuthors";
 import bookCategories from "./bookCategories";
 import bookedBooks from "./bookedBooks";
@@ -12,7 +11,6 @@ import users from "./users";
 
 // eslint-disable-next-line import/prefer-default-export
 export {
-  auth,
   bookAuthors,
   bookCategories,
   bookedBooks,

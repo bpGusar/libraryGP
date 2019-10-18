@@ -14,6 +14,9 @@ const MSG = {
   wrongEmail: {
     ru: "Не правильный e-mail при поиске пользователя."
   },
+  cantFindUser: {
+    ru: "Пользователь не найден."
+  },
   accessForbiddenByRole: {
     ru: "В доступе отказано. Не достаточно прав."
   },

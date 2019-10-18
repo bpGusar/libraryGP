@@ -6,17 +6,12 @@ import BookCategoriesContr from "../../DB/controllers/BookCategories";
 
 const app = express();
 
-app.get("/api/bookCategories/", withAuth, (req, res) => {
-  const { howMuch, categoriesArr } = req.query;
-  if (howMuch === "all") {
-    BookCategoriesContr.findCategories(res);
-  } else if (howMuch === "some") {
-    BookCategoriesContr.findCategories(res, categoriesArr);
-  }
-});
+app.get("/api/bookCategories/", withAuth, (req, res) =>
+  BookCategoriesContr.findCategories(res)
+);
 
 app.post("/api/bookCategories/", withAuth, (req, res) => {
-  BookCategoriesContr.addOneCategory(req.body.categoryName, res);
+  BookCategoriesContr.addOneCategory(req.body, res);
 });
 
 export default app;

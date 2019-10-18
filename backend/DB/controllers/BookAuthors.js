@@ -21,8 +21,8 @@ function findOneAuthor(authorName, res) {
   });
 }
 
-function addOneAuthor(authorName, res) {
-  const author = new Authors(authorName);
+function addOneAuthor(data, res) {
+  const author = new Authors({ ...data });
   author.save(err => {
     if (err) {
       if (err.code === 11000) {
@@ -39,11 +39,9 @@ function addOneAuthor(authorName, res) {
 /**
  * Возвращает массив авторов
  * @param res {Object} Response
- * @param data {Object} Либо {} (или не передавать ничего в аргумент data) если нужно взять всех авторов,
- * либо массив с авторами вида { _id: { $in: ["1", "2", ...] }
  */
-function findAuthors(res, data = {}) {
-  Authors.find(_.isEmpty(data) ? {} : JSON.parse(data), (err, author) => {
+function findAuthors(res) {
+  Authors.find({}, (err, author) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalServerErr, err));
     } else {

@@ -8,6 +8,7 @@ import {
   Message,
   Segment
 } from "semantic-ui-react";
+import _ from "lodash";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
@@ -36,6 +37,7 @@ class SignUpPage extends Component {
     };
 
     this.onSubmit = this.onSubmit.bind(this);
+    this.checkUnique = _.debounce(this.checkUnique.bind(this), 1000);
   }
 
   componentDidUpdate() {
@@ -55,7 +57,7 @@ class SignUpPage extends Component {
       this.setState({
         regInProgress: true
       });
-      axs.post("/signup", regData, { withCredentials: true }).then(regRes => {
+      axs.post("/users", regData, { withCredentials: true }).then(regRes => {
         if (!regRes.data.error) {
           this.setState({
             regStatus: true,
@@ -72,10 +74,17 @@ class SignUpPage extends Component {
 
     if (value !== "") {
       axs
-        .get("/doesUserWithThatCredsExist", { params: { [name]: value } })
+        .get(`/users/check_reg_fields`, {
+          params: {
+            [name]: value
+          }
+        })
         .then(res => {
           this.setState({
-            errors: { ...errors, [name]: res.data.error }
+            errors: {
+              ...errors,
+              [name]: _.has(res.data.payload[0], "_id")
+            }
           });
         });
     }

@@ -2,14 +2,22 @@
   "Axios get": {
     "prefix": "axsget",
     "body": [
-      "axs.get(\"/$1\", { params: { $2 } }).then(resp=>{ if(!resp.data.error){ } });"
+      "axs.get(`$1`, { params: {} }).then(resp => {",
+      "  if (!resp.data.error) {",
+      "    $2",
+      "  }",
+      "});"
     ],
     "description": "Axios get"
   },
   "Axios Post": {
     "prefix": "axspost",
     "body": [
-      "axs.post(\"/$1\").then(resp=>{ if(!resp.data.error){ } });"
+      "axs.post(`$1`).then(resp => {",
+      "  if (!resp.data.error) {",
+      "    $2",
+      "  }",
+      "});"
     ],
     "description": "Axios  post"
   }

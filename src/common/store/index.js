@@ -9,7 +9,6 @@ export const PARAMS = {
   MENU: "menu",
   BOOK_TO_DB: "book to db",
   BOOK: "book",
-  IS_BOOK_DATA_LOADED: "is book data loaded to store?",
   GLOBAL_PAGE_LOADER: "is some data is loading?",
   GLOBAL_PAGE_LOADER_BY_ACTION: "is some data is loading by action?",
   AUTHORS: "authors from db",
@@ -32,7 +31,6 @@ export const getInitialState = () => ({
     type: ""
   },
   [PARAMS.MENU]: {},
-  [PARAMS.IS_BOOK_DATA_LOADED]: false,
   [PARAMS.AUTHORS]: [],
   [PARAMS.CATEGORIES]: [],
   [PARAMS.LANGUAGES]: [],

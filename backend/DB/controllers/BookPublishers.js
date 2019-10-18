@@ -5,21 +5,18 @@ import * as config from "../config";
 
 import BookPublishers from "../models/BookPublishers";
 
-function findPublishers(res, data = {}) {
-  BookPublishers.find(
-    _.isEmpty(data) ? {} : JSON.parse(data),
-    (err, categories) => {
-      if (err) {
-        res.json(config.getRespData(true, MSG.internalServerErr, err));
-      } else {
-        res.json(config.getRespData(false, null, categories));
-      }
+function findPublishers(res) {
+  BookPublishers.find({}, (err, categories) => {
+    if (err) {
+      res.json(config.getRespData(true, MSG.internalServerErr, err));
+    } else {
+      res.json(config.getRespData(false, null, categories));
     }
-  );
+  });
 }
 
-function addOnePublisher(publisherName, res) {
-  const publisher = new BookPublishers({ publisherName });
+function addOnePublisher(data, res) {
+  const publisher = new BookPublishers({ ...data });
   publisher.save(err => {
     if (err) {
       if (err.code === 11000) {

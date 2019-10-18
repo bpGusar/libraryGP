@@ -7,6 +7,10 @@ $sidebarWidth: 300px;
     width: $sidebarWidth;
     display: inline-flex;
     height: 100%;
+    position: sticky;
+    left: 0;
+    top: 0;
+    z-index: 1;
     .sidebar {
       position: relative;
       width: $sidebarWidth !important;
@@ -26,5 +30,7 @@ $sidebarWidth: 300px;
   .mainContainer {
     padding: 20px;
     width: 1100px !important;
+    overflow-y: scroll;
+    height: 100%;
   }
 }

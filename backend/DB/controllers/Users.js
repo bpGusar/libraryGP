@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
 
 import User from "../models/User";
 
@@ -11,17 +12,50 @@ import { EmailVerifyTemplate } from "../../server/emailTemplates/EmailVerify";
 
 const transporter = nodemailer.createTransport(serverJson.emailConfig);
 
-function findUser(res, query) {
-  User.findOne({ ...query })
-    .select("-password")
-    .select("-emailVerified")
-    .exec((err, user) => {
+function logInUser(req, res) {
+  const { email: reqEmail, password, rememberMe } = req.body;
+  User.findOne({ email: reqEmail }, (err, user) => {
+    if (err) {
+      res.json(config.getRespData(true, MSG.internalServerErr, err));
+    } else if (!user) {
+      res.json(config.getRespData(true, MSG.wrongAuthCred));
+    } else if (user.emailVerified) {
+      user.isCorrectPassword(
+        password,
+        user.password,
+        (incorrectPassERR, same) => {
+          if (incorrectPassERR) {
+            res.json(
+              config.getRespData(true, MSG.internalServerErr, incorrectPassERR)
+            );
+          } else if (!same) {
+            res.json(config.getRespData(true, MSG.wrongAuthCred));
+          } else {
+            const { _id } = user;
+            const payload = { _id };
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {
+              expiresIn: rememberMe ? "365d" : "1d"
+            });
+            res.json(config.getRespData(false, null, token));
+          }
+        }
+      );
+    } else {
+      res.json(config.getRespData(true, MSG.userFoundButNotVerified));
+    }
+  });
+}
+
+function findUsers(res, query = {}, selectParams = "") {
+  User.find(query)
+    .select(selectParams === "" ? "-password -emailVerified" : selectParams)
+    .exec((err, users) => {
       if (err) {
         res.json(config.getRespData(true, MSG.internalServerErr, err));
-      } else if (!user) {
-        res.json(config.getRespData(true, MSG.wrongEmail));
+      } else if (!users) {
+        res.json(config.getRespData(true, MSG.cantFindUser));
       } else {
-        res.json(config.getRespData(false, null, user));
+        res.json(config.getRespData(false, null, users));
       }
     });
 }
@@ -60,37 +94,21 @@ function addNewUser(req, res) {
   });
 }
 
-function doesUserWithThatCredsExist(req, res) {
-  User.findOne(req.query, (err, user) => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.internalServerErr, err));
-    } else if (!user) {
-      res.json(config.getRespData(false, MSG.thisCredsAreFree));
-    } else {
-      res.json(config.getRespData(true, MSG.weFindSameCreds));
-    }
-  });
-}
-
 function emailVerification(req, res) {
-  const { verifyToken } = req.query;
-  User.findOne({ _id: verifyToken }, (findOneError, user) => {
+  const { id } = req.params;
+  User.findOne({ _id: id }, (findOneError, user) => {
     if (findOneError) {
       res.json(config.getRespData(true, MSG.internalServerErr, findOneError));
     } else if (!user) {
-      res.json(config.getRespData(false, MSG.thisCredsAreFree));
+      res.json(config.getRespData(true, MSG.cantFindUser));
     } else if (!user.emailVerified) {
-      User.findOneAndUpdate(
-        { _id: verifyToken },
-        { emailVerified: true },
-        err => {
-          if (err) {
-            res.json(config.getRespData(true, MSG.internalServerErr, err));
-          } else {
-            res.json(config.getRespData(false, MSG.emailSuccessfullyVerified));
-          }
+      User.findOneAndUpdate({ _id: id }, { emailVerified: true }, err => {
+        if (err) {
+          res.json(config.getRespData(true, MSG.internalServerErr, err));
+        } else {
+          res.json(config.getRespData(false, MSG.emailSuccessfullyVerified));
         }
-      );
+      });
     } else {
       res.json(config.getRespData(true, MSG.emailAlreadyVerified));
     }
@@ -98,8 +116,8 @@ function emailVerification(req, res) {
 }
 
 export default {
-  findUser,
+  findUsers,
   addNewUser,
-  doesUserWithThatCredsExist,
-  emailVerification
+  emailVerification,
+  logInUser
 };

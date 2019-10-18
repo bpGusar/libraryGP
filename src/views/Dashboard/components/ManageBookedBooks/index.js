@@ -146,7 +146,7 @@ export default class ManageBookedBooks extends Component {
     });
 
     axs
-      .post("/books/bookedBooksArchive/rejectOrdering", {
+      .post(`/bookedBooks/rejectOrdering`, {
         bookedBookInfo: {
           ...bookedBook
         },

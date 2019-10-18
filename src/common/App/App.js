@@ -31,15 +31,15 @@ class App extends React.Component {
   /**
    * если в localStorage лежит токен и он валидный
    * то будет произведена его проверка
-   * и если пользователя подходящего под токен в базе нет
+   * а если пользователя подходящего под токен в базе нет
    * то токен будет удален из localStorage
    *
    * такое бывает если пользователя удалили из базы и он не разлогинился до этого
    */
   getUserInfo() {
     const { dispatch } = this.props;
-    axs.post("/getUserInfo/").then(resp => {
-      if (resp.data.payload !== null) {
+    axs.get("/users/auth_status").then(resp => {
+      if (!resp.data.error) {
         dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);
       } else {
         localStorage.removeItem("token");
@@ -50,7 +50,7 @@ class App extends React.Component {
   checkAuth() {
     const { dispatch } = this.props;
     axs
-      .post("/auth/status/")
+      .get("/users/auth_status")
       .then(res => {
         if (res.data.error) {
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);

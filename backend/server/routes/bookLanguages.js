@@ -6,17 +6,12 @@ import BookLanguagesContr from "../../DB/controllers/BookLanguages";
 
 const app = express();
 
-app.get("/api/bookLanguages", withAuth, (req, res) => {
-  const { howMuch, langArr } = req.query;
-  if (howMuch === "all") {
-    BookLanguagesContr.findBookLanguage(res);
-  } else if (howMuch === "some") {
-    BookLanguagesContr.findBookLanguage(res, langArr);
-  }
-});
+app.get("/api/bookLanguages", withAuth, (req, res) =>
+  BookLanguagesContr.findBookLanguage(res)
+);
 
-app.post("/api/bookLanguages", withAuth, (req, res) => {
-  BookLanguagesContr.addOneLang({ languageName: req.body.languageName }, res);
-});
+app.post("/api/bookLanguages", withAuth, (req, res) =>
+  BookLanguagesContr.addOneLang(req.body, res)
+);
 
 export default app;

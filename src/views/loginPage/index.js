@@ -50,21 +50,23 @@ class loginPage extends Component {
       isLoginInProcess: true
     });
 
-    axs.post("/auth/login", this.state, { withCredentials: true }).then(res => {
-      if (!res.data.error) {
-        localStorage.setItem("token", res.data.payload);
-        // здесь можно было бы сделать редирект внутри реакт роутера
-        // но жесткая перезагрузка нужна что бы проверка входа прошла корректно
-        // TODO: изучить возможность редиректа внутри реакт роутера
-        document.location.href = "/";
-      } else {
-        this.setState({
-          isError: { error: true, msg: res.data.message },
-          isLoginInProcess: false
-        });
-        dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
-      }
-    });
+    axs
+      .post("/users/login", this.state, { withCredentials: true })
+      .then(res => {
+        if (!res.data.error) {
+          localStorage.setItem("token", res.data.payload);
+          // здесь можно было бы сделать редирект внутри реакт роутера
+          // но жесткая перезагрузка нужна что бы проверка входа прошла корректно
+          // TODO: изучить возможность редиректа внутри реакт роутера
+          document.location.href = "/";
+        } else {
+          this.setState({
+            isError: { error: true, msg: res.data.message },
+            isLoginInProcess: false
+          });
+          dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
+        }
+      });
   }
 
   handleInputChange(e) {

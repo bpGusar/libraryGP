@@ -13,6 +13,7 @@ import {
   Label
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
+import { DateTime } from "luxon";
 
 import s from "../../index.module.scss";
 
@@ -20,7 +21,6 @@ import { PARAMS } from "@store";
 import { storeData } from "@act";
 
 import MSG from "@msg";
-import * as utils from "@utils";
 
 import axs from "@axios";
 
@@ -62,48 +62,45 @@ class TopInfoBlock extends React.Component {
   // TODO: сделать удаление книг из забронированных если прошло 3 дня с момента брони и книгу еще не забрали
 
   checkIfBookAlreadyBookedOrOrdered() {
-    const { userInfo, bookProps } = this.props;
+    const { bookProps } = this.props;
 
     this.setState({
       isButtonLoading: true
     });
 
-    axs
-      .get("/books/orderStatus", {
-        params: {
-          booksQuery: {
-            userId: userInfo._id,
-            bookId: bookProps.match.params.id
-          }
-        }
-      })
-      .then(resp => {
-        if (!resp.data.error) {
-          if (resp.data.payload[0] !== null) {
-            this.setState({
-              isButtonLoading: false,
-              isThisBookBooked: true
-            });
-          } else if (resp.data.payload[1] !== null) {
-            this.setState({
-              isButtonLoading: false,
-              isThisBookOrdered: {
-                ordered: true,
-                until: utils.convertDate(resp.data.payload[1].orderedUntil)
-              }
-            });
-          } else {
-            this.setState({
-              isButtonLoading: false
-            });
-          }
+    axs.get(`/books/${bookProps.match.params.id}/availability`).then(resp => {
+      if (!resp.data.error) {
+        if (resp.data.payload.BookedBooks.length !== 0) {
+          this.setState({
+            isButtonLoading: false,
+            isThisBookBooked: true
+          });
+        } else if (resp.data.payload.OrderedBooks.length !== 0) {
+          this.setState({
+            isButtonLoading: false,
+            isThisBookOrdered: {
+              ordered: true,
+              until: DateTime.fromMillis(
+                new Date(
+                  resp.data.payload.OrderedBooks[0].orderedUntil
+                ).getTime()
+              )
+                .setLocale("ru-ru")
+                .toLocaleString()
+            }
+          });
         } else {
           this.setState({
             isButtonLoading: false
           });
-          toast(MSG.errorWhenFindBookedBooks(resp.data.message));
         }
-      });
+      } else {
+        this.setState({
+          isButtonLoading: false
+        });
+        toast(MSG.errorWhenFindBookedBooks(resp.data.message));
+      }
+    });
   }
 
   bookABook() {

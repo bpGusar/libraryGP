@@ -3,22 +3,34 @@ import express from "express";
 import withAuth from "../middleware";
 import UsersContr from "../../DB/controllers/Users";
 
+import * as config from "../../DB/config";
+
 const app = express();
 
-app.post("/api/getUserInfo", withAuth, (req, res) =>
-  UsersContr.findUser(res, { email: req.email })
-);
+app.get("/api/users", withAuth, (req, res) => UsersContr.findUsers(res));
 
-app.post("/api/signup", (req, res) => {
-  UsersContr.addNewUser(req, res);
+app.get("/api/users/check_reg_fields", (req, res) => {
+  UsersContr.findUsers(res, req.query, "_id");
 });
 
-app.get("/api/doesUserWithThatCredsExist", (req, res) => {
-  UsersContr.doesUserWithThatCredsExist(req, res);
-});
-
-app.get("/api/emailVerification", (req, res) => {
+app.get("/api/users/:id/email_verify", (req, res) => {
   UsersContr.emailVerification(req, res);
+});
+
+app.post("/api/users/login", (req, res) => {
+  UsersContr.logInUser(req, res);
+});
+
+/**
+ * проверяет токен пользователя и если все норм то на фронт уйдет error false а если токен не валидный то error true
+ * и на фронте уже можно делать манипуляции с этими данными
+ */
+app.get("/api/users/auth_status", withAuth, (req, res) => {
+  res.json(config.getRespData(false, null, req.middlewareUserInfo));
+});
+
+app.post("/api/users", (req, res) => {
+  UsersContr.addNewUser(req, res);
 });
 
 export default app;

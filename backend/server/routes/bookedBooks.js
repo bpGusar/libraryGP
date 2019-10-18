@@ -3,6 +3,7 @@ import express from "express";
 import withAuth from "../middleware";
 
 import BookedBooksContr from "../../DB/controllers/BookedBooks";
+import BookedBooksArchiveContr from "../../DB/controllers/BookedBooksArchive";
 
 const app = express();
 
@@ -19,6 +20,10 @@ app.get("/api/bookedBooks", withAuth, (req, res) => {
   const { getQuery } = req.query;
 
   BookedBooksContr.findBookedBooks(res, getQuery);
+});
+
+app.post("/api/bookedBooks/rejectOrdering", withAuth, (req, res) => {
+  BookedBooksArchiveContr.rejectOrdering(req.body, res);
 });
 
 export default app;

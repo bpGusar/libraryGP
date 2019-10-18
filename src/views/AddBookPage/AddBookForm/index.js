@@ -149,7 +149,6 @@ class AddBookForm extends React.Component {
           <Form.Group widths="equal">
             <UniqueDropdown
               axsGetLink="/authors"
-              axsQuery={{ params: { howMuch: "all" } }}
               axsPostLink="/authors"
               storeParam={PARAMS.AUTHORS}
               multiple
@@ -162,7 +161,6 @@ class AddBookForm extends React.Component {
             />
             <UniqueDropdown
               axsGetLink="/bookPublishers"
-              axsQuery={{ params: { howMuch: "all" } }}
               axsPostLink="/bookPublishers"
               storeParam={PARAMS.PUBLISHERS}
               multiple
@@ -176,9 +174,8 @@ class AddBookForm extends React.Component {
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/bookCategories/"
-              axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookCategories/"
+              axsGetLink="/bookCategories"
+              axsPostLink="/bookCategories"
               storeParam={PARAMS.CATEGORIES}
               multiple
               required
@@ -223,8 +220,7 @@ class AddBookForm extends React.Component {
             <UniqueDropdown
               axsGetLink="/bookLanguages"
               storeParam={PARAMS.LANGUAGES}
-              axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookLanguages/"
+              axsPostLink="/bookLanguages"
               multiple
               required
               onChangeBookInfoObjectProperty="language"
@@ -285,8 +281,7 @@ class AddBookForm extends React.Component {
 export default branch(
   {
     book: PARAMS.BOOK_TO_DB,
-    user: PARAMS.USER_INFO,
-    isBookDataLoaded: PARAMS.IS_BOOK_DATA_LOADED
+    user: PARAMS.USER_INFO
   },
   AddBookForm
 );

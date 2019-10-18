@@ -15,11 +15,11 @@ import servConf from "../../server/config/server.json";
 /**
  * @param {Object} res Response
  * @param {Object} data Данные для поиска нужной книги или книг. Если {} то будут отданы все книги.
- * @param {Boolean} getFullBookInfo Отдавать ли json с данными книги где будут только id'ки в полях authors, categories, publisher и language или же отдавать собранный json со всеми этими данными из соответствующих коллекций
+ * @param {Boolean} fetch_type 0 - вернуть данные по книге как есть, 1 - вернуть данные по книге и заполнить данными объекты authors, categories, publisher, language
  */
-function findBooks(res, data = {}, getFullBookInfo = false) {
-  if (getFullBookInfo === "true") {
-    Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
+function findBooks(res, data = {}, fetch_type = "0") {
+  if (fetch_type === "1") {
+    Book.find(_.isEmpty(data) ? {} : { _id: data.id })
       .populate("bookInfo.authors")
       .populate("bookInfo.categories")
       .populate("bookInfo.publisher")
@@ -31,8 +31,8 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
           res.json(config.getRespData(false, null, books));
         }
       });
-  } else {
-    Book.find(_.isEmpty(data) ? {} : JSON.parse(data), (err, books) => {
+  } else if (fetch_type === "0") {
+    Book.find(_.isEmpty(data) ? {} : { _id: data.id }, (err, books) => {
       if (err) {
         res.json(config.getRespData(true, MSG.bookNotFound, err));
       } else {
@@ -51,11 +51,12 @@ function findBooks(res, data = {}, getFullBookInfo = false) {
  */
 function addBook(req, res) {
   const { book: bodyBook } = req.body;
+  const posterName = `book_poster_${Date.now()}.png`;
 
   const pathToNewPoster = path.join(
     __dirname,
     `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
-    `book_poster_${Date.now()}.png`
+    posterName
   );
 
   const saveBook = book => {
@@ -85,7 +86,7 @@ function addBook(req, res) {
       if (err) {
         res.json(config.getRespData(true, MSG.cantAddNewBook, err));
       } else {
-        clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${process.env.BACK_PORT}${pathToNewPoster}`;
+        clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${process.env.BACK_PORT}${servConf.filesPaths.bookPoster.urlToPoster}/${posterName}`;
 
         saveBook(clonedBookObj);
       }
@@ -93,12 +94,18 @@ function addBook(req, res) {
   }
 }
 
-function thisBookOrderedOrBooked(res, query) {
+function thisBookOrderedOrBooked(res, req) {
+  const query = {
+    bookId: req.params.id,
+    userId: req.middlewareUserInfo._id
+  };
   parallel(
-    [
-      callback => BookedBooks.findOne(JSON.parse(query), callback),
-      callback => OrderedBooks.findOne(JSON.parse(query), callback)
-    ],
+    {
+      BookedBooks: callback =>
+        BookedBooks.find(query, callback).select("_id orderedUntil"),
+      OrderedBooks: callback =>
+        OrderedBooks.find(query, callback).select("_id orderedUntil")
+    },
     (asyncErr, results) => {
       if (asyncErr) {
         res.json(config.getRespData(true, MSG.internalServerErr, asyncErr));

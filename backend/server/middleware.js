@@ -23,17 +23,18 @@ const withAuth = (req, res, next) => {
       if (err) {
         res.json(getRespData(true, MSG.errorToken2, err));
       } else {
-        User.findOne({ email: decoded.email }, (findUserErr, user) => {
-          if (findUserErr) {
-            res.json(getRespData(true, MSG.internalServerErr, findUserErr));
-          } else if (!user) {
-            res.json(getRespData(true, MSG.wrongEmail));
-          } else {
-            req.email = decoded.email;
-            req.accessRole = decoded.userGroup;
-            next();
-          }
-        });
+        User.findOne({ _id: decoded._id })
+          .select("-password")
+          .exec((findUserErr, user) => {
+            if (findUserErr) {
+              res.json(getRespData(true, MSG.internalServerErr, findUserErr));
+            } else if (!user) {
+              res.json(getRespData(true, MSG.wrongEmail));
+            } else {
+              req.middlewareUserInfo = user;
+              next();
+            }
+          });
       }
     });
   }
