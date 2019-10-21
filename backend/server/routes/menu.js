@@ -9,7 +9,7 @@ import MenusContr from "../../DB/controllers/Menus";
 
 const app = express();
 
-app.post("/api/menus", (req, res) => {
+app.get("/api/menus/:menuName", (req, res) => {
   MenusContr.getMenus(req, res);
 });
 

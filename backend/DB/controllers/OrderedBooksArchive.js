@@ -3,12 +3,19 @@ import parallel from "async/parallel";
 import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
 
-import BookedBooksArchive from "../models/BookedBooksArchive";
-import BookedBooks from "../models/BookedBooks";
+import OrderedBooksArchive from "../models/OrderedBooksArchive";
+import OrderedBooks from "../models/OrderedBooks";
 import Book from "../models/Book";
 
-function bookReturn(bookedBookData, res) {
-  const newArchivedOrder = new BookedBooksArchive({ ...bookedBookData });
+function bookReturn(req, res) {
+  let orderedBookData = { ...req.body };
+
+  orderedBookData = {
+    ...orderedBookData,
+    userId: req.middlewareUserInfo._id
+  };
+
+  const newArchivedOrder = new OrderedBooksArchive({ ...orderedBookData });
 
   newArchivedOrder.save(saveErr => {
     if (saveErr) {
@@ -17,16 +24,16 @@ function bookReturn(bookedBookData, res) {
       parallel(
         [
           cb =>
-            BookedBooks.deleteOne(
+            OrderedBooks.deleteOne(
               {
-                bookId: bookedBookData.bookedBookInfo.bookId._id,
-                readerId: bookedBookData.bookedBookInfo.readerId
+                bookId: orderedBookData.orderedBookInfo.bookId._id,
+                readerId: orderedBookData.orderedBookInfo.readerId
               },
               cb
             ),
           cb =>
             Book.findOneAndUpdate(
-              { _id: bookedBookData.bookedBookInfo.bookId._id },
+              { _id: orderedBookData.orderedBookInfo.bookId._id },
               {
                 $inc: { "stockInfo.freeForBooking": 1 }
               },

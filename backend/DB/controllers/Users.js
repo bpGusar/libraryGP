@@ -1,16 +1,18 @@
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
+import path from "path";
+import fs from "fs";
 
 import User from "../models/User";
 
 import * as config from "../config";
 import MSG from "../../server/config/msgCodes";
 
-import serverJson from "../../server/config/server.json";
+import servConf from "../../server/config/server.json";
 
 import { EmailVerifyTemplate } from "../../server/emailTemplates/EmailVerify";
 
-const transporter = nodemailer.createTransport(serverJson.emailConfig);
+const transporter = nodemailer.createTransport(servConf.emailConfig);
 
 function logInUser(req, res) {
   const { email: reqEmail, password, rememberMe } = req.body;
@@ -61,37 +63,64 @@ function findUsers(res, query = {}, selectParams = "") {
 }
 
 function addNewUser(req, res) {
-  const { email, password, login, firstName, lastName, patronymic } = req.body;
-  const UserModel = new User({
-    email,
-    password,
-    login,
-    firstName,
-    lastName,
-    patronymic
-  });
-  UserModel.save((saveError, newUser) => {
-    if (saveError) {
-      res.json(config.getRespData(true, MSG.registrationError, saveError));
-    } else {
-      transporter.sendMail(
-        EmailVerifyTemplate(email, process.env, newUser._id),
-        function(emailSentError) {
-          if (emailSentError) {
-            User.find({ _id: newUser._id }).remove();
-            res.json(
-              config.getRespData(true, MSG.registrationError, {
-                saveError,
-                emailSentError
-              })
-            );
-          } else {
-            res.send(config.getRespData(false));
+  const posterName = `avatar_${Date.now()}.png`;
+
+  const pathToNewAvatar = path.join(
+    __dirname,
+    `../../server/${servConf.filesPaths.avatars.mainFolder}`,
+    posterName
+  );
+
+  const saveBook = userData => {
+    const UserModel = new User({
+      ...userData
+    });
+
+    UserModel.save((saveError, newUser) => {
+      if (saveError) {
+        res.json(config.getRespData(true, MSG.registrationError, saveError));
+      } else {
+        transporter.sendMail(
+          EmailVerifyTemplate(userData.email, process.env, newUser._id),
+          function(emailSentError) {
+            if (emailSentError) {
+              User.find({ _id: newUser._id }).remove();
+              res.json(
+                config.getRespData(true, MSG.registrationError, {
+                  saveError,
+                  emailSentError
+                })
+              );
+            } else {
+              res.send(config.getRespData(false));
+            }
           }
-        }
-      );
-    }
-  });
+        );
+      }
+    });
+  };
+
+  const clonedUserObj = { ...req.body };
+  if (clonedUserObj.avatar === "") {
+    clonedUserObj.avatar = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
+
+    saveBook(clonedUserObj);
+  } else {
+    const base64Poster = clonedUserObj.avatar.replace(
+      /^data:image\/png;base64,/,
+      ""
+    );
+
+    fs.writeFile(pathToNewAvatar, base64Poster, "base64", err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantAddNewBook, err));
+      } else {
+        clonedUserObj.avatar = `${servConf.filesPaths.avatars.urlToAvatar}/${posterName}`;
+
+        saveBook(clonedUserObj);
+      }
+    });
+  }
 }
 
 function emailVerification(req, res) {

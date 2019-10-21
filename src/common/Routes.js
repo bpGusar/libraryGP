@@ -75,6 +75,7 @@ class AppRotes extends React.Component {
         )}
       />
     );
+
     return (
       <Switch>
         <AppRoute exact path="/" layout={MainLayout} component={MainPage} />

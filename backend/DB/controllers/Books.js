@@ -73,7 +73,7 @@ function addBook(req, res) {
 
   const clonedBookObj = { ...bodyBook };
   if (bodyBook.bookInfo.imageLinks.poster === "") {
-    clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${process.env.BACK_PORT}${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
+    clonedBookObj.bookInfo.imageLinks.poster = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
 
     saveBook(clonedBookObj);
   } else {
@@ -86,7 +86,7 @@ function addBook(req, res) {
       if (err) {
         res.json(config.getRespData(true, MSG.cantAddNewBook, err));
       } else {
-        clonedBookObj.bookInfo.imageLinks.poster = `http://localhost:${process.env.BACK_PORT}${servConf.filesPaths.bookPoster.urlToPoster}/${posterName}`;
+        clonedBookObj.bookInfo.imageLinks.poster = `${servConf.filesPaths.bookPoster.urlToPoster}/${posterName}`;
 
         saveBook(clonedBookObj);
       }

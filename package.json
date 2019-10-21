@@ -99,6 +99,7 @@
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "4.3.1"
   },
+  "proxy": "http://localhost:5000",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"

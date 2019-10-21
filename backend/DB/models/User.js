@@ -44,7 +44,8 @@ const UserSchema = new Schema({
   emailVerified: {
     type: Boolean,
     default: false
-  }
+  },
+  avatar: String
 });
 
 UserSchema.pre("save", function(next) {

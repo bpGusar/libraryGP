@@ -13,12 +13,12 @@ class Poster extends React.Component {
   constructor(props) {
     super(props);
 
-    this.uploadPoster = this.uploadPoster.bind(this);
+    this.newPoster = this.newPoster.bind(this);
 
     this.posterInputRef = React.createRef();
   }
 
-  uploadPoster(e) {
+  newPoster(e) {
     e.preventDefault();
 
     const { book, dispatch } = this.props;
@@ -86,7 +86,8 @@ class Poster extends React.Component {
                   type="file"
                   ref={this.posterInputRef}
                   hidden
-                  onChange={this.uploadPoster}
+                  onChange={this.newPoster}
+                  accept="image/x-png"
                 />
               </Item.Description>
             </Item.Content>

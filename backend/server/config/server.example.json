@@ -11,14 +11,16 @@
   },
   "filesPaths": {
     "bookPoster": {
-      "tempFolder": "files/posters/temp/",
       "mainFolder": "files/posters/",
-      "urlToPostersTemp": "/posters/temp",
       "urlToPoster": "/posters"
     },
     "placeholders": {
       "mainFolder": "files/placeholders/",
       "urlToPlaceholder": "/placeholder"
+    },
+    "avatars": {
+      "mainFolder": "files/avatars/",
+      "urlToAvatar": "/avatar"
     }
   }
 }

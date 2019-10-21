@@ -29,7 +29,8 @@ const BookedBooksArchiveSchema = new Schema({
   comment: {
     type: String,
     default: ""
-  }
+  },
+  userId: String
 });
 
 export default Mongoose.model(

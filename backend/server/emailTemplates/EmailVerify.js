@@ -4,6 +4,6 @@ export const EmailVerifyTemplate = (to, process, userId) => {
     from: "libraryGPbot@libraryGP.com",
     to,
     subject: "LibraryGP. Подтверждение e-mail адреса.",
-    text: `Для подтверждения адреса перейдите по данной ссылке: ${process.CORS_LINK}/emailVerify?token=${userId}`
+    text: `Для подтверждения адреса перейдите по данной ссылке: ${process.CORS_LINK}/email-verify?token=${userId}`
   };
 };

@@ -6,7 +6,9 @@ import {
   Header,
   Image,
   Message,
-  Segment
+  Segment,
+  Item,
+  Modal
 } from "semantic-ui-react";
 import _ from "lodash";
 
@@ -15,12 +17,15 @@ import { PARAMS } from "@store";
 
 import axs from "@axios";
 
+import s from "./index.module.scss";
+
 class SignUpPage extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       regData: {
+        avatar: "",
         email: "",
         password: "",
         login: "",
@@ -35,9 +40,11 @@ class SignUpPage extends Component {
       regInProgress: false,
       regStatus: false
     };
+    this.avatarInputRef = React.createRef();
 
     this.onSubmit = this.onSubmit.bind(this);
-    this.checkUnique = _.debounce(this.checkUnique.bind(this), 1000);
+    this.newAvatar = this.newAvatar.bind(this);
+    this.checkUnique = this.checkUnique.bind(this);
   }
 
   componentDidUpdate() {
@@ -66,6 +73,26 @@ class SignUpPage extends Component {
         }
       });
     }
+  }
+
+  newAvatar(e) {
+    e.preventDefault();
+
+    const { regData } = this.state;
+
+    const reader = new FileReader();
+    const file = e.target.files[0];
+
+    reader.onloadend = () => {
+      this.setState({
+        regData: {
+          ...regData,
+          avatar: reader.result
+        }
+      });
+    };
+
+    reader.readAsDataURL(file);
   }
 
   checkUnique(target) {
@@ -122,6 +149,58 @@ class SignUpPage extends Component {
               }}
             >
               <Segment stacked>
+                <Item.Group>
+                  <Item>
+                    <Modal
+                      trigger={
+                        <Image
+                          src={
+                            regData.avatar ||
+                            "http://localhost:5000/placeholder/imagePlaceholder.png"
+                          }
+                          wrapped
+                          ui={false}
+                          className={s.posterImg}
+                        />
+                      }
+                      basic
+                      size="small"
+                    >
+                      <Modal.Content>
+                        <Image
+                          src={
+                            regData.avatar ||
+                            "http://localhost:5000/placeholder/imagePlaceholder.png"
+                          }
+                          wrapped
+                          ui={false}
+                          className={s.posterImgInModal}
+                        />
+                      </Modal.Content>
+                    </Modal>
+
+                    <Item.Content>
+                      <Item.Description>
+                        <Button
+                          content="Выберите аватар"
+                          labelPosition="left"
+                          icon="file"
+                          onClick={e => {
+                            e.preventDefault();
+                            this.avatarInputRef.current.click();
+                          }}
+                        />
+                        <input
+                          type="file"
+                          ref={this.avatarInputRef}
+                          hidden
+                          onChange={this.newAvatar}
+                          accept="image/x-png"
+                        />
+                      </Item.Description>
+                    </Item.Content>
+                  </Item>
+                </Item.Group>
                 <Form.Input
                   error={
                     errors.login && {

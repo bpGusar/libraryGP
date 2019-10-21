@@ -4,7 +4,7 @@ import { toast } from "react-semantic-toasts";
 import MSG from "@msg";
 
 const axs = axios.create({
-  baseURL: "http://localhost:5000/api"
+  baseURL: "/api"
 });
 
 axs.interceptors.request.use(

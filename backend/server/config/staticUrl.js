@@ -10,18 +10,18 @@ const staticUrls = {
       `../${servConf.filesPaths.bookPoster.mainFolder}`
     )
   },
-  pathToTempPoster: {
-    url: servConf.filesPaths.bookPoster.urlToPostersTemp,
-    pathToFolder: path.join(
-      __dirname,
-      `../${servConf.filesPaths.bookPoster.tempFolder}`
-    )
-  },
   pathPlaceholder: {
     url: servConf.filesPaths.placeholders.urlToPlaceholder,
     pathToFolder: path.join(
       __dirname,
       `../${servConf.filesPaths.placeholders.mainFolder}`
+    )
+  },
+  pathAvatar: {
+    url: servConf.filesPaths.avatars.urlToAvatar,
+    pathToFolder: path.join(
+      __dirname,
+      `../${servConf.filesPaths.avatars.mainFolder}`
     )
   }
 };

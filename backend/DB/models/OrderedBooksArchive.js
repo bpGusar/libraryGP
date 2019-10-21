@@ -25,6 +25,10 @@ const OrderedBooksArchiveSchema = new Schema({
   comment: {
     type: String,
     default: ""
+  },
+  userId: {
+    type: String,
+    required: true
   }
 });
 

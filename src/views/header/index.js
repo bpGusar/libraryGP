@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, Segment, Dropdown, Container } from "semantic-ui-react";
+import { Menu, Segment, Dropdown, Container, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 import { branch } from "baobab-react/higher-order";
@@ -7,6 +7,8 @@ import { PARAMS } from "@store";
 import { storeData } from "@act";
 
 import axs from "@axios";
+
+import s from "./Header.module.scss";
 
 class Header extends React.Component {
   static handleLogOut() {
@@ -24,7 +26,7 @@ class Header extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    axs.post("/menus", { menuName: "topMenu" }).then(res => {
+    axs.get(`/menus/topMenu`).then(res => {
       if (!res.data.error) {
         dispatch(storeData, PARAMS.MENU, res.data.payload.menu);
       }
@@ -65,6 +67,7 @@ class Header extends React.Component {
     });
     return menuArr;
   }
+  // TODO: сделать профиль
 
   render() {
     const {
@@ -87,18 +90,24 @@ class Header extends React.Component {
             <>
               {this.generateMenu().map(el => el)}
               {isUserAuthorized ? (
-                <Dropdown item text={userInfo.login}>
-                  <Dropdown.Menu>
-                    {userInfo.userGroup === userRoles.admin && (
-                      <Dropdown.Item as={Link} to="/dashboard">
-                        Dashboard
+                <Menu.Menu position="right" className={s.rightMenu}>
+                  <Image src={userInfo.avatar} avatar />
+                  <Dropdown item text={userInfo.login}>
+                    <Dropdown.Menu>
+                      {userInfo.userGroup === userRoles.admin && (
+                        <Dropdown.Item as={Link} to="/dashboard">
+                          Dashboard
+                        </Dropdown.Item>
+                      )}
+                      <Dropdown.Item as={Link} to="/profile">
+                        Профиль
                       </Dropdown.Item>
-                    )}
-                    <Dropdown.Item onClick={() => Header.handleLogOut()}>
-                      Выход
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                      <Dropdown.Item onClick={() => Header.handleLogOut()}>
+                        Выход
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Menu.Menu>
               ) : (
                 ""
               )}
