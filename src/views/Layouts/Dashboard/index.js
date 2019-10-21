@@ -36,13 +36,13 @@ export default class MainLayout extends React.Component {
             </Menu.Item>
             <Dropdown item text="Книги" className={s.menuItem}>
               <Dropdown.Menu>
-                <Dropdown.Item as={Link} to="/dashboard/findBook">
+                <Dropdown.Item as={Link} to="/dashboard/find-book">
                   Добавить новую
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/dashboard/bookingManagement">
+                <Dropdown.Item as={Link} to="/dashboard/booking-management">
                   Управление бронированием
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/dashboard/ordersManagement">
+                <Dropdown.Item as={Link} to="/dashboard/orders-management">
                   Управление выданными книгами
                 </Dropdown.Item>
               </Dropdown.Menu>

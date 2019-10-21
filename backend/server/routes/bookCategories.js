@@ -6,11 +6,11 @@ import BookCategoriesContr from "../../DB/controllers/BookCategories";
 
 const app = express();
 
-app.get("/api/bookCategories/", withAuth, (req, res) =>
+app.get("/api/book-categories/", withAuth, (req, res) =>
   BookCategoriesContr.findCategories(res)
 );
 
-app.post("/api/bookCategories/", withAuth, (req, res) => {
+app.post("/api/book-categories/", withAuth, (req, res) => {
   BookCategoriesContr.addOneCategory(req.body, res);
 });
 

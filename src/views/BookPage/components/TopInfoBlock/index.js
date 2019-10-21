@@ -111,7 +111,7 @@ class TopInfoBlock extends React.Component {
     });
 
     axs
-      .post("/bookedBooks/", {
+      .post("/booked-books/", {
         id: bookProps.match.params.id,
         userId: userInfo._id,
         readerId: userInfo.readerId

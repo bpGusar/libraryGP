@@ -6,11 +6,11 @@ import BookPublishersContr from "../../DB/controllers/BookPublishers";
 
 const app = express();
 
-app.get("/api/bookPublishers", withAuth, (req, res) =>
+app.get("/api/book-publishers", withAuth, (req, res) =>
   BookPublishersContr.findPublishers(res)
 );
 
-app.post("/api/bookPublishers", withAuth, (req, res) =>
+app.post("/api/book-publishers", withAuth, (req, res) =>
   BookPublishersContr.addOnePublisher(req.body, res)
 );
 

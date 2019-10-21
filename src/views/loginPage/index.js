@@ -55,9 +55,6 @@ class loginPage extends Component {
       .then(res => {
         if (!res.data.error) {
           localStorage.setItem("token", res.data.payload);
-          // здесь можно было бы сделать редирект внутри реакт роутера
-          // но жесткая перезагрузка нужна что бы проверка входа прошла корректно
-          // TODO: изучить возможность редиректа внутри реакт роутера
           document.location.href = "/";
         } else {
           this.setState({

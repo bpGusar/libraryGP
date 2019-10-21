@@ -74,7 +74,7 @@ class SignUpPage extends Component {
 
     if (value !== "") {
       axs
-        .get(`/users/check_reg_fields`, {
+        .get(`/users/check-reg-fields`, {
           params: {
             [name]: value
           }

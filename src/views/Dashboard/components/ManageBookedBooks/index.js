@@ -72,7 +72,7 @@ export default class ManageBookedBooks extends Component {
     });
 
     axs
-      .get("/bookedBooks", {
+      .get("/booked-books", {
         params: {
           getQuery
         }
@@ -107,7 +107,7 @@ export default class ManageBookedBooks extends Component {
     });
 
     axs
-      .post("/orderedBooks", {
+      .post("/ordered-books", {
         bookedBookInfo: {
           ...bookedBook
         },
@@ -146,7 +146,7 @@ export default class ManageBookedBooks extends Component {
     });
 
     axs
-      .post(`/bookedBooks/rejectOrdering`, {
+      .post(`/booked-books/reject-ordering`, {
         bookedBookInfo: {
           ...bookedBook
         },

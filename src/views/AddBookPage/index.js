@@ -129,7 +129,7 @@ class FindBookPage extends React.Component {
                 </Header>
                 <Button
                   primary
-                  onClick={() => history.push("/dashboard/addBook")}
+                  onClick={() => history.push("/dashboard/add-book")}
                 >
                   Ввести
                 </Button>

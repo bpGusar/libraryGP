@@ -14,13 +14,13 @@ class EmailVerify extends React.Component {
     const query = queryString.parse(location.search);
 
     if (globalLoader) {
-      axs.get(`/users/${query.token}/email_verify`).then(res => {
+      axs.get(`/users/${query.token}/email-verify`).then(res => {
         dispatch(storeData, PARAMS.INFO_PAGE, {
           text: res.data.message,
           type: !res.data.error ? "success" : "error"
         });
 
-        history.push("/infoPage");
+        history.push("/info-page");
       });
     }
   }

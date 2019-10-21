@@ -13,7 +13,7 @@ app.post("/api/menus", (req, res) => {
   MenusContr.getMenus(req, res);
 });
 
-app.put("/api/menu/:id", (req, res) => {
+app.put("/api/menus/:id", (req, res) => {
   const newmenu = {
     menu: {
       always: [

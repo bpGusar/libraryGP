@@ -31,7 +31,7 @@ class BookPage extends React.Component {
             type: "error"
           });
 
-          history.push("/infoPage");
+          history.push("/info-page");
         }
       });
   }

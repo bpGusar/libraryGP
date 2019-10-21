@@ -38,7 +38,7 @@ class App extends React.Component {
    */
   getUserInfo() {
     const { dispatch } = this.props;
-    axs.get("/users/auth_status").then(resp => {
+    axs.get("/users/auth-status").then(resp => {
       if (!resp.data.error) {
         dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);
       } else {
@@ -50,7 +50,7 @@ class App extends React.Component {
   checkAuth() {
     const { dispatch } = this.props;
     axs
-      .get("/users/auth_status")
+      .get("/users/auth-status")
       .then(res => {
         if (res.data.error) {
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);

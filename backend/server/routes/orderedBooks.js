@@ -7,11 +7,11 @@ import OrderedBooksArchiveContr from "../../DB/controllers/OrderedBooksArchive";
 
 const app = express();
 
-app.post("/api/orderedBooks", withAuth, (req, res) => {
+app.post("/api/ordered-books", withAuth, (req, res) => {
   OrderedBooksContr.addOrderedBook(req.body, res);
 });
 
-app.post("/api/books/orderedBooksArchive/bookReturn", withAuth, (req, res) => {
+app.post("/api/ordered-books/return", withAuth, (req, res) => {
   OrderedBooksArchiveContr.bookReturn(req.body, res);
 });
 

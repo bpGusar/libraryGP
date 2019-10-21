@@ -71,7 +71,7 @@ class AddBookForm extends React.Component {
           getInitialState()[PARAMS.BOOK_TO_DB]
         );
 
-        history.push("/infoPage");
+        history.push("/info-page");
       } else {
         this.setState({
           isFormLoaded: true,
@@ -148,8 +148,8 @@ class AddBookForm extends React.Component {
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/authors"
-              axsPostLink="/authors"
+              axsGetLink="/book-authors"
+              axsPostLink="/book-authors"
               storeParam={PARAMS.AUTHORS}
               multiple
               required
@@ -160,8 +160,8 @@ class AddBookForm extends React.Component {
               showAddNewField
             />
             <UniqueDropdown
-              axsGetLink="/bookPublishers"
-              axsPostLink="/bookPublishers"
+              axsGetLink="/book-publishers"
+              axsPostLink="/book-publishers"
               storeParam={PARAMS.PUBLISHERS}
               multiple
               required
@@ -174,8 +174,8 @@ class AddBookForm extends React.Component {
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/bookCategories"
-              axsPostLink="/bookCategories"
+              axsGetLink="/book-categories"
+              axsPostLink="/book-categories"
               storeParam={PARAMS.CATEGORIES}
               multiple
               required
@@ -218,9 +218,9 @@ class AddBookForm extends React.Component {
               defaultValue={bookInfo.pageCount}
             />
             <UniqueDropdown
-              axsGetLink="/bookLanguages"
+              axsGetLink="/book-languages"
               storeParam={PARAMS.LANGUAGES}
-              axsPostLink="/bookLanguages"
+              axsPostLink="/book-languages"
               multiple
               required
               onChangeBookInfoObjectProperty="language"

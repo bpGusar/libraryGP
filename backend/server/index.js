@@ -20,15 +20,13 @@ const corsOptions = {
 
 /** connect to DB */
 dbConfig.setUpConnection();
-// TODO: починить проблему с request entity too large когда грузишь постер
+
 /** server setup */
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 app.use(fileUpload());
 app.use(cors(corsOptions));
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 /** cron tasks builder */
 Object.keys(cronFunctions).forEach(task =>

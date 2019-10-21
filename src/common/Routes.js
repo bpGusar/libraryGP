@@ -80,7 +80,7 @@ class AppRotes extends React.Component {
         <AppRoute exact path="/" layout={MainLayout} component={MainPage} />
         <AppRoute
           exact
-          path="/emailVerify"
+          path="/email-verify"
           layout={MainLayout}
           component={EmailVerify}
         />
@@ -88,21 +88,21 @@ class AppRotes extends React.Component {
           exact
           layout={Dashboard}
           accessRole={userRoles.admin}
-          path="/dashboard/addBook"
+          path="/dashboard/add-book"
           component={AddBookForm}
         />
         <PrivateRoute
           exact
           layout={Dashboard}
           accessRole={userRoles.admin}
-          path="/dashboard/ordersManagement"
+          path="/dashboard/orders-management"
           component={ManageOrderedBooks}
         />
         <PrivateRoute
           exact
           layout={Dashboard}
           accessRole={userRoles.admin}
-          path="/dashboard/bookingManagement"
+          path="/dashboard/booking-management"
           component={ManageBookedBooks}
         />
         <PrivateRoute
@@ -126,7 +126,7 @@ class AppRotes extends React.Component {
         />
         <AppRoute
           exact
-          path="/infoPage"
+          path="/info-page"
           layout={MainLayout}
           component={InfoPage}
         />
@@ -134,7 +134,7 @@ class AppRotes extends React.Component {
           exact
           layout={Dashboard}
           accessRole={userRoles.admin}
-          path="/dashboard/findBook"
+          path="/dashboard/find-book"
           component={FindBookPage}
         />
         <PrivateRoute
