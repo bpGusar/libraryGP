@@ -9,7 +9,6 @@ import s from "./index.module.scss";
 export default class MainLayout extends React.Component {
   componentDidMount() {
     const { accessGranted, history } = this.props;
-
     if (!accessGranted) {
       history.push("/");
     }
@@ -36,14 +35,27 @@ export default class MainLayout extends React.Component {
             </Menu.Item>
             <Dropdown item text="Книги" className={s.menuItem}>
               <Dropdown.Menu>
-                <Dropdown.Item as={Link} to="/dashboard/find-book">
+                <Dropdown.Item as={Link} to="/dashboard/books/find">
                   Добавить новую
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/dashboard/booking-management">
+                <Dropdown.Item
+                  as={Link}
+                  to="/dashboard/books/booking-management"
+                >
                   Управление бронированием
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/dashboard/orders-management">
+                <Dropdown.Item
+                  as={Link}
+                  to="/dashboard/books/orders-management"
+                >
                   Управление выданными книгами
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Dropdown item text="Пользователи" className={s.menuItem}>
+              <Dropdown.Menu>
+                <Dropdown.Item as={Link} to="/dashboard/users/new">
+                  Добавить нового
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

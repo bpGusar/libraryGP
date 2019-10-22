@@ -92,7 +92,7 @@ class loginPage extends Component {
           <Message negative attached header="Ошибка" content={isError.msg} />
         )}
         <Form
-          attached
+          attached="true"
           onSubmit={this.onSubmit}
           size="large"
           style={{

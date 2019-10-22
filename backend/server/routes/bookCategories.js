@@ -10,7 +10,7 @@ app.get("/api/book-categories/", withAuth, (req, res) =>
   BookCategoriesContr.findCategories(res)
 );
 
-app.post("/api/book-categories/", withAuth, (req, res) => {
+app.post("/api/book-categories/", (req, res) => {
   BookCategoriesContr.addOneCategory(req.body, res);
 });
 

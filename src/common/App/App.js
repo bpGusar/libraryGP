@@ -6,6 +6,7 @@ import { SemanticToastContainer } from "react-semantic-toasts";
 import "react-semantic-toasts/styles/react-semantic-alert.css";
 import { createBrowserHistory } from "history";
 import "dotenv/config";
+import _ from "lodash";
 
 import AppRoutes from "../Routes";
 
@@ -18,68 +19,44 @@ const history = createBrowserHistory();
 
 class App extends React.Component {
   componentDidMount() {
-    const { dispatch } = this.props;
+    this.checkAuth();
+  }
+
+  async checkAuth() {
+    const { dispatch, user } = this.props;
+    let isError = false;
+
     if (localStorage.getItem("token") !== null) {
-      this.checkAuth();
-      this.getUserInfo();
-    } else {
-      dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
-      dispatch(isAuthInProgress, false);
-    }
-  }
-
-  /**
-   * если в localStorage лежит токен и он валидный
-   * то будет произведена его проверка
-   * а если пользователя подходящего под токен в базе нет
-   * то токен будет удален из localStorage
-   *
-   * такое бывает если пользователя удалили из базы и он не разлогинился до этого
-   */
-  getUserInfo() {
-    const { dispatch } = this.props;
-    axs.get("/users/auth-status").then(resp => {
-      if (!resp.data.error) {
-        dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);
-      } else {
-        localStorage.removeItem("token");
-      }
-    });
-  }
-
-  checkAuth() {
-    const { dispatch } = this.props;
-    axs
-      .get("/users/auth-status")
-      .then(res => {
-        if (res.data.error) {
-          dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
-          dispatch(isAuthInProgress, false);
-        } else {
+      await axs.get("/users/auth-status").then(resp => {
+        if (!resp.data.error) {
+          if (!_.isEqual(user, resp.data.payload)) {
+            dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);
+          }
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, true);
-          dispatch(isAuthInProgress, false);
+        } else {
+          dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
         }
-      })
-      .catch(() => {
-        dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
-        dispatch(isAuthInProgress, false);
+
+        isError = resp.data.error;
       });
+
+      dispatch(isAuthInProgress, false);
+
+      return { isError };
+    }
+    dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
+    dispatch(isAuthInProgress, false);
   }
 
   render() {
-    const {
-      pageLoaded,
-      globalPageLoader,
-      isAuthInProgresStored,
-      globalPageLoaderByAction
-    } = this.props;
+    const { pageLoaded, globalPageLoader, isAuthInProgresStored } = this.props;
 
     return (
       <Router history={history}>
-        <Dimmer active={globalPageLoader || globalPageLoaderByAction} page>
+        <Dimmer active={globalPageLoader} page>
           <Loader />
         </Dimmer>
-        {isAuthInProgresStored || pageLoaded ? (
+        {isAuthInProgresStored || pageLoaded || globalPageLoader ? (
           <Segment>
             <Dimmer active>
               <Loader />
@@ -107,7 +84,6 @@ export default root(
     {
       isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,
       globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
-      globalPageLoaderByAction: PARAMS.GLOBAL_PAGE_LOADER_BY_ACTION,
       pageLoaded: PARAMS.LOADED,
       isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
       user: PARAMS.USER_INFO

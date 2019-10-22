@@ -6,9 +6,13 @@ import BooksContr from "../../DB/controllers/Books";
 
 const app = express();
 
-app.post("/api/books", withAuth, (req, res) => {
-  BooksContr.addBook(req, res);
-});
+app.post(
+  "/api/books",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => {
+    BooksContr.addBook(req, res);
+  }
+);
 
 app.get("/api/books/:id", (req, res) => {
   const { fetch_type } = req.query;

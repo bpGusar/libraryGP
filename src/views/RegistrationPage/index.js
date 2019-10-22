@@ -16,6 +16,7 @@ import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
 
 import axs from "@axios";
+import MSG from "@msg";
 
 import s from "./index.module.scss";
 
@@ -36,6 +37,9 @@ class SignUpPage extends Component {
       errors: {
         login: false,
         email: false
+      },
+      regExpError: {
+        login: false
       },
       regInProgress: false,
       regStatus: false
@@ -119,27 +123,35 @@ class SignUpPage extends Component {
 
   handleInputChange(e) {
     const { value, name } = e.target;
-    const { regData } = this.state;
+    const { regData, regExpError } = this.state;
+    const reg = new RegExp(/^[a-z0-9]{3,16}$/gim);
 
     this.setState({
-      regData: { ...regData, [name]: value }
+      regData: { ...regData, [name]: value },
+      regExpError: {
+        ...regExpError,
+        login: !reg.test(value) && name === "login"
+      }
     });
   }
 
   render() {
-    const { regData, errors, regInProgress, regStatus } = this.state;
+    const {
+      regData,
+      errors,
+      regInProgress,
+      regStatus,
+      regExpError
+    } = this.state;
     return (
       <>
         {regStatus ? (
-          <Segment stacked>
-            Регистрация прошла успешно. <br /> На указанную почту отправлено
-            письмо подтверждение.
-          </Segment>
+          <Segment stacked>{MSG.singUpPage.successfullSignUp}</Segment>
         ) : (
           <>
             <Header as="h2" color="blue" textAlign="center">
-              <Image src="https://react.semantic-ui.com/logo.png" /> Регистрация
-              нового аккаунта
+              <Image src="https://react.semantic-ui.com/logo.png" />
+              {MSG.singUpPage.pageTitle}
             </Header>
             <Form
               onSubmit={this.onSubmit}
@@ -203,10 +215,14 @@ class SignUpPage extends Component {
                 </Item.Group>
                 <Form.Input
                   error={
-                    errors.login && {
-                      content: "Пользователь с таким логином уже существует",
+                    (errors.login && {
+                      content: MSG.singUpPage.userWThatLoginExistError,
                       pointing: "below"
-                    }
+                    }) ||
+                    (regExpError.login && {
+                      content: MSG.singUpPage.loginRegExpError,
+                      pointing: "below"
+                    })
                   }
                   type="text"
                   id="login"
@@ -261,7 +277,7 @@ class SignUpPage extends Component {
                 <Form.Input
                   error={
                     errors.email && {
-                      content: "Пользователь с таким имейлом уже существует",
+                      content: MSG.singUpPage.userWThatEmailExistError,
                       pointing: "below"
                     }
                   }
@@ -296,7 +312,12 @@ class SignUpPage extends Component {
                   color="blue"
                   fluid
                   size="large"
-                  disabled={regInProgress || (errors.login || errors.email)}
+                  disabled={
+                    regInProgress ||
+                    errors.login ||
+                    errors.email ||
+                    regExpError.login
+                  }
                   loading={regInProgress}
                 >
                   Регистрация

@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu, Segment, Dropdown, Container, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import _ from "lodash";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
@@ -25,12 +26,14 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    axs.get(`/menus/topMenu`).then(res => {
-      if (!res.data.error) {
-        dispatch(storeData, PARAMS.MENU, res.data.payload.menu);
-      }
-    });
+    const { dispatch, menu } = this.props;
+    if (_.isEmpty(menu)) {
+      axs.get(`/menus/topMenu`).then(res => {
+        if (!res.data.error) {
+          dispatch(storeData, PARAMS.MENU, res.data.payload.menu);
+        }
+      });
+    }
   }
 
   getLink(to, name) {

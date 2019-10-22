@@ -10,7 +10,6 @@ export const PARAMS = {
   BOOK_TO_DB: "book to db",
   BOOK: "book",
   GLOBAL_PAGE_LOADER: "is some data is loading?",
-  GLOBAL_PAGE_LOADER_BY_ACTION: "is some data is loading by action?",
   AUTHORS: "authors from db",
   CATEGORIES: "categories from db",
   LANGUAGES: "languages from db",
@@ -22,7 +21,6 @@ export const PARAMS = {
 export const getInitialState = () => ({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
   [PARAMS.GLOBAL_PAGE_LOADER]: true, // true значит какие то данные загружаются
-  [PARAMS.GLOBAL_PAGE_LOADER_BY_ACTION]: false, // true значит какому то действию необходим оверлей
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.USER_INFO]: {},
