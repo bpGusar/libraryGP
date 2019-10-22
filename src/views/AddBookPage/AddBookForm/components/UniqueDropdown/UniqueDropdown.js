@@ -94,7 +94,7 @@ class UniqueDropdown extends React.Component {
 
     return (
       <>
-        <div className="field">
+        <Form.Field>
           <Form.Dropdown
             fluid
             required={required}
@@ -130,7 +130,7 @@ class UniqueDropdown extends React.Component {
               </Button>
             </Message>
           )}
-        </div>
+        </Form.Field>
       </>
     );
   }

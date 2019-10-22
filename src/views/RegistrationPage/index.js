@@ -6,13 +6,19 @@ import {
   Header,
   Image,
   Message,
-  Segment
+  Segment,
+  Item,
+  Modal
 } from "semantic-ui-react";
+import _ from "lodash";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
 
 import axs from "@axios";
+import MSG from "@msg";
+
+import s from "./index.module.scss";
 
 class SignUpPage extends Component {
   constructor(props) {
@@ -20,6 +26,7 @@ class SignUpPage extends Component {
 
     this.state = {
       regData: {
+        avatar: "",
         email: "",
         password: "",
         login: "",
@@ -31,11 +38,17 @@ class SignUpPage extends Component {
         login: false,
         email: false
       },
+      regExpError: {
+        login: false
+      },
       regInProgress: false,
       regStatus: false
     };
+    this.avatarInputRef = React.createRef();
 
     this.onSubmit = this.onSubmit.bind(this);
+    this.newAvatar = this.newAvatar.bind(this);
+    this.checkUnique = this.checkUnique.bind(this);
   }
 
   componentDidUpdate() {
@@ -55,7 +68,7 @@ class SignUpPage extends Component {
       this.setState({
         regInProgress: true
       });
-      axs.post("/signup", regData, { withCredentials: true }).then(regRes => {
+      axs.post("/users", regData, { withCredentials: true }).then(regRes => {
         if (!regRes.data.error) {
           this.setState({
             regStatus: true,
@@ -66,16 +79,43 @@ class SignUpPage extends Component {
     }
   }
 
+  newAvatar(e) {
+    e.preventDefault();
+
+    const { regData } = this.state;
+
+    const reader = new FileReader();
+    const file = e.target.files[0];
+
+    reader.onloadend = () => {
+      this.setState({
+        regData: {
+          ...regData,
+          avatar: reader.result
+        }
+      });
+    };
+
+    reader.readAsDataURL(file);
+  }
+
   checkUnique(target) {
     const { value, name } = target;
     const { errors } = this.state;
 
     if (value !== "") {
       axs
-        .get("/doesUserWithThatCredsExist", { params: { [name]: value } })
+        .get(`/users/check-reg-fields`, {
+          params: {
+            [name]: value
+          }
+        })
         .then(res => {
           this.setState({
-            errors: { ...errors, [name]: res.data.error }
+            errors: {
+              ...errors,
+              [name]: _.has(res.data.payload[0], "_id")
+            }
           });
         });
     }
@@ -83,27 +123,35 @@ class SignUpPage extends Component {
 
   handleInputChange(e) {
     const { value, name } = e.target;
-    const { regData } = this.state;
+    const { regData, regExpError } = this.state;
+    const reg = new RegExp(/^[a-z0-9]{3,16}$/gim);
 
     this.setState({
-      regData: { ...regData, [name]: value }
+      regData: { ...regData, [name]: value },
+      regExpError: {
+        ...regExpError,
+        login: !reg.test(value) && name === "login"
+      }
     });
   }
 
   render() {
-    const { regData, errors, regInProgress, regStatus } = this.state;
+    const {
+      regData,
+      errors,
+      regInProgress,
+      regStatus,
+      regExpError
+    } = this.state;
     return (
       <>
         {regStatus ? (
-          <Segment stacked>
-            Регистрация прошла успешно. <br /> На указанную почту отправлено
-            письмо подтверждение.
-          </Segment>
+          <Segment stacked>{MSG.singUpPage.successfullSignUp}</Segment>
         ) : (
           <>
             <Header as="h2" color="blue" textAlign="center">
-              <Image src="https://react.semantic-ui.com/logo.png" /> Регистрация
-              нового аккаунта
+              <Image src="https://react.semantic-ui.com/logo.png" />
+              {MSG.singUpPage.pageTitle}
             </Header>
             <Form
               onSubmit={this.onSubmit}
@@ -113,12 +161,68 @@ class SignUpPage extends Component {
               }}
             >
               <Segment stacked>
+                <Item.Group>
+                  <Item>
+                    <Modal
+                      trigger={
+                        <Image
+                          src={
+                            regData.avatar ||
+                            "http://localhost:5000/placeholder/imagePlaceholder.png"
+                          }
+                          wrapped
+                          ui={false}
+                          className={s.posterImg}
+                        />
+                      }
+                      basic
+                      size="small"
+                    >
+                      <Modal.Content>
+                        <Image
+                          src={
+                            regData.avatar ||
+                            "http://localhost:5000/placeholder/imagePlaceholder.png"
+                          }
+                          wrapped
+                          ui={false}
+                          className={s.posterImgInModal}
+                        />
+                      </Modal.Content>
+                    </Modal>
+
+                    <Item.Content>
+                      <Item.Description>
+                        <Button
+                          content="Выберите аватар"
+                          labelPosition="left"
+                          icon="file"
+                          onClick={e => {
+                            e.preventDefault();
+                            this.avatarInputRef.current.click();
+                          }}
+                        />
+                        <input
+                          type="file"
+                          ref={this.avatarInputRef}
+                          hidden
+                          onChange={this.newAvatar}
+                          accept="image/x-png"
+                        />
+                      </Item.Description>
+                    </Item.Content>
+                  </Item>
+                </Item.Group>
                 <Form.Input
                   error={
-                    errors.login && {
-                      content: "Пользователь с таким логином уже существует",
+                    (errors.login && {
+                      content: MSG.singUpPage.userWThatLoginExistError,
                       pointing: "below"
-                    }
+                    }) ||
+                    (regExpError.login && {
+                      content: MSG.singUpPage.loginRegExpError,
+                      pointing: "below"
+                    })
                   }
                   type="text"
                   id="login"
@@ -173,7 +277,7 @@ class SignUpPage extends Component {
                 <Form.Input
                   error={
                     errors.email && {
-                      content: "Пользователь с таким имейлом уже существует",
+                      content: MSG.singUpPage.userWThatEmailExistError,
                       pointing: "below"
                     }
                   }
@@ -208,7 +312,12 @@ class SignUpPage extends Component {
                   color="blue"
                   fluid
                   size="large"
-                  disabled={regInProgress || (errors.login || errors.email)}
+                  disabled={
+                    regInProgress ||
+                    errors.login ||
+                    errors.email ||
+                    regExpError.login
+                  }
                   loading={regInProgress}
                 >
                   Регистрация

@@ -5,21 +5,18 @@ import * as config from "../config";
 
 import BookCategories from "../models/BookCategories";
 
-function findCategories(res, data = {}) {
-  BookCategories.find(
-    _.isEmpty(data) ? {} : JSON.parse(data),
-    (err, categories) => {
-      if (err) {
-        res.json(config.getRespData(true, MSG.internalErr500, err));
-      } else {
-        res.json(config.getRespData(false, null, categories));
-      }
+function findCategories(res) {
+  BookCategories.find({}, (err, categories) => {
+    if (err) {
+      res.json(config.getRespData(true, MSG.internalServerErr, err));
+    } else {
+      res.json(config.getRespData(false, null, categories));
     }
-  );
+  });
 }
 
-function addOneCategory(categoryName, res) {
-  const category = new BookCategories({ categoryName });
+function addOneCategory(data, res) {
+  const category = new BookCategories({ ...data });
   category.save(err => {
     if (err) {
       if (err.code === 11000) {

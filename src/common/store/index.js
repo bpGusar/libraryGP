@@ -9,18 +9,18 @@ export const PARAMS = {
   MENU: "menu",
   BOOK_TO_DB: "book to db",
   BOOK: "book",
-  IS_BOOK_DATA_LOADED: "is book data loaded to store?",
   GLOBAL_PAGE_LOADER: "is some data is loading?",
   AUTHORS: "authors from db",
   CATEGORIES: "categories from db",
   LANGUAGES: "languages from db",
   PUBLISHERS: "publishers from db",
-  INFO_PAGE: "info page text"
+  INFO_PAGE: "info page text",
+  USER_ROLES: "user roles"
 };
 
 export const getInitialState = () => ({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
-  [PARAMS.GLOBAL_PAGE_LOADER]: true, // true = some data is loading
+  [PARAMS.GLOBAL_PAGE_LOADER]: true, // true значит какие то данные загружаются
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.USER_INFO]: {},
@@ -29,12 +29,16 @@ export const getInitialState = () => ({
     type: ""
   },
   [PARAMS.MENU]: {},
-  [PARAMS.IS_BOOK_DATA_LOADED]: false,
   [PARAMS.AUTHORS]: [],
   [PARAMS.CATEGORIES]: [],
   [PARAMS.LANGUAGES]: [],
   [PARAMS.PUBLISHERS]: [],
   [PARAMS.BOOK]: {},
+  [PARAMS.USER_ROLES]: {
+    notLogged: "notLogged",
+    user: 0,
+    admin: 1
+  },
   [PARAMS.BOOK_TO_DB]: {
     userIdWhoAddedBookInDb: "",
     dateAdded: "",
@@ -63,7 +67,8 @@ export const getInitialState = () => ({
       language: []
     },
     stockInfo: {
-      quantityInStock: 0
+      freeForBooking: 0,
+      maxAvailableBooks: 0
     }
   }
 });

@@ -1,9 +1,26 @@
 {
+  "maxBooksPerOneUserBookedAndOrderedAtTheSameTime": 5,
+  "theRaderCanTakeTheBookForDays": 30,
+  "sendEmailNDaysBeforeBookExpires": 3,
   "emailConfig": {
     "service": "Смотрите список сервисов https://nodemailer.com/smtp/well-known/",
     "auth": {
       "user": "example@email.com",
       "pass": "pass"
+    }
+  },
+  "filesPaths": {
+    "bookPoster": {
+      "mainFolder": "files/posters/",
+      "urlToPoster": "/posters"
+    },
+    "placeholders": {
+      "mainFolder": "files/placeholders/",
+      "urlToPlaceholder": "/placeholder"
+    },
+    "avatars": {
+      "mainFolder": "files/avatars/",
+      "urlToAvatar": "/avatar"
     }
   }
 }

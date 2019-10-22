@@ -4,30 +4,51 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import "dotenv/config";
+import cron from "node-cron";
 
-import * as config from "../DB/config";
-
-import * as routes from "./routes/routesPaths";
+import * as dbConfig from "../DB/config";
+import cronFunctions from "./config/cron";
+import staticUrls from "./config/staticUrl";
+import generateRoutes from "./routes/routesGenerator";
 
 const app = express();
+
 const corsOptions = {
   origin: process.env.CORS_LINK,
   credentials: true
 };
 
-config.setUpConnection();
+/** connect to DB */
+dbConfig.setUpConnection();
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+/** server setup */
+app.use(bodyParser.json({ limit: "10mb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 app.use(fileUpload());
 app.use(cors(corsOptions));
 
-app.use("/posters", express.static(`${__dirname}/files/posters`));
-app.use("/placeholder", express.static(`${__dirname}/files/placeholders`));
+/** cron tasks builder */
+Object.keys(cronFunctions).forEach(task =>
+  cron.schedule(
+    cronFunctions[task].cron.time,
+    cronFunctions[task].cron.function,
+    {
+      scheduled: true,
+      timezone: "Europe/Moscow"
+    }
+  )
+);
 
-Object.keys(routes).map(route => app.use(routes[route]));
+/** static url's to folders builder */
+Object.keys(staticUrls).forEach(prop =>
+  app.use(staticUrls[prop].url, express.static(staticUrls[prop].pathToFolder))
+);
 
+/** routes builder */
+generateRoutes(app);
+
+/** server starter */
 app.listen(process.env.BACK_PORT, () => {
   console.log(`Server is up and running on port ${process.env.BACK_PORT}`);
 });

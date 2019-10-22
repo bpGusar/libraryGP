@@ -10,7 +10,7 @@ export default function SearchResults(props) {
   function addBookToStore(book) {
     const { history } = props;
     dispatch(setBookIntoStore, book);
-    history.push("/dashboard/addBook");
+    history.push("/dashboard/books/new");
   }
 
   return (

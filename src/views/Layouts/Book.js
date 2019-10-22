@@ -17,7 +17,7 @@ function BookLayout(props) {
     <>
       {!globalPageLoader && (
         <>
-          <Responsive className={headerStyles.topInfoBlock}>
+          <Responsive className={headerStyles.headerCustomStyleGradient}>
             <Segment
               inverted
               textAlign="center"
@@ -29,7 +29,7 @@ function BookLayout(props) {
                 headerMenuStyle={headerStyles.headerMenuStyle}
               />
             </Segment>
-            {!_.isEmpty(book) && <TopInfoBlock />}
+            {!_.isEmpty(book) && <TopInfoBlock bookProps={children.props} />}
           </Responsive>
           <Container style={{ marginTop: "20px" }}>
             {_.isEmpty(book) && (

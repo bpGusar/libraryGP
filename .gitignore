@@ -6,10 +6,11 @@
 .pnp.js
 
 # files
-backend/server/config/server.json
+/backend/server/config/server.json
 
 # folders
 /backend/node_modules
+/backend/server/files/posters/temp
 
 # testing
 /coverage

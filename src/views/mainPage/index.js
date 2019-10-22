@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button, Divider, Card, Image } from "semantic-ui-react";
+import { Card, Image } from "semantic-ui-react";
 
 import CustomLoader from "@views/Loader";
 
@@ -23,7 +23,11 @@ export default class MainPage extends React.Component {
   // TODO: переделать главную
   getBooks() {
     axs
-      .get("/books/get", { params: { howMuch: "all", fullBookInfo: true } })
+      .get("/books", {
+        params: {
+          fetch_type: 1
+        }
+      })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
@@ -39,10 +43,6 @@ export default class MainPage extends React.Component {
 
     return (
       <div>
-        <Button as={Link} to="/dashboard/findBook" color="blue">
-          Добавить книгу
-        </Button>
-        <Divider />
         {!isLoaded ? (
           <CustomLoader />
         ) : (

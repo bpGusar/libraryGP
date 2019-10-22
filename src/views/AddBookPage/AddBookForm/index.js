@@ -3,17 +3,20 @@ import React from "react";
 import { branch } from "baobab-react/higher-order";
 import uniqid from "uniqid";
 import _ from "lodash";
+import { DateTime } from "luxon";
 import { DateInput } from "semantic-ui-calendar-react";
 
 import { Form, Button, Message } from "semantic-ui-react";
 
 import UniqueDropdown from "./components/UniqueDropdown/UniqueDropdown";
-import Poster from "./components/Poster";
+import Poster from "./components/Poster/Poster";
 
 import { PARAMS, getInitialState } from "@store";
 import { storeData } from "@act";
 
 import axs from "@axios";
+
+import s from "./index.module.scss";
 
 class AddBookForm extends React.Component {
   constructor(props) {
@@ -31,13 +34,10 @@ class AddBookForm extends React.Component {
   componentDidMount() {
     const { book, user, dispatch } = this.props;
     const bookClone = _.cloneDeep(book);
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, "0");
-    const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
-    const yyyy = today.getFullYear();
+    const today = DateTime.local().toISODate();
 
-    _.set(bookClone, "userIdWhoAddedBookInDb", user.id);
-    _.set(bookClone, "dateAdded", `${dd}.${mm}.${yyyy}`);
+    _.set(bookClone, "userIdWhoAddedBookInDb", user._id);
+    _.set(bookClone, "dateAdded", today);
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
@@ -54,7 +54,7 @@ class AddBookForm extends React.Component {
       }
     });
 
-    axs.post("/books/add", { book }).then(resp => {
+    axs.post("/books", { book }).then(resp => {
       if (!resp.data.error) {
         this.setState({
           isFormLoaded: true
@@ -64,9 +64,14 @@ class AddBookForm extends React.Component {
           text: resp.data.message,
           type: "success"
         });
-        dispatch(storeData, PARAMS.BOOK_TO_DB, getInitialState().book);
 
-        history.push("/infoPage");
+        dispatch(
+          storeData,
+          PARAMS.BOOK_TO_DB,
+          getInitialState()[PARAMS.BOOK_TO_DB]
+        );
+
+        history.push("/info-page");
       } else {
         this.setState({
           isFormLoaded: true,
@@ -120,19 +125,31 @@ class AddBookForm extends React.Component {
 
         <Form loading={!isFormLoaded} onSubmit={() => this.handleSubmit()}>
           <Poster />
-          <Form.Input
-            fluid
-            required
-            label="Название"
-            name="bookInfo.title"
-            onChange={e => this.handleChangeBookInfo(e.currentTarget)}
-            defaultValue={bookInfo.title}
-          />
+          <Form.Group widths="equal">
+            <Form.Input
+              fluid
+              required
+              label="Название"
+              name="bookInfo.title"
+              onChange={e => this.handleChangeBookInfo(e.currentTarget)}
+              defaultValue={bookInfo.title}
+            />
+            <DateInput
+              name="bookInfo.publishedDate"
+              label="Дата публикации"
+              required
+              animation="off"
+              value={bookInfo.publishedDate}
+              iconPosition="left"
+              onChange={(e, { name, value }) =>
+                this.handleChangeBookInfo({ name, value })
+              }
+            />
+          </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/authors/get"
-              axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/authors/add/one"
+              axsGetLink="/book-authors"
+              axsPostLink="/book-authors"
               storeParam={PARAMS.AUTHORS}
               multiple
               required
@@ -143,9 +160,8 @@ class AddBookForm extends React.Component {
               showAddNewField
             />
             <UniqueDropdown
-              axsGetLink="/bookPublishers/get"
-              axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookPublishers/add/one/"
+              axsGetLink="/book-publishers"
+              axsPostLink="/book-publishers"
               storeParam={PARAMS.PUBLISHERS}
               multiple
               required
@@ -158,9 +174,8 @@ class AddBookForm extends React.Component {
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/bookCategories/get"
-              axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookCategories/add/one/"
+              axsGetLink="/book-categories"
+              axsPostLink="/book-categories"
               storeParam={PARAMS.CATEGORIES}
               multiple
               required
@@ -203,10 +218,9 @@ class AddBookForm extends React.Component {
               defaultValue={bookInfo.pageCount}
             />
             <UniqueDropdown
-              axsGetLink="/bookLanguages/get"
+              axsGetLink="/book-languages"
               storeParam={PARAMS.LANGUAGES}
-              axsQuery={{ params: { howMuch: "all" } }}
-              axsPostLink="/bookLanguages/add/one/"
+              axsPostLink="/book-languages"
               multiple
               required
               onChangeBookInfoObjectProperty="language"
@@ -217,27 +231,31 @@ class AddBookForm extends React.Component {
             />
           </Form.Group>
           <Form.Group widths="equal">
-            <DateInput
-              name="bookInfo.publishedDate"
-              label="Дата публикации"
-              required
-              animation="off"
-              value={bookInfo.publishedDate}
-              iconPosition="left"
-              // eslint-disable-next-line react/jsx-no-bind
-              onChange={(e, { name, value }) =>
-                this.handleChangeBookInfo({ name, value })
-              }
-            />
             <Form.Input
               fluid
               required
               type="number"
-              label="Количество книг в наличии"
-              name="stockInfo.quantityInStock"
+              label="Максимальное количество экземпляров в библиотеке"
+              name="stockInfo.maxAvailableBooks"
               onChange={e => this.handleChangeBookInfo(e.currentTarget)}
-              defaultValue={book.stockInfo.quantityInStock}
+              defaultValue={book.stockInfo.maxAvailableBooks}
             />
+            <Form.Field>
+              <Form.Input
+                fluid
+                required
+                type="number"
+                label="Количество экземпляров доступное для выдачи"
+                name="stockInfo.freeForBooking"
+                onChange={e => this.handleChangeBookInfo(e.currentTarget)}
+                max={book.stockInfo.maxAvailableBooks}
+                value={book.stockInfo.freeForBooking}
+              />
+              <p className={s.fieldSubText}>
+                Не может превышать значение в поле Максимальное количество
+                экземпляров в библиотеке
+              </p>
+            </Form.Field>
           </Form.Group>
           <Form.Field>
             <label htmlFor={uniqid(`description_`)}>
@@ -263,8 +281,7 @@ class AddBookForm extends React.Component {
 export default branch(
   {
     book: PARAMS.BOOK_TO_DB,
-    user: PARAMS.USER_INFO,
-    isBookDataLoaded: PARAMS.IS_BOOK_DATA_LOADED
+    user: PARAMS.USER_INFO
   },
   AddBookForm
 );
