@@ -3,27 +3,30 @@ import { Switch, Route } from "react-router";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
 
+/** обертки */
 import MainLayout from "@views/Layouts/Main";
 import BookTemplate from "@views/Layouts/Book";
 import LoginAndRegister from "@views/Layouts/LoginAndRegister";
 import Dashboard from "@views/Layouts/Dashboard/index";
 
-import LoginPage from "@views/LoginPage";
-import RegistrationPage from "@views/RegistrationPage";
-import MainPage from "@views/MainPage";
-import FindBookPage from "@views/AddBookPage";
-import AddBookForm from "@views/AddBookPage/AddBookForm/index";
-import AccessDenied from "@views/AccessDenied";
-import InfoPage from "@views/InfoPage";
-import BookPage from "@views/BookPage";
-import EmailVerify from "@views/EmailVerify";
-import DashboardPage from "@views/Dashboard";
-import ProfilePage from "@views/ProfilePage";
+/** вьюхи сайта */
+import LoginPage from "@UI/Users/LoginPage";
+import RegistrationPage from "@UI/Users/RegistrationPage";
+import MainPage from "@UI/MainPage";
+import FindBookPage from "@UI/Books/AddBookPage";
+import AddBookForm from "@UI/Books/AddBookPage/AddBookForm/index";
+import AccessDenied from "@views/Common/AccessDenied";
+import InfoPage from "@views/Common/InfoPage";
+import BookPage from "@UI/Books/BookPage";
+import EmailVerify from "@UI/Users/EmailVerify";
+import ProfilePage from "@UI/Users/ProfilePage";
 
-import ManageBookedBooks from "@views/Dashboard/components/Books/ManageBookedBooks";
-import ManageOrderedBooks from "@views/Dashboard/components/Books/ManageOrderedBooks";
-
-import AddNewUser from "@views/Dashboard/components/Users/AddNew";
+/** вьюхи дашборда */
+import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
+import ManageOrderedBooks from "@DUI/views/Books/ManageOrderedBooks";
+import AllBooks from "@DUI/views/Books/AllBooks";
+import AddNewUser from "@DUI/views/Users/AddNew";
+import DashboardPage from "@DUI";
 
 import { PARAMS } from "@store";
 
@@ -149,6 +152,13 @@ class AppRotes extends React.Component {
           accessRole={[userRoles.admin]}
           path="/dashboard/users/new"
           component={AddNewUser}
+        />
+        <PrivateRoute
+          exact
+          layout={Dashboard}
+          accessRole={[userRoles.admin]}
+          path="/dashboard/books/book-list"
+          component={AllBooks}
         />
         <PrivateRoute
           exact

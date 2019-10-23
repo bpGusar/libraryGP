@@ -12,7 +12,7 @@ import {
 } from "semantic-ui-react";
 import axios from "axios";
 
-import SearchResults from "@views/AddBookPage/SearchResults";
+import SearchResults from "@UI/Books/AddBookPage/SearchResults";
 
 class FindBookPage extends React.Component {
   constructor(props) {

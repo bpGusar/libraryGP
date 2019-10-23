@@ -4,10 +4,10 @@ import { branch } from "baobab-react/higher-order";
 
 import { Segment, Responsive, Container } from "semantic-ui-react";
 
-import Header from "@views/Header";
-import headerStyles from "@views/Header/Header.module.scss";
-import CustomLoader from "@views/Loader";
-import TopInfoBlock from "@views/BookPage/components/TopInfoBlock";
+import Header from "@UI/Header";
+import headerStyles from "@UI/Header/Header.module.scss";
+import CustomLoader from "@views/Common/Loader";
+import TopInfoBlock from "@UI/Books/BookPage/components/TopInfoBlock";
 
 import { PARAMS } from "@store";
 

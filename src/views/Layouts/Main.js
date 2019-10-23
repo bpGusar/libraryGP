@@ -2,7 +2,7 @@ import React from "react";
 
 import { Segment, Responsive, Container } from "semantic-ui-react";
 
-import Header from "@views/Header";
+import Header from "@UI/Header";
 
 export default function MainLayout(props) {
   const { children } = props;

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Card, Image } from "semantic-ui-react";
 
-import CustomLoader from "@views/Loader";
+import CustomLoader from "@views/Common/Loader";
 
 import axs from "@axios";
 
