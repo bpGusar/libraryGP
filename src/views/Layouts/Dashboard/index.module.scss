@@ -16,12 +16,22 @@ $sidebarWidth: 300px;
       width: $sidebarWidth !important;
       overflow: visible !important;
       background: #19537e !important;
+      box-shadow: none !important;
     }
   }
-  .mainContainer {
-    padding: 20px;
-    width: 1100px !important;
-    overflow-y: scroll;
-    height: 100%;
+  .mainContainerBlock {
+    width: 100%;
+    overflow: hidden;
+    .topTitleBar {
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+    }
+    .mainContainer {
+      padding: 15px;
+      width: 1100px !important;
+      overflow-y: auto;
+      height: 94vh;
+    }
   }
 }

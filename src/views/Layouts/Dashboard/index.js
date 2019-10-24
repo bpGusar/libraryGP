@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Sidebar, Menu } from "semantic-ui-react";
+import { Container, Sidebar, Menu, Segment } from "semantic-ui-react";
 
 import DashboardMenu from "@DUI/components/Menu/";
 
@@ -33,16 +33,14 @@ export default class MainLayout extends React.Component {
           </Sidebar>
         </div>
 
-        <Container
-          fluid
-          className={s.mainContainer}
-          style={{
-            marginLeft: `${0}px !important`,
-            marginRight: `${0}px !important`
-          }}
-        >
-          <div className="m-3">{children}</div>
-        </Container>
+        <div className={s.mainContainerBlock}>
+          <Segment className={s.topTitleBar}>
+            Pellentesque habitant morbi tristique senectus.
+          </Segment>
+          <Container fluid className={s.mainContainer}>
+            {children}
+          </Container>
+        </div>
       </div>
     );
   }

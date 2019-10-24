@@ -9,19 +9,32 @@ import AddNew from "./AddNew";
 
 import axs from "@axios";
 
-import { PARAMS } from "@store";
 import { storeData } from "@act";
 
+import s from "./index.module.scss";
+
+/**
+ * Кастомный dropdown.
+ * Принимает как стандартные пропсы semantic ui так и кастомные.
+ *
+ * Кастомные пропсы:
+ * @param {String} axiosGetLink Ссылка на получение данных
+ * @param {String} axiosPostLink Ссылка на добавление данных данных
+ * @param {String} storeParam Ссылка на параметр в сторе
+ * @param {Function} onChange Функция, которая будет принимать dropdown value
+ * @param {Boolean} showAddNewField Показывать ли поле добавления новых данных
+ * @param {String} dropdownValueName Используется для конвертации данных из базы и для добавления новых.
+ * @param {Boolean} showClear Показывать ли кнопку очистить или нет.
+ */
 class UniqueDropdown extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleOnChangeDropdown = this.handleOnChangeDropdown.bind(this);
-
     this.state = {
       isLoaded: false,
       options: [],
-      error: ""
+      error: "",
+      defaultValue: []
     };
   }
 
@@ -30,24 +43,26 @@ class UniqueDropdown extends React.Component {
   }
 
   handleGetAll() {
-    const { dispatch, axsGetLink, storeParam, axsQuery } = this.props;
+    const { dispatch, axiosGetLink, storeParam, axsQuery } = this.props;
 
     this.setState({
       isLoaded: false,
       error: ""
     });
 
-    axs.get(axsGetLink, !_.isUndefined(axsQuery) ? axsQuery : {}).then(resp => {
-      if (!resp.data.error) {
-        dispatch(storeData, storeParam, resp.data.payload);
-        this.handleConvertDataFromDBToOptions(resp.data.payload);
-      } else {
-        this.setState({
-          isLoaded: true,
-          error: resp.data.message
-        });
-      }
-    });
+    axs
+      .get(axiosGetLink, !_.isUndefined(axsQuery) ? axsQuery : {})
+      .then(resp => {
+        if (!resp.data.error) {
+          dispatch(storeData, storeParam, resp.data.payload);
+          this.handleConvertDataFromDBToOptions(resp.data.payload);
+        } else {
+          this.setState({
+            isLoaded: true,
+            error: resp.data.message
+          });
+        }
+      });
   }
 
   handleConvertDataFromDBToOptions(dataArray) {
@@ -70,27 +85,27 @@ class UniqueDropdown extends React.Component {
     });
   }
 
-  handleOnChangeDropdown(e, { value }) {
-    const { dispatch, book, onChangeBookInfoObjectProperty } = this.props;
-    const bookCloned = _.cloneDeep(book);
+  handleOnChange(value) {
+    const { onChange } = this.props;
 
-    bookCloned.bookInfo[onChangeBookInfoObjectProperty] = value;
+    onChange(value);
 
-    dispatch(storeData, PARAMS.BOOK_TO_DB, bookCloned);
+    this.setState({
+      defaultValue: value
+    });
   }
 
   render() {
     const {
-      book,
       label,
-      onChangeBookInfoObjectProperty,
       multiple,
       required,
-      axsPostLink,
+      axiosPostLink,
       showAddNewField,
-      dropdownValueName
+      dropdownValueName,
+      showClear
     } = this.props;
-    const { options, isLoaded, error } = this.state;
+    const { options, isLoaded, error, defaultValue } = this.state;
 
     return (
       <>
@@ -103,13 +118,22 @@ class UniqueDropdown extends React.Component {
             selection
             loading={!isLoaded}
             options={_.sortBy(options, ["text"])}
-            onChange={this.handleOnChangeDropdown}
+            onChange={(e, { value }) => this.handleOnChange(value)}
             label={label}
-            defaultValue={book.bookInfo[onChangeBookInfoObjectProperty]}
+            value={defaultValue}
           />
+          {showClear && (
+            <Button
+              className={s.clearButton}
+              as="a"
+              onClick={() => this.handleOnChange([])}
+            >
+              очистить
+            </Button>
+          )}
           {showAddNewField && (
             <AddNew
-              axsPostLink={axsPostLink}
+              axiosPostLink={axiosPostLink}
               functionOnSuccess={() => this.handleGetAll()}
               dropdownValueName={dropdownValueName}
             />

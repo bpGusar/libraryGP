@@ -15,7 +15,8 @@ export const PARAMS = {
   LANGUAGES: "languages from db",
   PUBLISHERS: "publishers from db",
   INFO_PAGE: "info page text",
-  USER_ROLES: "user roles"
+  USER_ROLES: "user roles",
+  PAGE_TITLE: "page title"
 };
 
 export const getInitialState = () => ({
@@ -23,6 +24,7 @@ export const getInitialState = () => ({
   [PARAMS.GLOBAL_PAGE_LOADER]: true, // true значит какие то данные загружаются
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
+  [PARAMS.PAGE_TITLE]: "",
   [PARAMS.USER_INFO]: {},
   [PARAMS.INFO_PAGE]: {
     text: "",

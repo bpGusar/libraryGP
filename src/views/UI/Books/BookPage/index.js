@@ -14,17 +14,19 @@ import s from "./index.module.scss";
 
 class BookPage extends React.Component {
   componentDidMount() {
-    const { match, history, dispatch } = this.props;
+    const { match, history, dispatch, book } = this.props;
 
     axs
       .get(`/books/${match.params.id}`, {
         params: {
-          fetch_type: 1
+          options: { fetch_type: 1 }
         }
       })
       .then(resp => {
         if (!resp.data.error) {
-          dispatch(storeData, PARAMS.BOOK, ...resp.data.payload);
+          if (!_.isEqual(book, resp.data.payload[0])) {
+            dispatch(storeData, PARAMS.BOOK, ...resp.data.payload);
+          }
         } else {
           dispatch(storeData, PARAMS.INFO_PAGE, {
             text: resp.data.message,
@@ -34,6 +36,14 @@ class BookPage extends React.Component {
           history.push("/info-page");
         }
       });
+  }
+
+  shouldComponentUpdate(nextProps) {
+    const { book } = this.props;
+    if (!_.isEqual(book, nextProps.book)) {
+      return true;
+    }
+    return false;
   }
 
   componentWillUnmount() {

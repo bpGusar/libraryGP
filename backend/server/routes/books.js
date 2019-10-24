@@ -15,15 +15,12 @@ app.post(
 );
 
 app.get("/api/books/:id", (req, res) => {
-  const { fetch_type } = req.query;
-
-  BooksContr.findBooks(res, req.params, fetch_type);
+  BooksContr.findBooks(res, req, JSON.stringify({ _id: req.params.id }));
 });
 
 app.get("/api/books", (req, res) => {
-  const { fetch_type } = req.query;
-
-  BooksContr.findBooks(res, {}, fetch_type);
+  const { searchQuery } = req.query;
+  BooksContr.findBooks(res, req, searchQuery);
 });
 
 app.get("/api/books/:id/availability", withAuth, (req, res) => {

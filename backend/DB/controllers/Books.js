@@ -13,33 +13,103 @@ import * as config from "../config";
 import servConf from "../../server/config/server.json";
 
 /**
+ * Функция поиска книг.
+ *
+ * Express параметры:
  * @param {Object} res Response
- * @param {Object} data Данные для поиска нужной книги или книг. Если {} то будут отданы все книги.
- * @param {Boolean} fetch_type 0 - вернуть данные по книге как есть, 1 - вернуть данные по книге и заполнить данными объекты authors, categories, publisher, language
+ * @param {Object} req Request
+ *
+ * Параметры запроса:
+ * @param {Object} data Данные для поиска нужной книги или книг.
+ * Если `{}` то будут отданы все книги.
+ * Если например `{ _id: id_книги }` то будет найдена именно книга с указанным `_id`.
+ * Кейсы по составлению запросов к MongoDB можно загуглить.
+ * Запросы делаются напрямую в базу, поэтому необходимо валидно составлять объект запроса.
+ *
+ * @param {Number} options Объект в опциями поиска. Не обязательно! Будет задан данными по умолчанию при полном отсутствии.
+ * @param {Boolean} options.fetch_type Вид возвращаемых данных. По умолчанию `0`. Не обязательно!
+ * `0` - вернуть данные по книге как есть (прим.: авторы будут возвращены в виде массива id и т.д. смотри модель `Book`).
+ * `1` - вернуть данные по книге и заполнить данными объекты, в которых изначально есть только id (смотри модель `Book`)).
+ * @param {Number} options.page Номер страницы выборки. По умолчанию `1`. Не обязательно!
+ * @param {Number} options.sort Сортировка. По умолчанию `desc`. Не обязательно!
+ * @param {Number} options.limit Количество элементов в одной выборке. За 1 раз не более 99 элементов. По умолчанию `99`. Не обязательно!
+ *
+ * ВНИМАНИЕ!
+ * `options.limit` по умолчанию `99`. Если не указать `options.limit` но при этом указать `options.page`, то, если в базе элементов будет меньше `99`-ти то поиск не даст результатов!
+ *
+ * Возвращаемые хедеры:
+ *
+ * `max-elements` Количество элементов в базе.
  */
-function findBooks(res, data = {}, fetch_type = "0") {
-  if (fetch_type === "1") {
-    Book.find(_.isEmpty(data) ? {} : { _id: data.id })
-      .populate("bookInfo.authors")
-      .populate("bookInfo.categories")
-      .populate("bookInfo.publisher")
-      .populate("bookInfo.language")
-      .exec((err, books) => {
-        if (err) {
-          res.json(config.getRespData(true, MSG.bookNotFound, err));
-        } else {
-          res.json(config.getRespData(false, null, books));
-        }
-      });
-  } else if (fetch_type === "0") {
-    Book.find(_.isEmpty(data) ? {} : { _id: data.id }, (err, books) => {
-      if (err) {
-        res.json(config.getRespData(true, MSG.bookNotFound, err));
-      } else {
-        res.json(config.getRespData(false, null, books));
-      }
-    });
+function findBooks(res, req, data = {}) {
+  // eslint-disable-next-line prefer-const
+  let { options } = req.query;
+
+  if (_.isUndefined(options)) {
+    options = {
+      page: 1,
+      limit: 99,
+      fetch_type: 0,
+      sort: "desc"
+    };
+  } else {
+    options = JSON.parse(options);
   }
+
+  options.page = _.isUndefined(options.page) ? 1 : options.page;
+  options.sort = _.isUndefined(options.sort) ? 1 : options.sort;
+  options.limit = _.isUndefined(options.limit) ? 99 : options.limit;
+  options.fetch_type = _.isUndefined(options.fetch_type)
+    ? 0
+    : options.fetch_type;
+
+  const getSkip = () => {
+    if (options.page === 1) {
+      return 0;
+    }
+    return options.limit * (options.page - 1);
+  };
+
+  parallel(
+    {
+      maxElements: cb => Book.countDocuments({}, cb)
+    },
+    (asyncErr, results) => {
+      res.set({
+        "max-elements": results.maxElements,
+        ...options
+      });
+      Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
+        .sort({ dateAdded: options.sort })
+        .skip(getSkip())
+        .limit(options.limit)
+        .populate(
+          options.fetch_type === 0
+            ? ""
+            : [
+                {
+                  path: "bookInfo.authors"
+                },
+                {
+                  path: "bookInfo.categories"
+                },
+                {
+                  path: "bookInfo.publisher"
+                },
+                {
+                  path: "bookInfo.language"
+                }
+              ]
+        )
+        .exec((err, books) => {
+          if (err) {
+            res.json(config.getRespData(true, MSG.bookNotFound, err));
+          } else {
+            res.json(config.getRespData(false, null, books));
+          }
+        });
+    }
+  );
 }
 
 /**

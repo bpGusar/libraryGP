@@ -1,6 +1,7 @@
 const path = require("path");
 
 module.exports = {
+  "@src": path.resolve("src/"),
   "@axios": path.resolve("src/config/axios"),
   "@UI": path.resolve("src/views/UI"),
   "@views": path.resolve("src/views/"),

@@ -25,7 +25,7 @@ export default class MainPage extends React.Component {
     axs
       .get("/books", {
         params: {
-          fetch_type: 1
+          options: { fetch_type: 1 }
         }
       })
       .then(resp => {
@@ -51,13 +51,13 @@ export default class MainPage extends React.Component {
               <Card key={book._id}>
                 <Image
                   as={Link}
-                  to={`/book-${book._id}`}
+                  to={`/book/${book._id}`}
                   src={book.bookInfo.imageLinks.poster}
                   wrapped
                   ui={false}
                 />
                 <Card.Content>
-                  <Card.Header as={Link} to={`/book-${book._id}`}>
+                  <Card.Header as={Link} to={`/book/${book._id}`}>
                     {book.bookInfo.title}
                   </Card.Header>
                   <Card.Meta>

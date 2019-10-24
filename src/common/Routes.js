@@ -13,8 +13,6 @@ import Dashboard from "@views/Layouts/Dashboard/index";
 import LoginPage from "@UI/Users/LoginPage";
 import RegistrationPage from "@UI/Users/RegistrationPage";
 import MainPage from "@UI/MainPage";
-import FindBookPage from "@UI/Books/AddBookPage";
-import AddBookForm from "@UI/Books/AddBookPage/AddBookForm/index";
 import AccessDenied from "@views/Common/AccessDenied";
 import InfoPage from "@views/Common/InfoPage";
 import BookPage from "@UI/Books/BookPage";
@@ -22,6 +20,8 @@ import EmailVerify from "@UI/Users/EmailVerify";
 import ProfilePage from "@UI/Users/ProfilePage";
 
 /** вьюхи дашборда */
+import FindBookPage from "@DUI/views/Books/AddBookPage";
+import AddBookForm from "@DUI/views/Books/AddBookPage/AddBookForm/index";
 import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
 import ManageOrderedBooks from "@DUI/views/Books/ManageOrderedBooks";
 import AllBooks from "@DUI/views/Books/AllBooks";
@@ -194,7 +194,7 @@ class AppRotes extends React.Component {
         />
         <AppRoute
           exact
-          path="/book-:id"
+          path="/book/:id"
           layout={BookTemplate}
           component={BookPage}
         />
@@ -206,7 +206,9 @@ class AppRotes extends React.Component {
 export default branch(
   {
     userRoles: PARAMS.USER_ROLES,
-    globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER
+    globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
+    user: PARAMS.USER_INFO,
+    pageTitle: PARAMS.PAGE_TITLE
   },
   AppRotes
 );

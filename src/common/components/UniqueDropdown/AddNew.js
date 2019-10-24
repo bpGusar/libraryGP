@@ -27,7 +27,7 @@ class AddNew extends React.Component {
 
   handleSetNewInDB(e) {
     e.preventDefault();
-    const { functionOnSuccess, axsPostLink, dropdownValueName } = this.props;
+    const { functionOnSuccess, axiosPostLink, dropdownValueName } = this.props;
     const { inputValue } = this.state;
 
     this.setState({
@@ -43,22 +43,24 @@ class AddNew extends React.Component {
         errorMsg: "Поле не должно быть пустым."
       });
     } else {
-      axs.post(axsPostLink, { [dropdownValueName]: inputValue }).then(resp => {
-        if (!resp.data.error) {
-          this.setState({
-            isLoaded: true,
-            inputValue: ""
-          });
+      axs
+        .post(axiosPostLink, { [dropdownValueName]: inputValue })
+        .then(resp => {
+          if (!resp.data.error) {
+            this.setState({
+              isLoaded: true,
+              inputValue: ""
+            });
 
-          functionOnSuccess();
-        } else {
-          this.setState({
-            isLoaded: true,
-            error: true,
-            errorMsg: resp.data.message
-          });
-        }
-      });
+            functionOnSuccess();
+          } else {
+            this.setState({
+              isLoaded: true,
+              error: true,
+              errorMsg: resp.data.message
+            });
+          }
+        });
     }
   }
 

@@ -362,12 +362,12 @@ export default class ManageOrderedBooks extends Component {
                           size="mini"
                           src={orderedBookInfo.bookInfo.imageLinks.poster}
                           as={Link}
-                          to={`/book-${orderedBookInfo._id}`}
+                          to={`/book/${orderedBookInfo._id}`}
                           target="blanc"
                         />
                         <Card.Header
                           as={Link}
-                          to={`/book-${orderedBookInfo._id}`}
+                          to={`/book/${orderedBookInfo._id}`}
                           target="blanc"
                         >
                           {orderedBookInfo.bookInfo.title}

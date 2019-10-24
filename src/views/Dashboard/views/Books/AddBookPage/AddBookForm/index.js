@@ -8,7 +8,7 @@ import { DateInput } from "semantic-ui-calendar-react";
 
 import { Form, Button, Message } from "semantic-ui-react";
 
-import UniqueDropdown from "./components/UniqueDropdown/UniqueDropdown";
+import UniqueDropdown from "@src/common/components/UniqueDropdown/UniqueDropdown";
 import Poster from "./components/Poster/Poster";
 
 import { PARAMS, getInitialState } from "@store";
@@ -38,6 +38,41 @@ class AddBookForm extends React.Component {
 
     _.set(bookClone, "userIdWhoAddedBookInDb", user._id);
     _.set(bookClone, "dateAdded", today);
+
+    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
+  }
+
+  handleOnChangeDropdown(value, bookInfoObjectProperty) {
+    const { dispatch, book } = this.props;
+    const bookCloned = _.cloneDeep(book);
+
+    bookCloned.bookInfo[bookInfoObjectProperty] = value;
+
+    dispatch(storeData, PARAMS.BOOK_TO_DB, bookCloned);
+  }
+
+  handleChangeISBN(e) {
+    const { book, dispatch } = this.props;
+    const bookClone = _.cloneDeep(book);
+    const { industryIdentifiers } = bookClone.bookInfo;
+
+    // eslint-disable-next-line consistent-return
+    Object.keys(industryIdentifiers).find(key => {
+      if (industryIdentifiers[key].type === e.name) {
+        industryIdentifiers[key].identifier = e.value;
+      } else {
+        return false;
+      }
+    });
+
+    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
+  }
+
+  handleChangeBookInfo(e) {
+    const { book, dispatch } = this.props;
+    const bookClone = _.cloneDeep(book);
+
+    _.set(bookClone, e.name, e.value);
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
   }
@@ -84,32 +119,6 @@ class AddBookForm extends React.Component {
     });
   }
 
-  handleChangeBookInfo(e) {
-    const { book, dispatch } = this.props;
-    const bookClone = _.cloneDeep(book);
-
-    _.set(bookClone, e.name, e.value);
-
-    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
-  }
-
-  handleChangeISBN(e) {
-    const { book, dispatch } = this.props;
-    const bookClone = _.cloneDeep(book);
-    const { industryIdentifiers } = bookClone.bookInfo;
-
-    // eslint-disable-next-line consistent-return
-    Object.keys(industryIdentifiers).find(key => {
-      if (industryIdentifiers[key].type === e.name) {
-        industryIdentifiers[key].identifier = e.value;
-      } else {
-        return false;
-      }
-    });
-
-    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
-  }
-
   render() {
     const { book } = this.props;
     const { isFormLoaded, msg } = this.state;
@@ -148,40 +157,41 @@ class AddBookForm extends React.Component {
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/book-authors"
-              axsPostLink="/book-authors"
+              axiosGetLink="/book-authors"
+              axiosPostLink="/book-authors"
               storeParam={PARAMS.AUTHORS}
               multiple
               required
-              onChangeBookInfoObjectProperty="authors"
+              onChange={value => this.handleOnChangeDropdown(value, "authors")}
               label="Автор"
-              book={book}
               dropdownValueName="authorName"
               showAddNewField
             />
             <UniqueDropdown
-              axsGetLink="/book-publishers"
-              axsPostLink="/book-publishers"
+              axiosGetLink="/book-publishers"
+              axiosPostLink="/book-publishers"
               storeParam={PARAMS.PUBLISHERS}
               multiple
               required
-              onChangeBookInfoObjectProperty="publisher"
+              onChange={value =>
+                this.handleOnChangeDropdown(value, "publisher")
+              }
               label="Издательство"
-              book={book}
               dropdownValueName="publisherName"
               showAddNewField
             />
           </Form.Group>
           <Form.Group widths="equal">
             <UniqueDropdown
-              axsGetLink="/book-categories"
-              axsPostLink="/book-categories"
+              axiosGetLink="/book-categories"
+              axiosPostLink="/book-categories"
               storeParam={PARAMS.CATEGORIES}
               multiple
               required
-              onChangeBookInfoObjectProperty="categories"
+              onChange={value =>
+                this.handleOnChangeDropdown(value, "categories")
+              }
               label="Категория"
-              book={book}
               dropdownValueName="categoryName"
               showAddNewField
             />
@@ -218,14 +228,13 @@ class AddBookForm extends React.Component {
               defaultValue={bookInfo.pageCount}
             />
             <UniqueDropdown
-              axsGetLink="/book-languages"
+              axiosGetLink="/book-languages"
               storeParam={PARAMS.LANGUAGES}
-              axsPostLink="/book-languages"
+              axiosPostLink="/book-languages"
               multiple
               required
-              onChangeBookInfoObjectProperty="language"
+              onChange={value => this.handleOnChangeDropdown(value, "language")}
               label="Язык"
-              book={book}
               dropdownValueName="languageName"
               showAddNewField
             />

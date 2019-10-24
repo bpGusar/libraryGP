@@ -382,12 +382,12 @@ export default class ManageBookedBooks extends Component {
                           size="mini"
                           src={bookedBookInfo.bookInfo.imageLinks.poster}
                           as={Link}
-                          to={`/book-${bookedBookInfo._id}`}
+                          to={`/book/${bookedBookInfo._id}`}
                           target="blanc"
                         />
                         <Card.Header
                           as={Link}
-                          to={`/book-${bookedBookInfo._id}`}
+                          to={`/book/${bookedBookInfo._id}`}
                           target="blanc"
                         >
                           {bookedBookInfo.bookInfo.title}
