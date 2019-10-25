@@ -1,5 +1,5 @@
 import React from "react";
-import { Item, Label, Icon } from "semantic-ui-react";
+import { Item, Label, Icon, Dropdown } from "semantic-ui-react";
 
 export default function BookItem(props) {
   const { book } = props;
@@ -13,8 +13,14 @@ export default function BookItem(props) {
         src={book.bookInfo.imageLinks.poster}
       />
       <Item.Content>
-        <Item.Header as="a" href={`/book/${book._id}`} target="blanc">
-          {book.bookInfo.title}
+        <Item.Header target="blanc">
+          <Dropdown text={book.bookInfo.title}>
+            <Dropdown.Menu>
+              <Dropdown.Item text="Редактировать" icon="pencil alternate" />
+              <Dropdown.Divider />
+              <Dropdown.Item text="Удалить" icon="close" />
+            </Dropdown.Menu>
+          </Dropdown>
         </Item.Header>
         <Item.Meta>
           <span className="cinema">

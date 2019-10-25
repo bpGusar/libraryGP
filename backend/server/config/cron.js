@@ -1,7 +1,11 @@
+import parallel from "async/parallel";
 import nodemailer from "nodemailer";
 import { DateTime } from "luxon";
 
 import OrderedBooks from "../../DB/models/OrderedBooks";
+import BookedBooks from "../../DB/models/BookedBooks";
+import BookedBooksArchive from "../../DB/models/BookedBooksArchive";
+import Book from "../../DB/models/Book";
 
 import serverJson from "./server.json";
 
@@ -10,9 +14,9 @@ import { BookExpiresTemplate } from "../emailTemplates/BookExpires";
 const transporter = nodemailer.createTransport(serverJson.emailConfig);
 
 const cronFunctions = {
-  sendEmailThreeDaysBeforeBookExpires: {
+  sendEmailNDaysBeforeBookExpires: {
     comment:
-      "Каждый день в 0 часов 0 минут 0 секунд (то есть в самом начале суток) проводит проверку книг на руках. Если до даты возврата книги осталось 3 дня будет отправлено сообщение на электронную почту.",
+      "Каждый день в 0 часов 0 минут 0 секунд (то есть в самом начале суток) проводит проверку книг на руках. Если до даты возврата книги осталось `sendEmailNDaysBeforeBookExpires` дня будет отправлено сообщение на электронную почту.",
     cron: {
       time: "0 0 */1 * *",
       function: () => {
@@ -24,14 +28,14 @@ const cronFunctions = {
               const todayDate = DateTime.local();
 
               orderedBooks.forEach(orderedBook => {
-                const orderedUntilDateMinusThreeDays = DateTime.fromMillis(
+                const orderedUntilDateMinusNDays = DateTime.fromMillis(
                   new Date(orderedBook.orderedUntil).getTime()
                 ).minus({ days: serverJson.sendEmailNDaysBeforeBookExpires });
 
                 if (
-                  todayDate.hasSame(orderedUntilDateMinusThreeDays, "day") &&
-                  todayDate.hasSame(orderedUntilDateMinusThreeDays, "year") &&
-                  todayDate.hasSame(orderedUntilDateMinusThreeDays, "month")
+                  todayDate.hasSame(orderedUntilDateMinusNDays, "day") &&
+                  todayDate.hasSame(orderedUntilDateMinusNDays, "year") &&
+                  todayDate.hasSame(orderedUntilDateMinusNDays, "month")
                 ) {
                   transporter.sendMail(
                     BookExpiresTemplate(orderedBook),
@@ -43,6 +47,63 @@ const cronFunctions = {
               });
             }
           });
+      }
+    }
+  },
+  deleteBookedBookIfNDaysHavePassed: {
+    comment:
+      "Каждый день в 0 часов 0 минут 0 секунд (то есть в самом начале суток) проводит проверку забронированных книг. Если книга забронирована `deleteBookedBookIfNDaysHavePassed` дня назад и день проверки это уже 4 день брони то удалить книгу из брони и вернуть в базу.",
+    cron: {
+      time: "0 0 */1 * *",
+      function: () => {
+        BookedBooks.find({}, (err, bookedBooks) => {
+          if (bookedBooks.length !== 0) {
+            const todayDate = DateTime.local();
+            bookedBooks.forEach(bookedBook => {
+              const bookedAtDatePlusNDays = DateTime.fromMillis(
+                new Date(bookedBook.createdAt).getTime()
+              ).plus({ days: serverJson.deleteBookedBookIfNDaysHavePassed });
+              if (
+                todayDate.hasSame(bookedAtDatePlusNDays, "day") &&
+                todayDate.hasSame(bookedAtDatePlusNDays, "year") &&
+                todayDate.hasSame(bookedAtDatePlusNDays, "month")
+              ) {
+                const archivedData = {
+                  comment: "Бронь не была активирована.",
+                  bookedBookInfo: {
+                    ...bookedBook._doc
+                  },
+                  status: "rejected",
+                  userId: serverJson.cronUserId
+                };
+                parallel([
+                  callback =>
+                    BookedBooks.deleteOne(
+                      {
+                        bookId: bookedBook.bookId,
+                        readerId: bookedBook.readerId
+                      },
+                      callback
+                    ),
+                  callback =>
+                    Book.findOneAndUpdate(
+                      { _id: bookedBook.bookId },
+                      {
+                        $inc: { "stockInfo.freeForBooking": 1 }
+                      }
+                    ).exec(callback),
+                  callback => {
+                    const newArchivedBookedBook = new BookedBooksArchive({
+                      ...archivedData
+                    });
+
+                    newArchivedBookedBook.save(callback);
+                  }
+                ]);
+              }
+            });
+          }
+        });
       }
     }
   }

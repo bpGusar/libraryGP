@@ -68,16 +68,16 @@ export default class AllBooks extends Component {
   };
 
   handleClick = (e, titleProps) =>
-    this.setState(() => {
+    this.setState(prevState => {
       const { index } = titleProps;
-      const { activeAccordionIndex } = this.state;
+      const { activeAccordionIndex } = prevState;
       const newIndex = activeAccordionIndex === index ? -1 : index;
       return { activeAccordionIndex: newIndex };
     });
 
   handleChangeSearchQuery = (value, name, regex = false) =>
-    this.setState(() => {
-      const { searchQuery } = this.state;
+    this.setState(prevState => {
+      const { searchQuery } = prevState;
       let searchQueryCloned = _.cloneDeep(searchQuery);
       if (_.isEmpty(value)) {
         delete searchQueryCloned[name];
@@ -114,7 +114,11 @@ export default class AllBooks extends Component {
             <Form.Input
               fluid
               label="Название книги"
-              value={searchQuery["bookInfo.title.$regex"]}
+              value={
+                _.has(searchQuery["bookInfo.title"], "$regex")
+                  ? searchQuery["bookInfo.title"].$regex
+                  : ""
+              }
               name="bookInfo.title"
               onChange={(e, { value, name }) =>
                 this.handleChangeSearchQuery(value, name, true)
@@ -138,10 +142,7 @@ export default class AllBooks extends Component {
             </Header>
           )}
           {!_.isEmpty(books) && (
-            <>
-              <Segment>Результатов: {books.length}</Segment>
-              <Item.Group divided>{this.renderBookList()}</Item.Group>
-            </>
+            <Item.Group divided>{this.renderBookList()}</Item.Group>
           )}
         </Segment>
         {!_.isEmpty(books) && (

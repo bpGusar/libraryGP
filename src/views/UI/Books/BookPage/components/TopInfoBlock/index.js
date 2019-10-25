@@ -59,8 +59,6 @@ class TopInfoBlock extends React.Component {
     }
   }
 
-  // TODO: сделать удаление книг из забронированных если прошло 3 дня с момента брони и книгу еще не забрали
-
   checkIfBookAlreadyBookedOrOrdered() {
     const { bookProps } = this.props;
 

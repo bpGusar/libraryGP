@@ -72,7 +72,8 @@ function findBooks(res, req, data = {}) {
 
   parallel(
     {
-      maxElements: cb => Book.countDocuments({}, cb)
+      maxElements: cb =>
+        Book.countDocuments(_.isEmpty(data) ? {} : JSON.parse(data), cb)
     },
     (asyncErr, results) => {
       res.set({
