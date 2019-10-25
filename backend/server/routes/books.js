@@ -14,6 +14,14 @@ app.post(
   }
 );
 
+app.put(
+  "/api/books",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => {
+    BooksContr.updateBook(req, res);
+  }
+);
+
 app.get("/api/books/:id", (req, res) => {
   BooksContr.findBooks(res, req, JSON.stringify({ _id: req.params.id }));
 });

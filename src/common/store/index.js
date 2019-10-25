@@ -42,35 +42,39 @@ export const getInitialState = () => ({
     admin: 1
   },
   [PARAMS.BOOK_TO_DB]: {
-    userIdWhoAddedBookInDb: "",
-    dateAdded: "",
-    bookInfo: {
-      title: "",
-      authors: [],
-      publisher: "",
-      publishedDate: "",
-      description: "",
-      industryIdentifiers: [
-        {
-          type: "ISBN_13",
-          identifier: ""
+    flag: "new",
+    book: {
+      userIdWhoAddedBookInDb: "",
+      dateAdded: "",
+      bookInfo: {
+        title: "",
+        authors: [],
+        publisher: [],
+        publishedDate: "",
+        description: "",
+        industryIdentifiers: [
+          {
+            type: "ISBN_13",
+            identifier: ""
+          },
+          {
+            type: "ISBN_10",
+            identifier: ""
+          }
+        ],
+        pageCount: 0,
+        categories: [],
+        maturityRating: "",
+        imageLinks: {
+          poster: ""
         },
-        {
-          type: "ISBN_10",
-          identifier: ""
-        }
-      ],
-      pageCount: 0,
-      categories: [],
-      maturityRating: "",
-      imageLinks: {
-        poster: ""
+        language: []
       },
-      language: []
-    },
-    stockInfo: {
-      freeForBooking: 0,
-      maxAvailableBooks: 0
+      stockInfo: {
+        freeForBooking: 0,
+        maxAvailableBooks: 0
+      },
+      editInfo: []
     }
   }
 });

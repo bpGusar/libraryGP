@@ -9,6 +9,7 @@ import {
   Divider
 } from "semantic-ui-react";
 import _ from "lodash";
+import { branch } from "baobab-react/higher-order";
 
 import Filters from "./components/Filters";
 
@@ -17,7 +18,10 @@ import ResultFilters from "./components/ResultFilters";
 import BookItem from "./components/BookItem";
 import PaginationBlock from "./components/Pagination";
 
-export default class AllBooks extends Component {
+import { PARAMS } from "@store";
+import { storeData } from "@act";
+
+class AllBooks extends Component {
   constructor(props) {
     super(props);
 
@@ -99,10 +103,48 @@ export default class AllBooks extends Component {
       };
     });
 
+  putBookDataInToStore(currentBook) {
+    const { dispatch, history, bookToDB } = this.props;
+
+    this.setState({
+      isLoading: true
+    });
+
+    axs
+      .get(`/books/${currentBook._id}`, {
+        params: {
+          options: { fetch_type: 0 }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          delete resp.data.payload[0].__v;
+
+          this.setState(
+            {
+              isLoading: false
+            },
+            () => {
+              dispatch(storeData, PARAMS.BOOK_TO_DB, {
+                ...bookToDB,
+                flag: "edit",
+                book: {
+                  ...resp.data.payload[0]
+                }
+              });
+              history.push("/dashboard/books/new");
+            }
+          );
+        }
+      });
+  }
+
   renderBookList() {
     const { books } = this.state;
 
-    return books.map(book => <BookItem key={book._id} book={book} />);
+    return books.map(book => (
+      <BookItem key={book._id} book={book} _this={this} />
+    ));
   }
 
   render() {
@@ -154,3 +196,10 @@ export default class AllBooks extends Component {
     );
   }
 }
+
+export default branch(
+  {
+    bookToDB: PARAMS.BOOK_TO_DB
+  },
+  AllBooks
+);

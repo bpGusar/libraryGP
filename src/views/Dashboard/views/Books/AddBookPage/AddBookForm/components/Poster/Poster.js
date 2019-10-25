@@ -21,14 +21,14 @@ class Poster extends React.Component {
   newPoster(e) {
     e.preventDefault();
 
-    const { book, dispatch } = this.props;
-    const bookCloned = _.cloneDeep(book);
+    const { bookToDB, dispatch } = this.props;
+    const bookCloned = _.cloneDeep(bookToDB);
 
     const reader = new FileReader();
     const file = e.target.files[0];
 
     reader.onloadend = () => {
-      bookCloned.bookInfo.imageLinks.poster = reader.result;
+      bookCloned.book.bookInfo.imageLinks.poster = reader.result;
       dispatch(storeData, PARAMS.BOOK_TO_DB, bookCloned);
     };
 
@@ -36,7 +36,8 @@ class Poster extends React.Component {
   }
 
   render() {
-    const { book } = this.props;
+    const { bookToDB } = this.props;
+    const { book } = bookToDB;
 
     return (
       <Segment>
@@ -100,7 +101,7 @@ class Poster extends React.Component {
 
 export default branch(
   {
-    book: PARAMS.BOOK_TO_DB,
+    bookToDB: PARAMS.BOOK_TO_DB,
     userInfo: PARAMS.USER_INFO
   },
   Poster

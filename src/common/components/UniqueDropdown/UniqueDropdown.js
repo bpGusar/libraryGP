@@ -25,6 +25,7 @@ import s from "./index.module.scss";
  * @param {Boolean} showAddNewField Показывать ли поле добавления новых данных
  * @param {String} dropdownValueName Используется для конвертации данных из базы и для добавления новых.
  * @param {Boolean} showClear Показывать ли кнопку очистить или нет.
+ * @param {Array} currentValue Массив значений от родителя.
  */
 class UniqueDropdown extends React.Component {
   constructor(props) {
@@ -33,8 +34,7 @@ class UniqueDropdown extends React.Component {
     this.state = {
       isLoaded: false,
       options: [],
-      error: "",
-      defaultValue: []
+      error: ""
     };
   }
 
@@ -85,16 +85,6 @@ class UniqueDropdown extends React.Component {
     });
   }
 
-  handleOnChange(value) {
-    const { onChange } = this.props;
-
-    onChange(value);
-
-    this.setState({
-      defaultValue: value
-    });
-  }
-
   render() {
     const {
       label,
@@ -103,9 +93,11 @@ class UniqueDropdown extends React.Component {
       axiosPostLink,
       showAddNewField,
       dropdownValueName,
-      showClear
+      showClear,
+      currentValue,
+      onChange
     } = this.props;
-    const { options, isLoaded, error, defaultValue } = this.state;
+    const { options, isLoaded, error } = this.state;
 
     return (
       <>
@@ -118,9 +110,9 @@ class UniqueDropdown extends React.Component {
             selection
             loading={!isLoaded}
             options={_.sortBy(options, ["text"])}
-            onChange={(e, { value }) => this.handleOnChange(value)}
+            onChange={(e, { value }) => onChange(value)}
             label={label}
-            value={defaultValue}
+            value={currentValue}
           />
           {showClear && (
             <Button

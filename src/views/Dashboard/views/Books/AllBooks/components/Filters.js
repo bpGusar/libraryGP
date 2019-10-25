@@ -1,12 +1,13 @@
 import React from "react";
 import { Form, Icon, Accordion } from "semantic-ui-react";
+import _ from "lodash";
 
 import UniqueDropdown from "@src/common/components/UniqueDropdown/UniqueDropdown";
 
 import { PARAMS } from "@store";
 
 export default function Filters(props) {
-  const { activeAccordionIndex, _this } = props;
+  const { activeAccordionIndex, _this, searchQuery } = props;
   return (
     <Accordion className="mb-3">
       <Accordion.Title
@@ -31,6 +32,11 @@ export default function Filters(props) {
             label="Автор"
             dropdownValueName="authorName"
             showClear
+            currentValue={
+              _.has(searchQuery["bookInfo.authors"], "$in")
+                ? searchQuery["bookInfo.authors"].$in
+                : []
+            }
           />
           <UniqueDropdown
             axiosGetLink="/book-publishers"
@@ -44,6 +50,11 @@ export default function Filters(props) {
             label="Издательство"
             dropdownValueName="publisherName"
             showClear
+            currentValue={
+              _.has(searchQuery["bookInfo.publisher"], "$in")
+                ? searchQuery["bookInfo.publisher"].$in
+                : []
+            }
           />
           <UniqueDropdown
             axiosGetLink="/book-categories"
@@ -57,6 +68,11 @@ export default function Filters(props) {
             label="Категория"
             dropdownValueName="categoryName"
             showClear
+            currentValue={
+              _.has(searchQuery["bookInfo.categories"], "$in")
+                ? searchQuery["bookInfo.categories"].$in
+                : []
+            }
           />
           <UniqueDropdown
             axiosGetLink="/book-languages"
@@ -70,6 +86,11 @@ export default function Filters(props) {
             label="Язык"
             dropdownValueName="languageName"
             showClear
+            currentValue={
+              _.has(searchQuery["bookInfo.language"], "$in")
+                ? searchQuery["bookInfo.language"].$in
+                : []
+            }
           />
         </Form.Group>
       </Accordion.Content>

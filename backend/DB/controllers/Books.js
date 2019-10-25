@@ -186,5 +186,24 @@ function thisBookOrderedOrBooked(res, req) {
     }
   );
 }
+// TODO: сделать обновление постера
+function updateBook(req, res) {
+  const { book } = req.body;
+  const clonedBook = { ...book };
 
-export default { findBooks, addBook, thisBookOrderedOrBooked };
+  clonedBook.editInfo[clonedBook.editInfo.length - 1] = {
+    ...clonedBook.editInfo[clonedBook.editInfo.length - 1],
+    userId: req.middlewareUserInfo._id,
+    editedAt: Date.now()
+  };
+
+  Book.update({ _id: book._id }, { ...book }, err => {
+    if (err) {
+      res.json(config.getRespData(true, MSG.cannotUpdateMenu, err));
+    } else {
+      res.json(config.getRespData(false, MSG.menuWasUpdated));
+    }
+  });
+}
+
+export default { findBooks, addBook, thisBookOrderedOrBooked, updateBook };

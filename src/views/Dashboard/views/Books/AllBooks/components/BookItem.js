@@ -2,7 +2,7 @@ import React from "react";
 import { Item, Label, Icon, Dropdown } from "semantic-ui-react";
 
 export default function BookItem(props) {
-  const { book } = props;
+  const { book, _this } = props;
   return (
     <Item>
       <Item.Image
@@ -16,7 +16,11 @@ export default function BookItem(props) {
         <Item.Header target="blanc">
           <Dropdown text={book.bookInfo.title}>
             <Dropdown.Menu>
-              <Dropdown.Item text="Редактировать" icon="pencil alternate" />
+              <Dropdown.Item
+                text="Редактировать"
+                icon="pencil alternate"
+                onClick={() => _this.putBookDataInToStore(book)}
+              />
               <Dropdown.Divider />
               <Dropdown.Item text="Удалить" icon="close" />
             </Dropdown.Menu>

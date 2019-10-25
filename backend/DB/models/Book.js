@@ -36,7 +36,14 @@ const BookSchema = new Schema({
       default: 0,
       requiared: true
     }
-  }
+  },
+  editInfo: [
+    {
+      editedAt: Date,
+      comment: String,
+      userId: String
+    }
+  ]
 });
 
 export default Mongoose.model("Book", BookSchema, "books");
