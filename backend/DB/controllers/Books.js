@@ -6,6 +6,7 @@ import parallel from "async/parallel";
 import Book from "../models/Book";
 import BookedBooks from "../models/BookedBooks";
 import OrderedBooks from "../models/OrderedBooks";
+import BooksArchive from "../models/BooksArchive";
 
 import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
@@ -70,47 +71,41 @@ function findBooks(res, req, data = {}) {
     return options.limit * (options.page - 1);
   };
 
-  parallel(
-    {
-      maxElements: cb =>
-        Book.countDocuments(_.isEmpty(data) ? {} : JSON.parse(data), cb)
-    },
-    (asyncErr, results) => {
-      res.set({
-        "max-elements": results.maxElements,
-        ...options
+  Book.countDocuments(_.isEmpty(data) ? {} : JSON.parse(data), (err, count) => {
+    res.set({
+      "max-elements": count,
+      ...options
+    });
+    Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
+      .sort({ dateAdded: options.sort })
+      .skip(getSkip())
+      .limit(options.limit)
+      .populate(
+        options.fetch_type === 0
+          ? ""
+          : [
+              {
+                path: "bookInfo.authors"
+              },
+              {
+                path: "bookInfo.categories"
+              },
+              {
+                path: "bookInfo.publisher"
+              },
+              {
+                path: "bookInfo.language"
+              }
+            ]
+      )
+      .exec((err, books) => {
+        if (err) {
+          res.json(config.getRespData(true, MSG.bookNotFound, err));
+        } else {
+          res.json(config.getRespData(false, null, books));
+        }
       });
-      Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
-        .sort({ dateAdded: options.sort })
-        .skip(getSkip())
-        .limit(options.limit)
-        .populate(
-          options.fetch_type === 0
-            ? ""
-            : [
-                {
-                  path: "bookInfo.authors"
-                },
-                {
-                  path: "bookInfo.categories"
-                },
-                {
-                  path: "bookInfo.publisher"
-                },
-                {
-                  path: "bookInfo.language"
-                }
-              ]
-        )
-        .exec((err, books) => {
-          if (err) {
-            res.json(config.getRespData(true, MSG.bookNotFound, err));
-          } else {
-            res.json(config.getRespData(false, null, books));
-          }
-        });
-    }
-  );
+  });
 }
 
 /**
@@ -190,20 +185,110 @@ function thisBookOrderedOrBooked(res, req) {
 function updateBook(req, res) {
   const { book } = req.body;
   const clonedBook = { ...book };
+  const detectNewPoster = clonedBook.bookInfo.imageLinks.poster.search(
+    "base64"
+  );
+  const dateNow = Date.now();
+  const posterName = `book_poster_${dateNow}.png`;
+
+  const pathToNewPoster = path.join(
+    __dirname,
+    `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
+    posterName
+  );
 
   clonedBook.editInfo[clonedBook.editInfo.length - 1] = {
     ...clonedBook.editInfo[clonedBook.editInfo.length - 1],
     userId: req.middlewareUserInfo._id,
-    editedAt: Date.now()
+    editedAt: dateNow
   };
 
-  Book.update({ _id: book._id }, { ...book }, err => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.cannotUpdateMenu, err));
-    } else {
-      res.json(config.getRespData(false, MSG.menuWasUpdated));
-    }
-  });
+  const saveBook = () => {
+    Book.update({ _id: book._id }, { ...book }, err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantUpdateBook, err));
+      } else {
+        res.json(config.getRespData(false, MSG.bookWasUpdated));
+      }
+    });
+  };
+
+  if (detectNewPoster !== -1) {
+    const base64Poster = clonedBook.bookInfo.imageLinks.poster.replace(
+      /^data:image\/png;base64,/,
+      ""
+    );
+
+    fs.writeFile(pathToNewPoster, base64Poster, "base64", err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantUpdateBook, err));
+      } else {
+        clonedBook.bookInfo.imageLinks.poster = `${servConf.filesPaths.bookPoster.urlToPoster}/${posterName}`;
+
+        saveBook(clonedBook);
+      }
+    });
+  } else {
+    saveBook(clonedBook);
+  }
 }
 
-export default { findBooks, addBook, thisBookOrderedOrBooked, updateBook };
+function deleteBook(res, req) {
+  const { id } = req.params;
+
+  parallel(
+    {
+      BookedBooks: cb => BookedBooks.countDocuments({ bookId: id }, cb),
+      OrderedBooks: cb => OrderedBooks.countDocuments({ bookId: id }, cb)
+    },
+    (parErr, result) => {
+      if (parErr) {
+        res.json(config.getRespData(true, MSG.internalServerErr, parErr));
+      } else if (result.BookedBooks !== 0 || result.OrderedBooks !== 0) {
+        res.json(
+          config.getRespData(true, MSG.cantDeleteBook, {
+            bookOnHand: true,
+            result
+          })
+        );
+      } else {
+        Book.findOne({ _id: id }, (err, book) => {
+          if (err) {
+            res.json(config.getRespData(true, MSG.internalServerErr, err));
+          } else {
+            const newArchivedBook = new BooksArchive({
+              bookInfo: book,
+              userId: req.middlewareUserInfo._id
+            });
+
+            newArchivedBook.save(bookSaveErr => {
+              if (bookSaveErr) {
+                res.json(
+                  config.getRespData(
+                    true,
+                    MSG.cantAddNewBookToArchive,
+                    bookSaveErr
+                  )
+                );
+              }
+            });
+          }
+        }).remove(err => {
+          if (err) {
+            res.json(config.getRespData(true, MSG.cantDeleteBook, err));
+          } else {
+            res.json(config.getRespData(false, MSG.bookWasDeleted));
+          }
+        });
+      }
+    }
+  );
+}
+
+export default {
+  findBooks,
+  addBook,
+  thisBookOrderedOrBooked,
+  updateBook,
+  deleteBook
+};

@@ -26,6 +26,14 @@ app.get("/api/books/:id", (req, res) => {
   BooksContr.findBooks(res, req, JSON.stringify({ _id: req.params.id }));
 });
 
+app.delete(
+  "/api/books/:id",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => {
+    BooksContr.deleteBook(res, req);
+  }
+);
+
 app.get("/api/books", (req, res) => {
   const { searchQuery } = req.query;
   BooksContr.findBooks(res, req, searchQuery);

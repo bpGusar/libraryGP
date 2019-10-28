@@ -20,6 +20,12 @@ const MSG = {
     time: 10000,
     onDismiss: () => true
   }),
+  toastClassicSuccess: title => ({
+    type: "success",
+    title,
+    time: 10000,
+    onDismiss: () => true
+  }),
   errorWhenFindBookedBooks: title => ({
     type: "error",
     title,

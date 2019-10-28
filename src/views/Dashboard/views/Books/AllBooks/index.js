@@ -10,6 +10,7 @@ import {
 } from "semantic-ui-react";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
+import { toast } from "react-semantic-toasts";
 
 import Filters from "./components/Filters";
 
@@ -17,9 +18,11 @@ import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
 import BookItem from "./components/BookItem";
 import PaginationBlock from "./components/Pagination";
+import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";
 import { storeData } from "@act";
+import MSG from "@msg";
 
 class AllBooks extends Component {
   constructor(props) {
@@ -36,6 +39,15 @@ class AllBooks extends Component {
         sort: "desc",
         limit: 10,
         page: 1
+      },
+      bookToDeleteId: "",
+      deleteBookModal: {
+        open: false,
+        isLoading: false,
+        result: {
+          BookedBooks: 0,
+          OrderedBooks: 0
+        }
       }
     };
   }
@@ -139,6 +151,77 @@ class AllBooks extends Component {
       });
   }
 
+  manageConfirmWindow(book) {
+    const { deleteBookModal } = this.state;
+    this.setState({
+      deleteBookModal: {
+        ...deleteBookModal,
+        open: true
+      },
+      bookToDeleteId: book._id
+    });
+  }
+
+  deleteBook(deleteBook) {
+    const { bookToDeleteId, deleteBookModal } = this.state;
+
+    if (deleteBook) {
+      this.setState({
+        isLoading: true,
+        deleteBookModal: {
+          ...deleteBookModal,
+          isLoading: true
+        }
+      });
+      axs.delete(`/books/${bookToDeleteId}`).then(resp => {
+        if (!resp.data.error) {
+          this.setState(
+            {
+              isLoading: false,
+              bookToDeleteId: "",
+              deleteBookModal: {
+                ...deleteBookModal,
+                open: false
+              }
+            },
+            () => {
+              this.handleSearchBooks(true);
+              toast(MSG.toastClassicSuccess(resp.data.message));
+            }
+          );
+        } else if (resp.data.error && _.has(resp.data.payload, "bookOnHand")) {
+          this.setState({
+            isLoading: false,
+            deleteBookModal: {
+              ...deleteBookModal,
+              isLoading: false,
+              result: {
+                BookedBooks: resp.data.payload.result.BookedBooks,
+                OrderedBooks: resp.data.payload.result.OrderedBooks
+              }
+            }
+          });
+        } else {
+          this.setState({
+            isLoading: false
+          });
+          toast(MSG.toastClassicError(resp.data.message));
+        }
+      });
+    } else {
+      this.setState({
+        deleteBookModal: {
+          ...deleteBookModal,
+          open: false,
+          result: {
+            BookedBooks: 0,
+            OrderedBooks: 0
+          }
+        }
+      });
+    }
+  }
+
   renderBookList() {
     const { books } = this.state;
 
@@ -151,7 +234,7 @@ class AllBooks extends Component {
     const { books, isLoading, searchQuery } = this.state;
     return (
       <Segment.Group>
-        <Segment>
+        <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
             <Form.Input
               fluid
@@ -192,6 +275,7 @@ class AllBooks extends Component {
             <PaginationBlock {...this.state} _this={this} />
           </Segment>
         )}
+        <ModalWindow {...this.state} _this={this} />
       </Segment.Group>
     );
   }

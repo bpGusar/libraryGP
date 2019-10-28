@@ -22,7 +22,11 @@ export default function BookItem(props) {
                 onClick={() => _this.putBookDataInToStore(book)}
               />
               <Dropdown.Divider />
-              <Dropdown.Item text="Удалить" icon="close" />
+              <Dropdown.Item
+                text="Удалить"
+                icon="close"
+                onClick={() => _this.manageConfirmWindow(book)}
+              />
             </Dropdown.Menu>
           </Dropdown>
         </Item.Header>

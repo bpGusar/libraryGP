@@ -69,6 +69,24 @@ const MSG = {
   cantAddNewBook: {
     ru: "Произошла ошибка при добавлении книги."
   },
+  cantAddNewBookToArchive: {
+    ru: "Произошла ошибка при добавлении книги в архив."
+  },
+  bookAddedInArchiveSuccessfully: {
+    ru: "Книга успешно добавлена в архив."
+  },
+  cantUpdateBook: {
+    ru: "Произошла ошибка при обновлении книги."
+  },
+  cantDeleteBook: {
+    ru: "Произошла ошибка при удалении книги."
+  },
+  bookWasUpdated: {
+    ru: "Книга успешно обновлена."
+  },
+  bookWasDeleted: {
+    ru: "Книга успешно удалена."
+  },
   thisCredsAreFree: {
     ru: "Введенные данные сободны."
   },
