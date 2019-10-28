@@ -1,7 +1,8 @@
 import React from "react";
-import { Container, Sidebar, Menu, Segment } from "semantic-ui-react";
+import { Container, Sidebar, Menu } from "semantic-ui-react";
 
 import DashboardMenu from "@DUI/components/Menu/";
+import TopMenu from "@DUI/components/TopMenu/";
 
 import s from "./index.module.scss";
 
@@ -34,9 +35,7 @@ export default class MainLayout extends React.Component {
         </div>
 
         <div className={s.mainContainerBlock}>
-          <Segment className={s.topTitleBar}>
-            Pellentesque habitant morbi tristique senectus.
-          </Segment>
+          <TopMenu />
           <Container fluid className={s.mainContainer}>
             {children}
           </Container>

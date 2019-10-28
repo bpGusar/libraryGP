@@ -24,7 +24,7 @@ import { PARAMS } from "@store";
 import { storeData } from "@act";
 import MSG from "@msg";
 
-class AllBooks extends Component {
+class ManageBooks extends Component {
   constructor(props) {
     super(props);
 
@@ -285,5 +285,5 @@ export default branch(
   {
     bookToDB: PARAMS.BOOK_TO_DB
   },
-  AllBooks
+  ManageBooks
 );

@@ -12,11 +12,6 @@ import axs from "@axios";
 import s from "./Header.module.scss";
 
 class Header extends React.Component {
-  static handleLogOut() {
-    localStorage.removeItem("token");
-    document.location.href = "/";
-  }
-
   constructor(props) {
     super(props);
 
@@ -105,7 +100,7 @@ class Header extends React.Component {
                       <Dropdown.Item as={Link} to="/profile">
                         Профиль
                       </Dropdown.Item>
-                      <Dropdown.Item onClick={() => Header.handleLogOut()}>
+                      <Dropdown.Item as={Link} to="/logout">
                         Выход
                       </Dropdown.Item>
                     </Dropdown.Menu>

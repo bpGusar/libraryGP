@@ -24,7 +24,7 @@ import FindBookPage from "@DUI/views/Books/AddBookPage";
 import AddBookForm from "@DUI/views/Books/AddBookPage/AddBookForm/index";
 import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
 import ManageOrderedBooks from "@DUI/views/Books/ManageOrderedBooks";
-import AllBooks from "@DUI/views/Books/AllBooks";
+import ManageBooks from "@DUI/views/Books/ManageBooks";
 import AddNewUser from "@DUI/views/Users/AddNew";
 import DashboardPage from "@DUI";
 
@@ -158,7 +158,14 @@ class AppRotes extends React.Component {
           layout={Dashboard}
           accessRole={[userRoles.admin]}
           path="/dashboard/books/book-list"
-          component={AllBooks}
+          component={ManageBooks}
+        />
+        <PrivateRoute
+          exact
+          layout={Dashboard}
+          accessRole={[userRoles.admin, userRoles.user]}
+          path="/dashboard/info-page"
+          component={InfoPage}
         />
         <PrivateRoute
           exact
@@ -197,6 +204,16 @@ class AppRotes extends React.Component {
           path="/book/:id"
           layout={BookTemplate}
           component={BookPage}
+        />
+        <AppRoute
+          exact
+          path="/logout"
+          layout={MainLayout}
+          component={() => {
+            localStorage.removeItem("token");
+            document.location.href = "/";
+            return <div>выход...</div>;
+          }}
         />
       </Switch>
     );

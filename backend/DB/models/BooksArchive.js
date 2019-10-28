@@ -7,7 +7,7 @@ const BooksArchiveSchema = new Schema({
     type: Date,
     default: Date.now()
   },
-  bookInfo: Object,
+  book: Object,
   userId: {
     type: String,
     required: true

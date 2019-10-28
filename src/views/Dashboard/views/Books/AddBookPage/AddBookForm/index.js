@@ -121,7 +121,7 @@ class AddBookForm extends React.Component {
           PARAMS.BOOK_TO_DB,
           getInitialState()[PARAMS.BOOK_TO_DB]
         );
-        history.push("/info-page");
+        history.push("/dashboard/info-page");
       } else {
         this.setState({
           isFormLoaded: true,

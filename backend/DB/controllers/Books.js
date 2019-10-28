@@ -1,5 +1,5 @@
 import path from "path";
-import fs from "fs";
+import fs from "fs-extra";
 import _ from "lodash";
 import parallel from "async/parallel";
 
@@ -257,7 +257,7 @@ function deleteBook(res, req) {
             res.json(config.getRespData(true, MSG.internalServerErr, err));
           } else {
             const newArchivedBook = new BooksArchive({
-              bookInfo: book,
+              book,
               userId: req.middlewareUserInfo._id
             });
 

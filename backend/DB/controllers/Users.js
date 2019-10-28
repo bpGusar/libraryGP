@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import path from "path";
-import fs from "fs";
+import fs from "fs-extra";
+import _ from "lodash";
 
 import User from "../models/User";
 
@@ -63,6 +64,8 @@ function findUsers(res, query = {}, selectParams = "") {
 }
 
 function addNewUser(req, res) {
+  const { send_email } = req.body;
+
   const posterName = `avatar_${Date.now()}.png`;
 
   const pathToNewAvatar = path.join(
@@ -71,7 +74,7 @@ function addNewUser(req, res) {
     posterName
   );
 
-  const saveBook = userData => {
+  const saveUser = userData => {
     const UserModel = new User({
       ...userData
     });
@@ -79,7 +82,7 @@ function addNewUser(req, res) {
     UserModel.save((saveError, newUser) => {
       if (saveError) {
         res.json(config.getRespData(true, MSG.registrationError, saveError));
-      } else {
+      } else if (!_.isUndefined(send_email) && send_email) {
         transporter.sendMail(
           EmailVerifyTemplate(userData.email, process.env, newUser._id),
           function(emailSentError) {
@@ -96,6 +99,8 @@ function addNewUser(req, res) {
             }
           }
         );
+      } else if (_.isUndefined(send_email) || !send_email) {
+        res.send(config.getRespData(false));
       }
     });
   };
@@ -104,7 +109,7 @@ function addNewUser(req, res) {
   if (clonedUserObj.avatar === "") {
     clonedUserObj.avatar = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
 
-    saveBook(clonedUserObj);
+    saveUser(clonedUserObj);
   } else {
     const base64Poster = clonedUserObj.avatar.replace(
       /^data:image\/png;base64,/,
@@ -117,7 +122,7 @@ function addNewUser(req, res) {
       } else {
         clonedUserObj.avatar = `${servConf.filesPaths.avatars.urlToAvatar}/${posterName}`;
 
-        saveBook(clonedUserObj);
+        saveUser(clonedUserObj);
       }
     });
   }

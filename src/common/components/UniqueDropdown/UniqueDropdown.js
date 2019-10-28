@@ -118,7 +118,7 @@ class UniqueDropdown extends React.Component {
             <Button
               className={s.clearButton}
               as="a"
-              onClick={() => this.handleOnChange([])}
+              onClick={() => onChange([])}
             >
               очистить
             </Button>

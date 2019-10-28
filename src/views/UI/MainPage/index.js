@@ -62,7 +62,9 @@ export default class MainPage extends React.Component {
                   </Card.Header>
                   <Card.Meta>
                     <span className="date">
-                      {book.bookInfo.authors.map(el => `${el.authorName}, `)}
+                      {book.bookInfo.authors
+                        .map(el => el.authorName)
+                        .join(", ")}
                     </span>
                   </Card.Meta>
                 </Card.Content>
