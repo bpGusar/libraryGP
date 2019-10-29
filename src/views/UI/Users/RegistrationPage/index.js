@@ -42,13 +42,10 @@ class SignUpPage extends Component {
         login: false
       },
       regInProgress: false,
-      regStatus: false
+      regStatus: false,
+      passwordsEquals: true
     };
     this.avatarInputRef = React.createRef();
-
-    this.onSubmit = this.onSubmit.bind(this);
-    this.newAvatar = this.newAvatar.bind(this);
-    this.checkUnique = this.checkUnique.bind(this);
   }
 
   componentDidUpdate() {
@@ -59,7 +56,7 @@ class SignUpPage extends Component {
     }
   }
 
-  onSubmit(e) {
+  onSubmit = e => {
     e.preventDefault();
 
     const { regData, errors } = this.state;
@@ -68,18 +65,20 @@ class SignUpPage extends Component {
       this.setState({
         regInProgress: true
       });
-      axs.post("/users", regData, { withCredentials: true }).then(regRes => {
-        if (!regRes.data.error) {
-          this.setState({
-            regStatus: true,
-            regInProgress: false
-          });
-        }
-      });
+      axs
+        .post("/users", { regData }, { withCredentials: true })
+        .then(regRes => {
+          if (!regRes.data.error) {
+            this.setState({
+              regStatus: true,
+              regInProgress: false
+            });
+          }
+        });
     }
-  }
+  };
 
-  newAvatar(e) {
+  newAvatar = e => {
     e.preventDefault();
 
     const { regData } = this.state;
@@ -97,9 +96,9 @@ class SignUpPage extends Component {
     };
 
     reader.readAsDataURL(file);
-  }
+  };
 
-  checkUnique(target) {
+  checkUnique = target => {
     const { value, name } = target;
     const { errors } = this.state;
 
@@ -119,7 +118,16 @@ class SignUpPage extends Component {
           });
         });
     }
-  }
+  };
+
+  handleCheckPassEquals = e => {
+    const { value } = e.target;
+    const { regData } = this.state;
+
+    this.setState({
+      passwordsEquals: regData.password === value
+    });
+  };
 
   handleInputChange(e) {
     const { value, name } = e.target;
@@ -141,7 +149,8 @@ class SignUpPage extends Component {
       errors,
       regInProgress,
       regStatus,
-      regExpError
+      regExpError,
+      passwordsEquals
     } = this.state;
     return (
       <>
@@ -303,9 +312,23 @@ class SignUpPage extends Component {
                   onChange={e => this.handleInputChange(e)}
                   required
                   fluid
+                  error={!passwordsEquals}
                   icon="lock"
                   iconPosition="left"
                   label="Пароль"
+                />
+                <Form.Input
+                  type="password"
+                  error={!passwordsEquals}
+                  id="rePass"
+                  name="rePass"
+                  onChange={e => this.handleCheckPassEquals(e)}
+                  required
+                  disabled={_.isEmpty(regData.password)}
+                  fluid
+                  icon="lock"
+                  iconPosition="left"
+                  label="Повторите пароль"
                 />
                 <Button
                   type="submit"
@@ -316,7 +339,8 @@ class SignUpPage extends Component {
                     regInProgress ||
                     errors.login ||
                     errors.email ||
-                    regExpError.login
+                    regExpError.login ||
+                    !passwordsEquals
                   }
                   loading={regInProgress}
                 >

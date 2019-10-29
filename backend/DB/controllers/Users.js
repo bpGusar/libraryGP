@@ -64,7 +64,7 @@ function findUsers(res, query = {}, selectParams = "") {
 }
 
 function addNewUser(req, res) {
-  const { send_email } = req.body;
+  const { send_email, regData } = req.body;
 
   const posterName = `avatar_${Date.now()}.png`;
 
@@ -82,7 +82,10 @@ function addNewUser(req, res) {
     UserModel.save((saveError, newUser) => {
       if (saveError) {
         res.json(config.getRespData(true, MSG.registrationError, saveError));
-      } else if (!_.isUndefined(send_email) && send_email) {
+      } else if (
+        (!_.isUndefined(send_email) && send_email) ||
+        _.isUndefined(send_email)
+      ) {
         transporter.sendMail(
           EmailVerifyTemplate(userData.email, process.env, newUser._id),
           function(emailSentError) {
@@ -99,13 +102,21 @@ function addNewUser(req, res) {
             }
           }
         );
-      } else if (_.isUndefined(send_email) || !send_email) {
+      } else if (!send_email) {
         res.send(config.getRespData(false));
       }
     });
   };
 
-  const clonedUserObj = { ...req.body };
+  let clonedUserObj = { ...regData };
+
+  if (!send_email) {
+    clonedUserObj = {
+      ...clonedUserObj,
+      emailVerified: true
+    };
+  }
+
   if (clonedUserObj.avatar === "") {
     clonedUserObj.avatar = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
 

@@ -51,6 +51,7 @@ const UserSchema = new Schema({
 UserSchema.pre("save", function(next) {
   if (this.isNew || this.isModified("password")) {
     const document = this;
+    console.log(document);
     document.readerId = new Date().getTime();
     bcrypt.hash(
       document.password,

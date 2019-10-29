@@ -10,14 +10,12 @@ import { storeData } from "@act";
 import axs from "@axios";
 
 import s from "./Header.module.scss";
-
+// TODO: переосмыслить меню. сделать генерацию выпадающего меню и т.д
 class Header extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = { activeItem: "Главная" };
-
-    this.handleItemClick = this.handleItemClick.bind(this);
   }
 
   componentDidMount() {
@@ -46,9 +44,9 @@ class Header extends React.Component {
     );
   }
 
-  handleItemClick(e, { name }) {
+  handleItemClick = (e, { name }) => {
     this.setState({ activeItem: name });
-  }
+  };
 
   generateMenu() {
     const { menu, isUserAuthorized } = this.props;
