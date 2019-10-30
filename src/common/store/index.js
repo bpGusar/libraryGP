@@ -30,7 +30,10 @@ export const getInitialState = () => ({
     text: "",
     type: ""
   },
-  [PARAMS.MENU]: {},
+  [PARAMS.MENU]: {
+    dashboardMenu: {},
+    mainMenu: {}
+  },
   [PARAMS.AUTHORS]: [],
   [PARAMS.CATEGORIES]: [],
   [PARAMS.LANGUAGES]: [],

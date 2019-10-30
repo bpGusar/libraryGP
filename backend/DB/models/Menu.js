@@ -8,24 +8,11 @@ const MenuSchema = new Schema({
     default: Date.now()
   },
   menuName: String,
-  always: [
-    {
-      to: String,
-      name: String
-    }
-  ],
-  authorized: [
-    {
-      to: String,
-      name: String
-    }
-  ],
-  onlyNotAuthorized: [
-    {
-      to: String,
-      name: String
-    }
-  ]
+  menu: {
+    always: [],
+    authorized: [],
+    onlyNotAuthorized: []
+  }
 });
 
-export default Mongoose.model("Menu", MenuSchema);
+export default Mongoose.model("Menu", MenuSchema, "menus");

@@ -1,11 +1,10 @@
 const menus = {
-  dashMain: [
+  dashboardMain: [
     {
       type: "simple",
       text: "Главная",
       to: "/dashboard",
-      icon: "",
-      items: []
+      icon: ""
     },
     {
       type: "dropdown",

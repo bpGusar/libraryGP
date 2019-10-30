@@ -5,61 +5,97 @@ import _ from "lodash";
 
 import { Menu, Dropdown, Icon } from "semantic-ui-react";
 
-import Menus from "@src/common/menus";
+import { branch } from "baobab-react/higher-order";
+import { PARAMS } from "@store";
+import { storeData } from "@act";
+
+import axs from "@axios";
 
 import s from "./index.module.scss";
 
-const menuType = {
-  simple: "simple",
-  drop: "dropdown"
-};
+class DashboardMenu extends Component {
+  constructor(props) {
+    super(props);
 
-// eslint-disable-next-line react/prefer-stateless-function
-export default class DashboardMenu extends Component {
-  generateMenu = () => {
-    const menu = [];
+    this.state = {
+      isLoading: true
+    };
 
-    const dropItem = el => (
-      <Dropdown.Item key={el.to} as={Link} to={el.to}>
-        {!_.isEmpty(el.icon) && <Icon name={el.icon} />}
-        {el.text}
-      </Dropdown.Item>
-    );
+    this.menuItems = {
+      dropdown: el => {
+        const dropItem = dropItemEl => (
+          <Dropdown.Item key={dropItemEl.to} as={Link} to={dropItemEl.to}>
+            {!_.isEmpty(dropItemEl.icon) && <Icon name={dropItemEl.icon} />}
+            {dropItemEl.text}
+          </Dropdown.Item>
+        );
+        return (
+          <Dropdown key={el.text} item text={el.text} className={s.menuItem}>
+            <Dropdown.Menu>
+              {el.items.map(menuItem => dropItem(menuItem))}
+            </Dropdown.Menu>
+          </Dropdown>
+        );
+      },
+      simple: el => (
+        <Menu.Item key={el.to} className={s.menuItem} as={Link} to={el.to}>
+          {!_.isEmpty(el.icon) && <Icon name={el.icon} />}
+          {el.text}
+        </Menu.Item>
+      )
+    };
+  }
 
-    const dropBlock = el => (
-      <Dropdown key={el.to} item text={el.text} className={s.menuItem}>
-        <Dropdown.Menu>
-          {el.items.map(menuItem => dropItem(menuItem))}
-        </Dropdown.Menu>
-      </Dropdown>
-    );
+  componentDidMount() {
+    this.handleGetMenu();
+  }
 
-    const simpleItem = el => (
-      <Menu.Item key={el.to} className={s.menuItem} as={Link} to={el.to}>
-        {!_.isEmpty(el.icon) && <Icon name={el.icon} />}
-        {el.text}
-      </Menu.Item>
-    );
+  handleGetMenu = () => {
+    const { dispatch, menu } = this.props;
+    const clonedMenu = { ...menu };
 
-    Menus.dashMain.forEach(el => {
-      if (el.type === menuType.simple) {
-        menu.push(simpleItem(el));
-      } else if (el.type === menuType.drop) {
-        menu.push(dropBlock(el));
+    axs.get(`/menus/dashboardMenu`).then(resp => {
+      if (!resp.data.error) {
+        dispatch(storeData, PARAMS.MENU, {
+          ...clonedMenu,
+          dashboardMenu: resp.data.payload.menu
+        });
+
+        this.setState({
+          isLoading: false
+        });
       }
     });
-
-    return menu;
   };
 
   render() {
+    const { isLoading } = this.state;
+    const { menu } = this.props;
+
     return (
       <>
-        {this.generateMenu()}
-        <Menu.Item as={Link} to="/" className={cn(s.menuItem, s.backtoToSite)}>
-          Вернуться на сайт
-        </Menu.Item>
+        {_.isEmpty(menu.dashboardMenu) || isLoading ? (
+          "Загрузка меню..."
+        ) : (
+          <>
+            {menu.dashboardMenu.always.map(el => this.menuItems[el.type](el))}
+            <Menu.Item
+              as={Link}
+              to="/"
+              className={cn(s.menuItem, s.backtoToSite)}
+            >
+              Вернуться на сайт
+            </Menu.Item>
+          </>
+        )}
       </>
     );
   }
 }
+
+export default branch(
+  {
+    menu: PARAMS.MENU
+  },
+  DashboardMenu
+);

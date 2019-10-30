@@ -1,7 +1,6 @@
 import React from "react";
 import { Menu, Segment, Dropdown, Container, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import _ from "lodash";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
@@ -20,13 +19,16 @@ class Header extends React.Component {
 
   componentDidMount() {
     const { dispatch, menu } = this.props;
-    if (_.isEmpty(menu)) {
-      axs.get(`/menus/topMenu`).then(res => {
-        if (!res.data.error) {
-          dispatch(storeData, PARAMS.MENU, res.data.payload.menu);
-        }
-      });
-    }
+    const clonedMenu = { ...menu };
+
+    axs.get(`/menus/topMenu`).then(res => {
+      if (!res.data.error) {
+        dispatch(storeData, PARAMS.MENU, {
+          ...clonedMenu,
+          mainMenu: res.data.payload.menu
+        });
+      }
+    });
   }
 
   getLink(to, name) {
@@ -51,14 +53,19 @@ class Header extends React.Component {
   generateMenu() {
     const { menu, isUserAuthorized } = this.props;
     const menuArr = [];
-
-    Object.keys(menu).forEach(menuKey => {
+    Object.keys(menu.mainMenu).forEach(menuKey => {
       if (menuKey === "always") {
-        menu[menuKey].map(el => menuArr.push(this.getLink(el.to, el.name)));
+        menu.mainMenu[menuKey].map(el =>
+          menuArr.push(this.getLink(el.to, el.name))
+        );
       } else if (menuKey === "authorized" && isUserAuthorized) {
-        menu[menuKey].map(el => menuArr.push(this.getLink(el.to, el.name)));
+        menu.mainMenu[menuKey].map(el =>
+          menuArr.push(this.getLink(el.to, el.name))
+        );
       } else if (menuKey === "onlyNotAuthorized" && !isUserAuthorized) {
-        menu[menuKey].map(el => menuArr.push(this.getLink(el.to, el.name)));
+        menu.mainMenu[menuKey].map(el =>
+          menuArr.push(this.getLink(el.to, el.name))
+        );
       }
     });
     return menuArr;
