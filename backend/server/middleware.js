@@ -36,10 +36,12 @@ const withAuth = (req, res, next, accessRoles = []) => {
                 !_.isEmpty(accessRoles)) ||
               _.isEmpty(accessRoles)
             ) {
-              req.middlewareUserInfo = user;
-              next();
-            } else {
-              res.json(getRespData(true, MSG.internalServerErr, findUserErr));
+              if (user.emailVerified) {
+                req.middlewareUserInfo = user;
+                next();
+              } else {
+                res.json(getRespData(true, MSG.internalServerErr));
+              }
             }
           });
       }

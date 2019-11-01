@@ -71,41 +71,44 @@ function findBooks(res, req, data = {}) {
     return options.limit * (options.page - 1);
   };
 
-  Book.countDocuments(_.isEmpty(data) ? {} : JSON.parse(data), (err, count) => {
-    res.set({
-      "max-elements": count,
-      ...options
-    });
-    Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
-      .sort({ dateAdded: options.sort })
-      .skip(getSkip())
-      .limit(options.limit)
-      .populate(
-        options.fetch_type === 0
-          ? ""
-          : [
-              {
-                path: "bookInfo.authors"
-              },
-              {
-                path: "bookInfo.categories"
-              },
-              {
-                path: "bookInfo.publisher"
-              },
-              {
-                path: "bookInfo.language"
-              }
-            ]
-      )
-      .exec((err, books) => {
-        if (err) {
-          res.json(config.getRespData(true, MSG.bookNotFound, err));
-        } else {
-          res.json(config.getRespData(false, null, books));
-        }
+  Book.countDocuments(
+    _.isEmpty(data) ? {} : JSON.parse(data),
+    (countError, count) => {
+      res.set({
+        "max-elements": count,
+        ...options
       });
-  });
+      Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
+        .sort({ dateAdded: options.sort })
+        .skip(getSkip())
+        .limit(options.limit)
+        .populate(
+          options.fetch_type === 0
+            ? ""
+            : [
+                {
+                  path: "bookInfo.authors"
+                },
+                {
+                  path: "bookInfo.categories"
+                },
+                {
+                  path: "bookInfo.publisher"
+                },
+                {
+                  path: "bookInfo.language"
+                }
+              ]
+        )
+        .exec((findBookError, books) => {
+          if (findBookError) {
+            res.json(config.getRespData(true, MSG.bookNotFound, findBookError));
+          } else {
+            res.json(config.getRespData(false, null, books));
+          }
+        });
+    }
+  );
 }
 
 /**
@@ -181,7 +184,7 @@ function thisBookOrderedOrBooked(res, req) {
     }
   );
 }
-// TODO: сделать обновление постера
+
 function updateBook(req, res) {
   const { book } = req.body;
   const clonedBook = { ...book };

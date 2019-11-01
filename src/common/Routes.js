@@ -26,6 +26,8 @@ import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
 import ManageOrderedBooks from "@DUI/views/Books/ManageOrderedBooks";
 import ManageBooks from "@DUI/views/Books/ManageBooks";
 import AddNewUser from "@DUI/views/Users/AddNew";
+import MenusPage from "@DUI/views/MenusPage";
+import UsersList from "@DUI/views/Users/UsersListPage";
 import DashboardPage from "@DUI";
 
 import { PARAMS } from "@store";
@@ -157,15 +159,29 @@ class AppRotes extends React.Component {
           exact
           layout={Dashboard}
           accessRole={[userRoles.admin]}
+          path="/dashboard/users/list"
+          component={UsersList}
+        />
+        <PrivateRoute
+          exact
+          layout={Dashboard}
+          accessRole={[userRoles.admin]}
           path="/dashboard/books/book-list"
           component={ManageBooks}
         />
         <PrivateRoute
           exact
           layout={Dashboard}
-          accessRole={[userRoles.admin, userRoles.user]}
+          accessRole={[userRoles.admin]}
           path="/dashboard/info-page"
           component={InfoPage}
+        />
+        <PrivateRoute
+          exact
+          layout={Dashboard}
+          accessRole={[userRoles.admin]}
+          path="/dashboard/menus"
+          component={MenusPage}
         />
         <PrivateRoute
           exact

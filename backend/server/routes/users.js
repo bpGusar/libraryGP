@@ -7,12 +7,25 @@ import * as config from "../../DB/config";
 
 const app = express();
 
-app.get("/api/users", withAuth, (req, res) => UsersContr.findUsers(res));
+app.get(
+  "/api/users",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => {
+    const { searchQuery } = req.query;
+    UsersContr.findUsers(res, searchQuery);
+  }
+);
+
+app.put(
+  "/api/users",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => UsersContr.updateUser(req, res)
+);
 
 app.post("/api/users", (req, res) => UsersContr.addNewUser(req, res));
 
 app.get("/api/users/check-reg-fields", (req, res) =>
-  UsersContr.findUsers(res, req.query, "_id")
+  UsersContr.findUsers(res, JSON.stringify(req.query), "_id")
 );
 
 app.get("/api/users/:id/email-verify", (req, res) =>

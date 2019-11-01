@@ -50,10 +50,21 @@ const MSG = {
   },
   singUpPage: {
     successfullSignUp:
-      "Регистрация прошла успешно.На указанную почту отправлено письмо подтверждение.",
+      "Регистрация прошла успешно. На указанную почту отправлено письмо подтверждение.",
     pageTitle: "Регистрация нового аккаунта",
-    userWThatLoginExistError: "Пользователь с таким логином уже существует",
-    userWThatEmailExistError: "Пользователь с таким имейлом уже существует",
+    userWThatLoginExistError: "Логин занят",
+    userWThatEmailExistError: "Email занят",
+    loginRegExpError:
+      "Логин должен быть длиной не менее 3 символов, и состоять только из букв английского алфавита и цифр."
+  },
+  editUser: {
+    successUpdate: "Информация сохранена!",
+    itsMyProfileHeader: "Вы редактируете свой профиль!",
+    emailVerify: "На email отправлено письмо для подтверждения адреса.",
+    itsMyProfileText:
+      "При изменении пароля или имейла Вам необходимо будет войти заново!",
+    userWThatLoginExistError: "Логин занят",
+    userWThatEmailExistError: "Email занят",
     loginRegExpError:
       "Логин должен быть длиной не менее 3 символов, и состоять только из букв английского алфавита и цифр."
   }

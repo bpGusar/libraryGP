@@ -43,31 +43,8 @@ app.post("/api/menus/", (req, res) => {
 });
 
 app.put("/api/menus", (req, res) => {
-  const newmenu = {
-    always: [
-      {
-        to: "/",
-        name: "Главная"
-      }
-    ],
-    authorized: [
-      {
-        to: "/secret",
-        name: "Секрет"
-      },
-      {
-        to: "/346345634",
-        name: "34563456345"
-      }
-    ],
-    onlyNotAuthorized: [
-      {
-        to: "/login",
-        name: "Вход"
-      }
-    ]
-  };
-  Menu.update({ _id: "5d0cdd7669529541dc73e657" }, { ...newmenu }, err => {
+  const newmenu = {};
+  Menu.update({ _id: "5db94f2e4321e23ab46dc649" }, { ...newmenu }, err => {
     if (err) {
       res.json(config.getRespData(true, MSG.cannotUpdateMenu, err));
     } else {

@@ -33,6 +33,9 @@ const MSG = {
   registrationError: {
     ru: "Ошибка при регистрации."
   },
+  userUpdateError: {
+    ru: "Ошибка при обновлении пользователя."
+  },
   registrationSuccess: {
     ru: "Успешная регистрация."
   },

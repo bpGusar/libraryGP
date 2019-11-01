@@ -50,7 +50,7 @@ function logInUser(req, res) {
 }
 
 function findUsers(res, query = {}, selectParams = "") {
-  User.find(query)
+  User.find(_.isEmpty(query) ? {} : JSON.parse(query))
     .select(selectParams === "" ? "-password -emailVerified" : selectParams)
     .exec((err, users) => {
       if (err) {
@@ -63,15 +63,79 @@ function findUsers(res, query = {}, selectParams = "") {
     });
 }
 
-function addNewUser(req, res) {
-  const { send_email, regData } = req.body;
+function updateUser(req, res) {
+  const { updateData, send_email } = req.body;
+  let clonedUserData = _.cloneDeep(updateData);
+  const detectNewAvatar = clonedUserData.avatar.search("base64");
 
-  const posterName = `avatar_${Date.now()}.png`;
+  const saveUser = user => {
+    User.update({ _id: user._id }, { ...user }, err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.userUpdateError, err));
+      } else if (
+        (!_.isUndefined(send_email) && send_email) ||
+        _.isUndefined(send_email)
+      ) {
+        transporter.sendMail(
+          EmailVerifyTemplate(updateData.email, process.env, updateData._id),
+          function(emailSentError) {
+            if (emailSentError) {
+              res.json(
+                config.getRespData(true, MSG.userUpdateError, emailSentError)
+              );
+            } else {
+              res.send(config.getRespData(false));
+            }
+          }
+        );
+      } else if (!send_email) {
+        res.send(config.getRespData(false));
+      }
+    });
+  };
+
+  if (send_email) {
+    clonedUserData = {
+      ...clonedUserData,
+      emailVerified: false
+    };
+  }
+
+  if (detectNewAvatar !== -1) {
+    const base64Poster = clonedUserData.avatar.replace(
+      /^data:image\/png;base64,/,
+      ""
+    );
+    const avatarName = `avatar_${Date.now()}.png`;
+    const pathToNewAvatar = path.join(
+      __dirname,
+      `../../server/${servConf.filesPaths.avatars.mainFolder}`,
+      avatarName
+    );
+
+    fs.writeFile(pathToNewAvatar, base64Poster, "base64", err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantAddNewBook, err));
+      } else {
+        clonedUserData.avatar = `${servConf.filesPaths.avatars.urlToAvatar}/${avatarName}`;
+
+        saveUser(clonedUserData);
+      }
+    });
+  } else {
+    saveUser(clonedUserData);
+  }
+}
+
+function addNewUser(req, res) {
+  const { send_email, regInfo } = req.body;
+
+  const avatarName = `avatar_${Date.now()}.png`;
 
   const pathToNewAvatar = path.join(
     __dirname,
     `../../server/${servConf.filesPaths.avatars.mainFolder}`,
-    posterName
+    avatarName
   );
 
   const saveUser = userData => {
@@ -108,7 +172,7 @@ function addNewUser(req, res) {
     });
   };
 
-  let clonedUserObj = { ...regData };
+  let clonedUserObj = { ...regInfo };
 
   if (!send_email) {
     clonedUserObj = {
@@ -131,7 +195,7 @@ function addNewUser(req, res) {
       if (err) {
         res.json(config.getRespData(true, MSG.cantAddNewBook, err));
       } else {
-        clonedUserObj.avatar = `${servConf.filesPaths.avatars.urlToAvatar}/${posterName}`;
+        clonedUserObj.avatar = `${servConf.filesPaths.avatars.urlToAvatar}/${avatarName}`;
 
         saveUser(clonedUserObj);
       }
@@ -164,5 +228,6 @@ export default {
   findUsers,
   addNewUser,
   emailVerification,
-  logInUser
+  logInUser,
+  updateUser
 };

@@ -353,14 +353,18 @@ export default class AddNewUser extends Component {
                   onChange={e => this.handleInputChange(e)}
                   required
                   fluid
-                  error={!passwordsEquals.equal}
+                  error={
+                    !passwordsEquals.equal && !_.isEmpty(passwordsEquals.value)
+                  }
                   icon="lock"
                   iconPosition="left"
                   label="Пароль"
                 />
                 <Form.Input
                   type="password"
-                  error={!passwordsEquals.equal}
+                  error={
+                    !passwordsEquals.equal && !_.isEmpty(passwordsEquals.value)
+                  }
                   id="rePass"
                   name="rePass"
                   value={passwordsEquals.value}

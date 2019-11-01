@@ -4,8 +4,8 @@ import cn from "classnames";
 import _ from "lodash";
 
 import { Menu, Dropdown, Icon } from "semantic-ui-react";
-
 import { branch } from "baobab-react/higher-order";
+
 import { PARAMS } from "@store";
 import { storeData } from "@act";
 
@@ -30,7 +30,7 @@ class DashboardMenu extends Component {
           </Dropdown.Item>
         );
         return (
-          <Dropdown key={el.text} item text={el.text} className={s.menuItem}>
+          <Dropdown item text={el.text} className={s.menuItem}>
             <Dropdown.Menu>
               {el.items.map(menuItem => dropItem(menuItem))}
             </Dropdown.Menu>
@@ -38,7 +38,7 @@ class DashboardMenu extends Component {
         );
       },
       simple: el => (
-        <Menu.Item key={el.to} className={s.menuItem} as={Link} to={el.to}>
+        <Menu.Item className={s.menuItem} as={Link} to={el.to}>
           {!_.isEmpty(el.icon) && <Icon name={el.icon} />}
           {el.text}
         </Menu.Item>

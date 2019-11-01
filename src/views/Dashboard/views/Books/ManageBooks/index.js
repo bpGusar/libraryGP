@@ -52,6 +52,10 @@ class ManageBooks extends Component {
     };
   }
 
+  componentDidMount() {
+    this.handleSearchBooks(true);
+  }
+
   handleSearchBooks = (dropPageCount = false) => {
     const { searchQuery, options } = this.state;
     const clonedOptions = { ...options };
