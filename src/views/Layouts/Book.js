@@ -6,7 +6,7 @@ import { Segment, Responsive, Container } from "semantic-ui-react";
 
 import Header from "@UI/Header";
 import headerStyles from "@UI/Header/Header.module.scss";
-import CustomLoader from "@views/Common/Loader";
+import CustomLoader from "@views/common/Loader";
 import TopInfoBlock from "@UI/Books/BookPage/components/TopInfoBlock";
 
 import { PARAMS } from "@store";

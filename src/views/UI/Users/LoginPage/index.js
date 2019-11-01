@@ -51,7 +51,7 @@ class loginPage extends Component {
     });
 
     axs
-      .post("/users/login", this.state, { withCredentials: true })
+      .post("/users/service/login", this.state, { withCredentials: true })
       .then(res => {
         if (!res.data.error) {
           localStorage.setItem("token", res.data.payload);

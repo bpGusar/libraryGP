@@ -49,18 +49,53 @@ function logInUser(req, res) {
   });
 }
 
-function findUsers(res, query = {}, selectParams = "") {
-  User.find(_.isEmpty(query) ? {} : JSON.parse(query))
-    .select(selectParams === "" ? "-password -emailVerified" : selectParams)
-    .exec((err, users) => {
-      if (err) {
-        res.json(config.getRespData(true, MSG.internalServerErr, err));
-      } else if (!users) {
-        res.json(config.getRespData(true, MSG.cantFindUser));
-      } else {
-        res.json(config.getRespData(false, null, users));
-      }
-    });
+function findUsers(res, req, query = {}, selectParams = "") {
+  let { options } = req.query;
+
+  if (_.isUndefined(options)) {
+    options = {
+      page: 1,
+      limit: 99,
+      sort: "desc"
+    };
+  } else {
+    options = JSON.parse(options);
+  }
+
+  options.page = _.isUndefined(options.page) ? 1 : options.page;
+  options.sort = _.isUndefined(options.sort) ? 1 : options.sort;
+  options.limit = _.isUndefined(options.limit) ? 99 : options.limit;
+
+  const getSkip = () => {
+    if (options.page === 1) {
+      return 0;
+    }
+    return options.limit * (options.page - 1);
+  };
+
+  User.countDocuments(
+    _.isEmpty(query) ? {} : JSON.parse(query),
+    (countError, count) => {
+      res.set({
+        "max-elements": count,
+        ...options
+      });
+      User.find(_.isEmpty(query) ? {} : JSON.parse(query))
+        .select(selectParams === "" ? "-password -emailVerified" : selectParams)
+        .sort({ createdAt: options.sort })
+        .skip(getSkip())
+        .limit(options.limit)
+        .exec((err, users) => {
+          if (err) {
+            res.json(config.getRespData(true, MSG.internalServerErr, err));
+          } else if (!users) {
+            res.json(config.getRespData(true, MSG.cantFindUser));
+          } else {
+            res.json(config.getRespData(false, null, users));
+          }
+        });
+    }
+  );
 }
 
 function updateUser(req, res) {
@@ -69,7 +104,7 @@ function updateUser(req, res) {
   const detectNewAvatar = clonedUserData.avatar.search("base64");
 
   const saveUser = user => {
-    User.update({ _id: user._id }, { ...user }, err => {
+    User.updateOne({ _id: user._id }, { ...user }, err => {
       if (err) {
         res.json(config.getRespData(true, MSG.userUpdateError, err));
       } else if (

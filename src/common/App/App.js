@@ -27,7 +27,7 @@ class App extends React.Component {
     let isError = false;
 
     if (localStorage.getItem("token") !== null) {
-      await axs.get("/users/auth-status").then(resp => {
+      await axs.get("/users/service/auth-status").then(resp => {
         if (!resp.data.error) {
           if (!_.isEqual(user, resp.data.payload)) {
             dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);

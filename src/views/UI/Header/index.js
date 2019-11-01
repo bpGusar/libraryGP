@@ -9,7 +9,7 @@ import { storeData } from "@act";
 import axs from "@axios";
 
 import s from "./Header.module.scss";
-// TODO: переосмыслить меню. сделать генерацию выпадающего меню и т.д
+// TODO: переосмыслить меню
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -102,7 +102,10 @@ class Header extends React.Component {
                           Dashboard
                         </Dropdown.Item>
                       )}
-                      <Dropdown.Item as={Link} to="/profile">
+                      <Dropdown.Item
+                        as={Link}
+                        to={`/profile/${userInfo.login}`}
+                      >
                         Профиль
                       </Dropdown.Item>
                       <Dropdown.Item as={Link} to="/logout">

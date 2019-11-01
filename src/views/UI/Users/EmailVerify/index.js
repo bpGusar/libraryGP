@@ -7,27 +7,23 @@ import axs from "@axios";
 import { storeData } from "@act";
 import { PARAMS } from "@store";
 
-class EmailVerify extends React.Component {
-  componentDidMount() {
-    const { location, dispatch, history, globalLoader } = this.props;
+function EmailVerify(props) {
+  const { location, dispatch, history, globalLoader } = props;
 
-    const query = queryString.parse(location.search);
+  const query = queryString.parse(location.search);
 
-    if (!globalLoader) {
-      axs.get(`/users/${query.token}/email-verify`).then(res => {
-        dispatch(storeData, PARAMS.INFO_PAGE, {
-          text: res.data.message,
-          type: !res.data.error ? "success" : "error"
-        });
-
-        history.push("/info-page");
+  if (!globalLoader) {
+    axs.get(`/users/service/${query.token}/email-verify`).then(res => {
+      dispatch(storeData, PARAMS.INFO_PAGE, {
+        text: res.data.message,
+        type: !res.data.error ? "success" : "error"
       });
-    }
+
+      history.push("/info-page");
+    });
   }
 
-  render() {
-    return <></>;
-  }
+  return <b>Выполняем...</b>;
 }
 
 export default branch({ globalLoader: PARAMS.GLOBAL_PAGE_LOADER }, EmailVerify);

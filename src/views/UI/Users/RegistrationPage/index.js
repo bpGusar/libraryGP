@@ -104,7 +104,7 @@ class SignUpPage extends Component {
 
     if (value !== "") {
       axs
-        .get(`/users/check-reg-fields`, {
+        .get(`/users/service/check-reg-fields`, {
           params: {
             [name]: value
           }

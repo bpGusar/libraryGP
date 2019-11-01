@@ -169,7 +169,7 @@ class TopInfoBlock extends React.Component {
         <Container className={s.bookTopCardContainer}>
           <Grid columns={2} className={s.bookTopCardContainerGrid}>
             <Grid.Row>
-              <Grid.Column width={4}>
+              <Grid.Column width={4} className={s.bookTopCardImgCol}>
                 <Image
                   rounded
                   label={bookAvailability && MSG.bookDoesntAvailableRibbon}

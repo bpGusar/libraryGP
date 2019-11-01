@@ -9,7 +9,7 @@ import { DateInput } from "semantic-ui-calendar-react";
 
 import { Form, Button, Message, Segment } from "semantic-ui-react";
 
-import UniqueDropdown from "@src/common/components/UniqueDropdown/UniqueDropdown";
+import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
 import Poster from "./components/Poster/Poster";
 
 import { PARAMS, getInitialState } from "@store";

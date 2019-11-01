@@ -7,12 +7,15 @@ import {
   Icon,
   Item,
   Dropdown,
-  Modal
+  Modal,
+  Divider
 } from "semantic-ui-react";
 import _ from "lodash";
+import { Link } from "react-router-dom";
 
 import EditUser from "../EditUser";
 import PaginationBlock from "./components/Pagination";
+import ResultFilters from "./components/ResultFilters";
 
 import axs from "@axios";
 
@@ -23,12 +26,18 @@ class UsersList extends Component {
     this.state = {
       isLoading: false,
       searchQuery: {},
-      users: []
+      users: [],
+      maxElements: 0,
+      options: {
+        sort: "desc",
+        limit: 10,
+        page: 1
+      }
     };
   }
 
   componentDidMount() {
-    this.handleSubmitForm();
+    this.handleSubmitForm(true);
   }
 
   handleChangeSearchQuery = (value, name) =>
@@ -52,23 +61,32 @@ class UsersList extends Component {
       };
     });
 
-  handleSubmitForm = () => {
-    const { searchQuery } = this.state;
+  handleSubmitForm = (dropPageCount = false) => {
+    const { searchQuery, options } = this.state;
+    const clonedOptions = { ...options };
+
+    if (dropPageCount) {
+      clonedOptions.page = 1;
+    }
+
     this.setState({
-      isLoading: true
+      isLoading: true,
+      options: { ...clonedOptions }
     });
 
     axs
       .get(`/users`, {
         params: {
-          searchQuery
+          searchQuery,
+          options: { ...clonedOptions }
         }
       })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
             users: resp.data.payload,
-            isLoading: false
+            isLoading: false,
+            maxElements: resp.headers["max-elements"]
           });
         }
       });
@@ -84,7 +102,7 @@ class UsersList extends Component {
           <Header as="h3">Список пользователей</Header>
         </Segment>
         <Segment loading={isLoading}>
-          <Form onSubmit={this.handleSubmitForm}>
+          <Form onSubmit={() => this.handleSubmitForm(true)}>
             <Form.Group widths="equal">
               <Form.Input
                 fluid
@@ -115,13 +133,21 @@ class UsersList extends Component {
               <Icon name="search" />
               Поиск
             </Button>
+            <Divider />
+            <ResultFilters {...this.state} _this={this} />
           </Form>
         </Segment>
         <Segment loading={isLoading}>
           <Item.Group divided>
             {users.map(user => (
               <Item key={user._id}>
-                <Item.Image size="tiny" src={user.avatar} />
+                <Item.Image
+                  as={Link}
+                  to={`/profile/${user.login}`}
+                  target="blanc"
+                  size="tiny"
+                  src={user.avatar}
+                />
 
                 <Item.Content>
                   <Item.Header>

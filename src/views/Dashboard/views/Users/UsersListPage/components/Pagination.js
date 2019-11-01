@@ -29,7 +29,7 @@ export default function PaginationBlock(props) {
               page: data.activePage
             }
           },
-          () => _this.handleSearchBooks()
+          () => _this.handleSubmitForm()
         )
       }
     />

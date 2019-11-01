@@ -13,15 +13,15 @@ import Dashboard from "@views/Layouts/Dashboard/index";
 import LoginPage from "@UI/Users/LoginPage";
 import RegistrationPage from "@UI/Users/RegistrationPage";
 import MainPage from "@UI/MainPage";
-import AccessDenied from "@views/Common/AccessDenied";
-import InfoPage from "@views/Common/InfoPage";
+import AccessDenied from "@views/common/AccessDenied";
+import InfoPage from "@views/common/InfoPage";
 import BookPage from "@UI/Books/BookPage";
 import EmailVerify from "@UI/Users/EmailVerify";
 import ProfilePage from "@UI/Users/ProfilePage";
 
 /** вьюхи дашборда */
 import FindBookPage from "@DUI/views/Books/AddBookPage";
-import AddBookForm from "@DUI/views/Books/AddBookPage/AddBookForm/index";
+import AddBookForm from "@DUI/views/Books/AddBookPage/Form/index";
 import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
 import ManageOrderedBooks from "@DUI/views/Books/ManageOrderedBooks";
 import ManageBooks from "@DUI/views/Books/ManageBooks";
@@ -187,7 +187,7 @@ class AppRotes extends React.Component {
           exact
           layout={MainLayout}
           accessRole={[userRoles.admin, userRoles.user]}
-          path="/profile"
+          path="/profile/:login"
           component={ProfilePage}
         />
         <AppRoute exact path="/" layout={MainLayout} component={MainPage} />
@@ -228,7 +228,6 @@ class AppRotes extends React.Component {
           component={() => {
             localStorage.removeItem("token");
             document.location.href = "/";
-            return <div>выход...</div>;
           }}
         />
       </Switch>
