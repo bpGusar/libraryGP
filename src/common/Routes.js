@@ -187,7 +187,7 @@ class AppRotes extends React.Component {
           exact
           layout={MainLayout}
           accessRole={[userRoles.admin, userRoles.user]}
-          path="/profile/:login"
+          path="/profile/:userId"
           component={ProfilePage}
         />
         <AppRoute exact path="/" layout={MainLayout} component={MainPage} />

@@ -7,20 +7,20 @@ import {
   Segment,
   Header,
   Divider,
-  List,
   Label
 } from "semantic-ui-react";
 import { branch } from "baobab-react/higher-order";
 import { DateTime } from "luxon";
 import Loader from "@views/common/Loader";
+import Stats from "./components/Stats";
 
 import { PARAMS } from "@store";
 
 import axs from "@axios";
 
 const userGroup = {
-  0: "Администратор",
-  1: "Пользователь"
+  0: "Пользователь",
+  1: "Администратор"
 };
 
 // TODO: доделать профиль
@@ -37,11 +37,11 @@ class ProfilePage extends Component {
 
   componentDidMount() {
     const { match, userInfo } = this.props;
-    if (match.params.login === userInfo.login) {
+    if (match.params.userId === userInfo._id) {
       this.setState({
         user: userInfo,
         isLoading: false,
-        currentUser: userInfo.login
+        currentUser: userInfo._id
       });
     } else {
       this.handleGetUserInfo();
@@ -49,9 +49,9 @@ class ProfilePage extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.match.params.login !== prevState.currentUser) {
+    if (nextProps.match.params.userId !== prevState.currentUser) {
       return {
-        currentUser: nextProps.match.params.login
+        currentUser: nextProps.match.params.userId
       };
     }
     return null;
@@ -60,7 +60,7 @@ class ProfilePage extends Component {
   componentDidUpdate(prevProps) {
     const { currentUser } = this.state;
 
-    if (prevProps.match.params.login !== currentUser) {
+    if (prevProps.match.params.userId !== currentUser) {
       this.handleGetUserInfo();
       return true;
     }
@@ -74,12 +74,12 @@ class ProfilePage extends Component {
       isLoading: true
     });
 
-    axs.get(`/users/${match.params.login}`).then(resp => {
+    axs.get(`/users/${match.params.userId}`).then(resp => {
       if (!resp.data.error) {
         this.setState({
           user: resp.data.payload[0],
           isLoading: false,
-          currentUser: resp.data.payload[0].login
+          currentUser: resp.data.payload[0].userId
         });
       }
     });
@@ -101,7 +101,7 @@ class ProfilePage extends Component {
                     <Card.Header>{user.login}</Card.Header>
                     <Card.Meta>
                       <span className="date">
-                        Дата регистрации{" "}
+                        Дата регистрации:{" "}
                         <b>
                           {DateTime.fromISO(user.createdAt)
                             .setLocale("ru")
@@ -119,14 +119,7 @@ class ProfilePage extends Component {
                     <Label>{userGroup[user.userGroup]}</Label>
                   </Header>
                   <Divider />
-                  <List divided relaxed>
-                    <List.Item>
-                      <List.Content>
-                        <List.Header>Группа</List.Header>
-                        <Label>ffff</Label>
-                      </List.Content>
-                    </List.Item>
-                  </List>
+                  <Stats userId={user._id} />
                 </Segment>
               </Grid.Column>
             </Grid.Row>

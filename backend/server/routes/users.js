@@ -1,7 +1,9 @@
 import express from "express";
 
 import withAuth from "../middleware";
+
 import UsersContr from "../../DB/controllers/Users";
+import BookedBooksContr from "../../DB/controllers/BookedBooks";
 
 import * as config from "../../DB/config";
 
@@ -17,11 +19,21 @@ app.get(
 );
 
 app.get(
-  "/api/users/:login",
+  "/api/users/:userId",
   (req, res, next) => withAuth(req, res, next, [1]),
   (req, res) => {
-    const { login } = req.params;
-    UsersContr.findUsers(res, req, JSON.stringify({ login }));
+    const { userId } = req.params;
+    UsersContr.findUsers(res, req, JSON.stringify({ _id: userId }));
+  }
+);
+
+app.get(
+  "/api/users/:userId/booked-books",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => {
+    const { userId } = req.params;
+
+    BookedBooksContr.findBookedBooks(res, JSON.stringify({ userId }));
   }
 );
 

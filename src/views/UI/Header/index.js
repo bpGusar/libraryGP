@@ -102,10 +102,7 @@ class Header extends React.Component {
                           Dashboard
                         </Dropdown.Item>
                       )}
-                      <Dropdown.Item
-                        as={Link}
-                        to={`/profile/${userInfo.login}`}
-                      >
+                      <Dropdown.Item as={Link} to={`/profile/${userInfo._id}`}>
                         Профиль
                       </Dropdown.Item>
                       <Dropdown.Item as={Link} to="/logout">
