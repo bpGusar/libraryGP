@@ -6,10 +6,11 @@ const MenuItemWrapper = ({ index, moveCard, cildren }) => {
   const [, drop] = useDrop({
     accept: "card",
     hover(item, monitor) {
+      const clonedItem = item;
       if (!ref.current) {
         return;
       }
-      const dragIndex = item.index;
+      const dragIndex = clonedItem.index;
       const hoverIndex = index;
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
@@ -41,7 +42,7 @@ const MenuItemWrapper = ({ index, moveCard, cildren }) => {
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
-      item.index = hoverIndex;
+      clonedItem.index = hoverIndex;
     }
   });
   const [{ isDragging }, drag] = useDrag({

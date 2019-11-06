@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from "react";
 import { Switch, Route } from "react-router";
 import _ from "lodash";
@@ -11,7 +12,7 @@ import Dashboard from "@views/Layouts/Dashboard/index";
 
 /** вьюхи сайта */
 import LoginPage from "@UI/Users/LoginPage";
-import RegistrationPage from "@UI/Users/RegistrationPage";
+import RegistrationPage from "@UI/Users/RegistrationPage/index";
 import MainPage from "@UI/MainPage";
 import AccessDenied from "@views/common/AccessDenied";
 import InfoPage from "@views/common/InfoPage";
@@ -95,6 +96,7 @@ class AppRotes extends React.Component {
               }
               routeProps.history.push("/");
             }
+            return false;
           }}
         />
       );
@@ -240,7 +242,9 @@ export default branch(
     userRoles: PARAMS.USER_ROLES,
     globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
     user: PARAMS.USER_INFO,
-    pageTitle: PARAMS.PAGE_TITLE
+    pageTitle: PARAMS.PAGE_TITLE,
+    isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,
+    isUserAuthorized: PARAMS.IS_USER_AUTHORIZED
   },
   AppRotes
 );

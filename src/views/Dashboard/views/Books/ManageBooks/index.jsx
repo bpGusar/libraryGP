@@ -134,7 +134,8 @@ class ManageBooks extends Component {
       })
       .then(resp => {
         if (!resp.data.error) {
-          delete resp.data.payload[0].__v;
+          const clonedResp = resp;
+          delete clonedResp.data.payload[0].__v;
 
           this.setState(
             {
@@ -145,7 +146,7 @@ class ManageBooks extends Component {
                 ...bookToDB,
                 flag: "edit",
                 book: {
-                  ...resp.data.payload[0]
+                  ...clonedResp.data.payload[0]
                 }
               });
               history.push("/dashboard/books/new");
@@ -235,7 +236,15 @@ class ManageBooks extends Component {
   }
 
   render() {
-    const { books, isLoading, searchQuery } = this.state;
+    const {
+      books,
+      isLoading,
+      searchQuery,
+      activeAccordionIndex,
+      options,
+      maxElements,
+      deleteBookModal
+    } = this.state;
     return (
       <Segment.Group>
         <Segment loading={isLoading}>
@@ -253,14 +262,18 @@ class ManageBooks extends Component {
                 this.handleChangeSearchQuery(value, name, true)
               }
             />
-            <Filters {...this.state} _this={this} />
+            <Filters
+              activeAccordionIndex={activeAccordionIndex}
+              searchQuery={searchQuery}
+              _this={this}
+            />
             <Divider />
             <Button icon type="submit" primary labelPosition="left">
               <Icon name="search" />
               Поиск
             </Button>
             <Divider />
-            <ResultFilters {...this.state} _this={this} />
+            <ResultFilters options={options} _this={this} />
           </Form>
         </Segment>
         <Segment placeholder={_.isEmpty(books)} loading={isLoading}>
@@ -276,10 +289,14 @@ class ManageBooks extends Component {
         </Segment>
         {!_.isEmpty(books) && (
           <Segment>
-            <PaginationBlock {...this.state} _this={this} />
+            <PaginationBlock
+              options={options}
+              maxElements={maxElements}
+              _this={this}
+            />
           </Segment>
         )}
-        <ModalWindow {...this.state} _this={this} />
+        <ModalWindow deleteBookModal={deleteBookModal} _this={this} />
       </Segment.Group>
     );
   }

@@ -93,7 +93,7 @@ class UsersList extends Component {
   };
 
   render() {
-    const { users, isLoading } = this.state;
+    const { users, isLoading, options, maxElements } = this.state;
     const { history } = this.props;
 
     return (
@@ -134,7 +134,7 @@ class UsersList extends Component {
               Поиск
             </Button>
             <Divider />
-            <ResultFilters {...this.state} _this={this} />
+            <ResultFilters options={options} _this={this} />
           </Form>
         </Segment>
         <Segment loading={isLoading}>
@@ -189,7 +189,11 @@ class UsersList extends Component {
         </Segment>
         {!_.isEmpty(users) && (
           <Segment>
-            <PaginationBlock {...this.state} _this={this} />
+            <PaginationBlock
+              options={options}
+              maxElements={maxElements}
+              _this={this}
+            />
           </Segment>
         )}
       </Segment.Group>

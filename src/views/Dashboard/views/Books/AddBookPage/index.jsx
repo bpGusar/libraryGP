@@ -137,7 +137,7 @@ class FindBookPage extends React.Component {
             </Grid.Row>
           </Grid>
         </Segment>
-        {showResults && <SearchResults results={results} {...this.props} />}
+        {showResults && <SearchResults results={results} />}
       </>
     );
   }

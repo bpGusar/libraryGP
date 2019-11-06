@@ -226,6 +226,7 @@ export default class ManageOrderedBooks extends Component {
         </>
       );
     }
+    return false;
   }
 
   renderOrderBlock(orderedBook) {
@@ -255,6 +256,7 @@ export default class ManageOrderedBooks extends Component {
         </div>
       );
     }
+    return false;
   }
 
   renderEmptyResultsBlock(emptyResults) {
@@ -272,6 +274,7 @@ export default class ManageOrderedBooks extends Component {
         </Message>
       );
     }
+    return false;
   }
 
   renderDimmer(orderedBook) {

@@ -229,6 +229,7 @@ export default class ManageBookedBooks extends Component {
         </>
       );
     }
+    return false;
   }
 
   renderOrderBlock(bookedBook) {
@@ -266,6 +267,7 @@ export default class ManageBookedBooks extends Component {
         </div>
       );
     }
+    return false;
   }
 
   renderEmptyResultsBlock(emptyResults) {
@@ -285,6 +287,7 @@ export default class ManageBookedBooks extends Component {
         </Message>
       );
     }
+    return false;
   }
 
   renderDimmer(bookedBook) {

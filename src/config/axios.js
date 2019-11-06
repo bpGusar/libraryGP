@@ -9,10 +9,11 @@ const axs = axios.create({
 
 axs.interceptors.request.use(
   config => {
+    const clonedConfig = config;
     if (localStorage.getItem("token") !== null) {
-      config.headers["x-access-token"] = localStorage.getItem("token");
+      clonedConfig.headers["x-access-token"] = localStorage.getItem("token");
     }
-    return config;
+    return clonedConfig;
   },
   error => {
     toast(MSG.serverError);

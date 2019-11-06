@@ -22,6 +22,7 @@ class App extends React.Component {
     this.checkAuth();
   }
 
+  // eslint-disable-next-line consistent-return
   async checkAuth() {
     const { dispatch, user } = this.props;
     let isError = false;
@@ -66,8 +67,6 @@ class App extends React.Component {
           </Segment>
         ) : (
           <AppRoutes
-            {...this.props}
-            {...this.stae}
             // eslint-disable-next-line react/jsx-no-bind
             checkAuth={this.checkAuth.bind(this)}
           />
@@ -85,7 +84,6 @@ export default root(
       isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,
       globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
       pageLoaded: PARAMS.LOADED,
-      isUserAuthorized: PARAMS.IS_USER_AUTHORIZED,
       user: PARAMS.USER_INFO
     },
     App
