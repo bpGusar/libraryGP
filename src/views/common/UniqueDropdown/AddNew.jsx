@@ -15,7 +15,6 @@ import axs from "@axios";
 class AddNew extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       isLoaded: true,
       accordionActive: false,
