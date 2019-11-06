@@ -28,10 +28,20 @@ function bookABook(req, res) {
   const { id: bookId, userId, readerId } = req.body;
 
   Book.find({ _id: bookId })
-    .populate("bookInfo.authors")
-    .populate("bookInfo.categories")
-    .populate("bookInfo.publisher")
-    .populate("bookInfo.language")
+    .populate([
+      {
+        path: "bookInfo.authors"
+      },
+      {
+        path: "bookInfo.categories"
+      },
+      {
+        path: "bookInfo.publisher"
+      },
+      {
+        path: "bookInfo.language"
+      }
+    ])
     .exec((findError, books) => {
       if (findError) {
         res.json(config.getRespData(true, MSG.internalServerErr, findError));
@@ -67,10 +77,20 @@ function bookABook(req, res) {
                   },
                   { new: true }
                 )
-                  .populate("bookInfo.authors")
-                  .populate("bookInfo.categories")
-                  .populate("bookInfo.publisher")
-                  .populate("bookInfo.language")
+                  .populate([
+                    {
+                      path: "bookInfo.authors"
+                    },
+                    {
+                      path: "bookInfo.categories"
+                    },
+                    {
+                      path: "bookInfo.publisher"
+                    },
+                    {
+                      path: "bookInfo.language"
+                    }
+                  ])
                   .exec((findOneAndUpdateError, findOneAndUpdateBookObj) => {
                     if (findOneAndUpdateError) {
                       res.json(
@@ -131,17 +151,19 @@ function bookABook(req, res) {
  */
 function findBookedBooks(res, data = {}) {
   BookedBooks.find(_.isEmpty(data) ? {} : JSON.parse(data))
-    .populate(
-      "userId",
-      "-password -emailVerified -userGroup -createdAt -readerId"
-    )
-    .populate({
-      path: "bookId",
-      populate: {
-        path:
-          "bookInfo.authors bookInfo.categories bookInfo.publisher bookInfo.language"
+    .populate([
+      {
+        path: "userId",
+        select: "-password -emailVerified -userGroup -createdAt -readerId"
+      },
+      {
+        path: "bookId",
+        populate: {
+          path:
+            "bookInfo.authors bookInfo.categories bookInfo.publisher bookInfo.language"
+        }
       }
-    })
+    ])
     .exec((findOneErr, foundBookedBooks) => {
       if (findOneErr) {
         res.json(config.getRespData(true, MSG.errorWhenFindBookedBooks, {}));

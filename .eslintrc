@@ -3,23 +3,10 @@
   "plugins": ["react", "prettier"],
   "parser": "babel-eslint",
   "rules": {
-    "react/jsx-props-no-spreading": "off",
     "no-underscore-dangle": "off",
-    "consistent-return": "off",
-    "array-callback-return": "off",
-    "func-names": "off",
-    "react/jsx-filename-extension": [
-      1,
-      {
-        "extensions": [".js", "jsx"]
-      }
-    ],
-    "prettier/prettier": "error",
-    "max-len": ["error", 9999],
     "react/prop-types": [0],
     "import/no-unresolved": "off",
-    "no-console": "warn",
-    "no-param-reassign": 0
+    "no-console": "warn"
   },
   "env": {
     "browser": true,

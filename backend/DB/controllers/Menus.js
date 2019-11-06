@@ -4,7 +4,7 @@ import MSG from "../../server/config/msgCodes";
 import Menu from "../models/Menu";
 
 function getMenus(req, res) {
-  Menu.findOne({ email: req.query.menuId }, (err, menu) => {
+  Menu.findOne({ menuName: req.params.menuName }, (err, menu) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalServerErr, err));
     } else if (!menu) {

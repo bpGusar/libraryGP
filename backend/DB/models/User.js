@@ -1,5 +1,6 @@
 import Mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import _ from "lodash";
 
 const { Schema } = Mongoose;
 
@@ -52,6 +53,26 @@ UserSchema.pre("save", function(next) {
   if (this.isNew || this.isModified("password")) {
     const document = this;
     document.readerId = new Date().getTime();
+    bcrypt.hash(
+      document.password,
+      Number(process.env.BCRYPT_SALT),
+      (err, hashedPassword) => {
+        if (err) {
+          next(err);
+        } else {
+          document.password = hashedPassword;
+          next();
+        }
+      }
+    );
+  } else {
+    next();
+  }
+});
+
+UserSchema.pre("update", function(next) {
+  if (_.has(this.getUpdate(), "password")) {
+    const document = this.getUpdate();
     bcrypt.hash(
       document.password,
       Number(process.env.BCRYPT_SALT),

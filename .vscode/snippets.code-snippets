@@ -20,5 +20,15 @@
       "});"
     ],
     "description": "Axios  post"
+  },
+  "JavaScript constructor": {
+    "prefix": "constr",
+    "body": ["constructor(props){", "  super(props)", "    $1", "}", ""],
+    "description": "Axios  post"
+  },
+  "Import styles": {
+    "prefix": "imps",
+    "body": ["import s from \"./index.module.scss\";"],
+    "description": "Fast import styles file"
   }
 }

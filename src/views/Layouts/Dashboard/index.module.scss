@@ -16,21 +16,17 @@ $sidebarWidth: 300px;
       width: $sidebarWidth !important;
       overflow: visible !important;
       background: #19537e !important;
-      .menuItem {
-        text-align: left !important;
-      }
-      .backtoToSite {
-        position: absolute;
-        width: 100%;
-        background: #24608c !important;
-        bottom: 0;
-      }
+      box-shadow: none !important;
     }
   }
-  .mainContainer {
-    padding: 20px;
-    width: 1100px !important;
-    overflow-y: scroll;
-    height: 100%;
+  .mainContainerBlock {
+    width: 100%;
+    overflow: hidden;
+    .mainContainer {
+      padding: 15px;
+      width: 1100px !important;
+      overflow-y: auto;
+      height: 94vh;
+    }
   }
 }

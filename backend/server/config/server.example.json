@@ -2,6 +2,8 @@
   "maxBooksPerOneUserBookedAndOrderedAtTheSameTime": 5,
   "theRaderCanTakeTheBookForDays": 30,
   "sendEmailNDaysBeforeBookExpires": 3,
+  "deleteBookedBookIfNDaysHavePassed": 3,
+  "cronUserId": "укажите id cron юзера, предварительно создайте его в базе",
   "emailConfig": {
     "service": "Смотрите список сервисов https://nodemailer.com/smtp/well-known/",
     "auth": {

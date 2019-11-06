@@ -13,8 +13,9 @@ app.get("/api/menus/:menuName", (req, res) => {
   MenusContr.getMenus(req, res);
 });
 
-app.put("/api/menus/:id", (req, res) => {
-  const newmenu = {
+app.post("/api/menus/", (req, res) => {
+  const MenuModel = new Menu({
+    menuName: "topMenu",
     menu: {
       always: [
         {
@@ -22,16 +23,7 @@ app.put("/api/menus/:id", (req, res) => {
           name: "Главная"
         }
       ],
-      authorized: [
-        {
-          to: "/secret",
-          name: "Секрет"
-        },
-        {
-          to: "/346345634",
-          name: "34563456345"
-        }
-      ],
+      authorized: [],
       onlyNotAuthorized: [
         {
           to: "/login",
@@ -39,8 +31,20 @@ app.put("/api/menus/:id", (req, res) => {
         }
       ]
     }
-  };
-  Menu.update({ _id: req.params.id }, { ...newmenu }, err => {
+  });
+
+  MenuModel.save(saveError => {
+    if (saveError) {
+      res.json(config.getRespData(true, MSG.cannotUpdateMenu, saveError));
+    } else {
+      res.json(config.getRespData(false, MSG.menuWasUpdated));
+    }
+  });
+});
+
+app.put("/api/menus", (req, res) => {
+  const newmenu = {};
+  Menu.update({ _id: "5db94f2e4321e23ab46dc649" }, { ...newmenu }, err => {
     if (err) {
       res.json(config.getRespData(true, MSG.cannotUpdateMenu, err));
     } else {
