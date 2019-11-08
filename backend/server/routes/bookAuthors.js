@@ -16,4 +16,14 @@ app.get("/api/book-authors", (req, res) => {
   BookAuthorsContr.findAuthors(res);
 });
 
+app.get("/api/book-authors/byid/:id", (req, res) => {
+  const { id } = req.params;
+  BookAuthorsContr.findAuthors(res, JSON.stringify({ _id: id }));
+});
+
+app.get("/api/book-authors/byname/:authorName", (req, res) => {
+  const { authorName } = req.params;
+  BookAuthorsContr.findAuthors(res, JSON.stringify({ authorName }));
+});
+
 export default app;

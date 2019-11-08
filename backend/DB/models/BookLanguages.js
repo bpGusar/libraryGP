@@ -7,6 +7,10 @@ const BookLanguagesSchema = new Schema({
     type: String,
     unique: true
   },
+  langCode: {
+    type: String,
+    unique: true
+  },
   createdAt: {
     type: Date,
     default: Date.now()

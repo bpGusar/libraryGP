@@ -45,6 +45,10 @@
       .titleLine {
         color: rgb(255, 255, 255);
       }
+      .descrBlock {
+        overflow: auto;
+        max-height: 120px;
+      }
       .descrLine {
         color: rgb(255, 255, 255);
         line-height: 23px;

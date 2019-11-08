@@ -145,7 +145,11 @@ function addBook(req, res) {
     clonedBookObj.bookInfo.imageLinks.poster = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
 
     saveBook(clonedBookObj);
-  } else {
+  } else if (
+    clonedBookObj.bookInfo.imageLinks.poster.search(
+      /^data:image\/png;base64,/
+    ) !== -1
+  ) {
     const base64Poster = clonedBookObj.bookInfo.imageLinks.poster.replace(
       /^data:image\/png;base64,/,
       ""
@@ -160,6 +164,8 @@ function addBook(req, res) {
         saveBook(clonedBookObj);
       }
     });
+  } else {
+    saveBook(clonedBookObj);
   }
 }
 

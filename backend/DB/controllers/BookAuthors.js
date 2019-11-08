@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import MSG from "../../server/config/msgCodes";
 import * as config from "../config";
 
@@ -21,7 +23,7 @@ function findOneAuthor(authorName, res) {
 
 function addOneAuthor(data, res) {
   const author = new Authors({ ...data });
-  author.save(err => {
+  author.save((err, newAuthor) => {
     if (err) {
       if (err.code === 11000) {
         res.json(config.getRespData(true, MSG.authorMustBeUnique, err));
@@ -29,7 +31,7 @@ function addOneAuthor(data, res) {
         res.json(config.getRespData(true, MSG.cantAddAuthor, err));
       }
     } else {
-      res.send(config.getRespData(false));
+      res.send(config.getRespData(false, null, newAuthor));
     }
   });
 }
@@ -38,12 +40,12 @@ function addOneAuthor(data, res) {
  * Возвращает массив авторов
  * @param res {Object} Response
  */
-function findAuthors(res) {
-  Authors.find({}, (err, author) => {
+function findAuthors(res, query = {}) {
+  Authors.find(_.isEmpty(query) ? {} : JSON.parse(query), (err, authors) => {
     if (err) {
       res.json(config.getRespData(true, MSG.internalServerErr, err));
     } else {
-      res.json(config.getRespData(false, null, author));
+      res.json(config.getRespData(false, null, authors));
     }
   });
 }

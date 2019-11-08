@@ -16,4 +16,9 @@ app.post(
   (req, res) => BookLanguagesContr.addOneLang(req.body, res)
 );
 
+app.get("/api/book-languages/bycode/:langCode", (req, res) => {
+  const { langCode } = req.params;
+  BookLanguagesContr.findBookLanguage(res, JSON.stringify({ langCode }));
+});
+
 export default app;

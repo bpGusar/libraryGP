@@ -12,7 +12,7 @@ import {
 } from "semantic-ui-react";
 import axios from "axios";
 
-import SearchResults from "@UI/Books/AddBookPage/SearchResults";
+import SearchResults from "./components/SearchResults";
 
 class FindBookPage extends React.Component {
   constructor(props) {
@@ -137,7 +137,7 @@ class FindBookPage extends React.Component {
             </Grid.Row>
           </Grid>
         </Segment>
-        {showResults && <SearchResults results={results} />}
+        {showResults && <SearchResults results={results} history={history} />}
       </>
     );
   }

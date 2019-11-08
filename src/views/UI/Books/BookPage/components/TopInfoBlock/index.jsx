@@ -1,5 +1,6 @@
 import React from "react";
 import { branch } from "baobab-react/higher-order";
+import cn from "classnames";
 
 import {
   Container,
@@ -195,7 +196,7 @@ class TopInfoBlock extends React.Component {
                   {" • "}
                   {book.bookInfo.publishedDate}
                 </Grid.Row>
-                <Grid.Row className={s.descrLine}>
+                <Grid.Row className={cn(s.descrLine, s.descrBlock)}>
                   {book.bookInfo.description}
                 </Grid.Row>
                 <Grid.Row className={s.descrLine}>

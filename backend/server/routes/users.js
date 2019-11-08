@@ -4,6 +4,7 @@ import withAuth from "../middleware";
 
 import UsersContr from "../../DB/controllers/Users";
 import BookedBooksContr from "../../DB/controllers/BookedBooks";
+import OrderedBooksContr from "../../DB/controllers/OrderedBooks";
 
 import * as config from "../../DB/config";
 
@@ -34,6 +35,16 @@ app.get(
     const { userId } = req.params;
 
     BookedBooksContr.findBookedBooks(res, JSON.stringify({ userId }));
+  }
+);
+
+app.get(
+  "/api/users/:userId/ordered-books",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => {
+    const { userId } = req.params;
+
+    OrderedBooksContr.findOrderedBooks(res, JSON.stringify({ userId }));
   }
 );
 

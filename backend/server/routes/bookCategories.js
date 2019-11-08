@@ -14,4 +14,9 @@ app.post("/api/book-categories/", (req, res) => {
   BookCategoriesContr.addOneCategory(req.body, res);
 });
 
+app.get("/api/book-categories/byname/:categoryName", (req, res) => {
+  const { categoryName } = req.params;
+  BookCategoriesContr.findCategories(res, JSON.stringify({ categoryName }));
+});
+
 export default app;

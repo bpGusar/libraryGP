@@ -5,19 +5,22 @@ import * as config from "../config";
 
 import BookPublishers from "../models/BookPublishers";
 
-function findPublishers(res) {
-  BookPublishers.find({}, (err, categories) => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.internalServerErr, err));
-    } else {
-      res.json(config.getRespData(false, null, categories));
+function findPublishers(res, query = {}) {
+  BookPublishers.find(
+    _.isEmpty(query) ? {} : JSON.parse(query),
+    (err, categories) => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.internalServerErr, err));
+      } else {
+        res.json(config.getRespData(false, null, categories));
+      }
     }
-  });
+  );
 }
 
 function addOnePublisher(data, res) {
   const publisher = new BookPublishers({ ...data });
-  publisher.save(err => {
+  publisher.save((err, newPub) => {
     if (err) {
       if (err.code === 11000) {
         res.json(config.getRespData(true, MSG.publisherMustBeUnique, err));
@@ -25,7 +28,7 @@ function addOnePublisher(data, res) {
         res.json(config.getRespData(true, MSG.cantAddNewBookCategory, err));
       }
     } else {
-      res.send(config.getRespData(false));
+      res.send(config.getRespData(false, null, newPub));
     }
   });
 }

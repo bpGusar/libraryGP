@@ -95,7 +95,8 @@ class UniqueDropdown extends React.Component {
       dropdownValueName,
       showClear,
       currentValue,
-      onChange
+      onChange,
+      error: propsError
     } = this.props;
     const { options, isLoaded, error } = this.state;
 
@@ -107,6 +108,7 @@ class UniqueDropdown extends React.Component {
             required={required}
             multiple={multiple}
             search
+            error={propsError}
             selection
             loading={!isLoaded}
             options={_.sortBy(options, ["text"])}

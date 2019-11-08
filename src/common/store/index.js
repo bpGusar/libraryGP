@@ -19,6 +19,12 @@ export const PARAMS = {
   PAGE_TITLE: "page title"
 };
 
+const bookFlag = {
+  new: "new",
+  edit: "edit",
+  google: "google"
+};
+
 export const getInitialState = () => ({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
   [PARAMS.GLOBAL_PAGE_LOADER]: true, // true значит какие то данные загружаются
@@ -45,7 +51,7 @@ export const getInitialState = () => ({
     admin: 1
   },
   [PARAMS.BOOK_TO_DB]: {
-    flag: "new",
+    flag: bookFlag.new,
     book: {
       userIdWhoAddedBookInDb: "",
       dateAdded: "",

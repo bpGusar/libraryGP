@@ -9,30 +9,31 @@ export default class Stats extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      bookedBooks: []
+      bookedBooks: [],
+      isError: false
     };
   }
 
   componentDidMount() {
-    const { userId } = this.props;
-    axs.get(`/users/${userId}/booked-books`, { params: {} }).then(resp => {
-      if (!resp.data.error) {
-        this.setState({
-          isLoading: false,
-          bookedBooks: resp.data.payload
-        });
-      }
+    const { reqTo } = this.props;
+    axs.get(reqTo).then(resp => {
+      this.setState({
+        isError: resp.data.error,
+        isLoading: false,
+        bookedBooks: resp.data.error ? [] : resp.data.payload
+      });
     });
   }
 
   render() {
-    const { isLoading, bookedBooks } = this.state;
+    const { isLoading, bookedBooks, isError } = this.state;
+    const { label } = this.props;
     return (
-      <Statistic>
+      <Statistic color={isError ? "red" : "black"}>
         <Statistic.Value>
           {isLoading ? <Icon loading name="spinner" /> : bookedBooks.length}
         </Statistic.Value>
-        <Statistic.Label>Арендовано книг</Statistic.Label>
+        <Statistic.Label>{label}</Statistic.Label>
       </Statistic>
     );
   }

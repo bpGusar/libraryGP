@@ -6,7 +6,9 @@
     "no-underscore-dangle": "off",
     "react/prop-types": [0],
     "import/no-unresolved": "off",
-    "no-console": "warn"
+    "no-console": "warn",
+    "consistent-return": "off",
+    "array-callback-return": "off"
   },
   "env": {
     "browser": true,

@@ -16,4 +16,9 @@ app.post(
   (req, res) => BookPublishersContr.addOnePublisher(req.body, res)
 );
 
+app.get("/api/book-publishers/byname/:publisherName", (req, res) => {
+  const { publisherName } = req.params;
+  BookPublishersContr.findPublishers(res, JSON.stringify({ publisherName }));
+});
+
 export default app;

@@ -60,12 +60,9 @@ class AddBookForm extends React.Component {
     const bookClone = _.cloneDeep(bookToDB);
     const { industryIdentifiers } = bookClone.book.bookInfo;
 
-    // eslint-disable-next-line consistent-return
     Object.keys(industryIdentifiers).find(key => {
       if (industryIdentifiers[key].type === e.name) {
         industryIdentifiers[key].identifier = e.value;
-      } else {
-        return false;
       }
     });
 
@@ -274,7 +271,6 @@ class AddBookForm extends React.Component {
                 }
                 label="Язык"
                 dropdownValueName="languageName"
-                showAddNewField
                 currentValue={bookInfo.language}
               />
             </Form.Group>

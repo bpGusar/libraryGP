@@ -36,12 +36,12 @@ class ProfilePage extends Component {
   }
 
   componentDidMount() {
-    const { match, userInfo } = this.props;
-    if (match.params.userId === userInfo._id) {
+    const { match, userInfoFromStore } = this.props;
+    if (match.params.userId === userInfoFromStore._id) {
       this.setState({
-        user: userInfo,
+        user: userInfoFromStore,
         isLoading: false,
-        currentUser: userInfo._id
+        currentUser: userInfoFromStore._id
       });
     } else {
       this.handleGetUserInfo();
@@ -67,7 +67,7 @@ class ProfilePage extends Component {
     return false;
   }
 
-  handleGetUserInfo = () => {
+  handleGetUserInfo() {
     const { match } = this.props;
 
     this.setState({
@@ -83,7 +83,7 @@ class ProfilePage extends Component {
         });
       }
     });
-  };
+  }
 
   render() {
     const { user, isLoading } = this.state;
@@ -119,7 +119,14 @@ class ProfilePage extends Component {
                     <Label>{userGroup[user.userGroup]}</Label>
                   </Header>
                   <Divider />
-                  <Stats userId={user._id} />
+                  <Stats
+                    label="Арендовано книг"
+                    reqTo={`/users/${user._id}/booked-books`}
+                  />
+                  <Stats
+                    label="Книг на руках"
+                    reqTo={`/users/${user._id}/ordered-books`}
+                  />
                 </Segment>
               </Grid.Column>
             </Grid.Row>
@@ -132,7 +139,7 @@ class ProfilePage extends Component {
 
 export default branch(
   {
-    userInfo: PARAMS.USER_INFO
+    userInfoFromStore: PARAMS.USER_INFO
   },
   ProfilePage
 );
