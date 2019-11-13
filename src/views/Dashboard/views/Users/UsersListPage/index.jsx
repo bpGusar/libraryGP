@@ -143,7 +143,7 @@ class UsersList extends Component {
               <Item key={user._id}>
                 <Item.Image
                   as={Link}
-                  to={`/profile/${user.login}`}
+                  to={`/profile/${user._id}`}
                   target="blanc"
                   size="tiny"
                   src={user.avatar}

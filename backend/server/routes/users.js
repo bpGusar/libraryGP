@@ -5,6 +5,8 @@ import withAuth from "../middleware";
 import UsersContr from "../../DB/controllers/Users";
 import BookedBooksContr from "../../DB/controllers/BookedBooks";
 import OrderedBooksContr from "../../DB/controllers/OrderedBooks";
+import OrderedBooksArchive from "../../DB/controllers/OrderedBooksArchive";
+import BookedBooksArchive from "../../DB/controllers/BookedBooksArchive";
 
 import * as config from "../../DB/config";
 
@@ -21,7 +23,7 @@ app.get(
 
 app.get(
   "/api/users/:userId",
-  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res, next) => withAuth(req, res, next),
   (req, res) => {
     const { userId } = req.params;
     UsersContr.findUsers(res, req, JSON.stringify({ _id: userId }));
@@ -30,7 +32,7 @@ app.get(
 
 app.get(
   "/api/users/:userId/booked-books",
-  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res, next) => withAuth(req, res, next),
   (req, res) => {
     const { userId } = req.params;
 
@@ -39,12 +41,40 @@ app.get(
 );
 
 app.get(
+  "/api/users/:userId/booked-books/archive",
+  (req, res, next) => withAuth(req, res, next),
+  (req, res) => {
+    const { userId } = req.params;
+
+    BookedBooksArchive.findBooks(
+      req,
+      res,
+      JSON.stringify({ "bookedBookInfo.userId": userId })
+    );
+  }
+);
+
+app.get(
   "/api/users/:userId/ordered-books",
-  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res, next) => withAuth(req, res, next),
   (req, res) => {
     const { userId } = req.params;
 
     OrderedBooksContr.findOrderedBooks(res, JSON.stringify({ userId }));
+  }
+);
+
+app.get(
+  "/api/users/:userId/ordered-books/archive",
+  (req, res, next) => withAuth(req, res, next),
+  (req, res) => {
+    const { userId } = req.params;
+
+    OrderedBooksArchive.findBooks(
+      req,
+      res,
+      JSON.stringify({ "orderedBookInfo.userId": userId })
+    );
   }
 );
 

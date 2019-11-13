@@ -10,7 +10,8 @@ import {
   Image,
   Button,
   Message,
-  Divider
+  Divider,
+  Select
 } from "semantic-ui-react";
 import _ from "lodash";
 
@@ -151,7 +152,7 @@ class EditUser extends Component {
       let clonedUpdateData = _.cloneDeep(updateData);
       const reg = new RegExp(/^[a-z0-9]{3,16}$/gim);
 
-      if (_.isEmpty(value)) {
+      if (value.length === 0) {
         delete clonedUpdateData[name];
       } else {
         clonedUpdateData = {
@@ -169,6 +170,13 @@ class EditUser extends Component {
       };
     });
 
+  handleGetUserGroupsOptions = userRoles =>
+    Object.keys(userRoles).map(key => ({
+      key,
+      value: userRoles[key].value,
+      text: userRoles[key].name
+    }));
+
   render() {
     const {
       errors,
@@ -180,7 +188,7 @@ class EditUser extends Component {
       isLoading
     } = this.state;
 
-    const { user, authUser } = this.props;
+    const { user, authUser, userRoles } = this.props;
 
     return (
       <>
@@ -354,6 +362,16 @@ class EditUser extends Component {
               iconPosition="left"
               label="E-mail"
             />
+            <Select
+              label="Группа пользователя"
+              name="userGroup"
+              placeholder="Select your country"
+              options={this.handleGetUserGroupsOptions(userRoles)}
+              defaultValue={updateData.userGroup}
+              onChange={(e, { value, name }) =>
+                this.handleInputChange(value, name)
+              }
+            />
           </Form.Group>
           <Form.Group widths="equal">
             <Form.Input
@@ -390,7 +408,6 @@ class EditUser extends Component {
           </Form.Group>
           <Header as="h5">Опции</Header>
           <Form.Group inline>
-            {/* <label>Отправить подтверждение email на указанную почту</label> */}
             <Form.Checkbox
               label="Отправить подтверждение email на указанную почту"
               value="sendEmail"
@@ -424,7 +441,8 @@ class EditUser extends Component {
 
 export default branch(
   {
-    authUser: PARAMS.USER_INFO
+    authUser: PARAMS.USER_INFO,
+    userRoles: PARAMS.USER_ROLES
   },
   EditUser
 );

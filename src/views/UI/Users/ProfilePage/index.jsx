@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-state */
 import React, { Component } from "react";
 import {
   Grid,
@@ -6,24 +5,26 @@ import {
   Card,
   Segment,
   Header,
-  Divider,
-  Label
+  Label,
+  Tab
 } from "semantic-ui-react";
 import { branch } from "baobab-react/higher-order";
 import { DateTime } from "luxon";
 import Loader from "@views/common/Loader";
-import Stats from "./components/Stats";
+import OrdersInfo from "./components/OrdersInfo";
+import ArchivedInfo from "./components/ArchivedInfo";
 
 import { PARAMS } from "@store";
 
 import axs from "@axios";
+
+import s from "./index.module.scss";
 
 const userGroup = {
   0: "Пользователь",
   1: "Администратор"
 };
 
-// TODO: доделать профиль
 class ProfilePage extends Component {
   constructor(props) {
     super(props);
@@ -85,8 +86,60 @@ class ProfilePage extends Component {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  renderTabContent(user) {
+    return [
+      {
+        menuItem: "Выданные и забронированные книги",
+        pane: (
+          <Tab.Pane attached={false} className={s.tabPane}>
+            <OrdersInfo
+              type="booked"
+              url={`/users/${user._id}/booked-books`}
+              label="Забронированные книги"
+            />
+            <OrdersInfo
+              type="ordered"
+              url={`/users/${user._id}/ordered-books`}
+              label="Книги на руках"
+            />
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: "История выданных",
+        pane: (
+          <Tab.Pane attached={false} className={s.tabPane}>
+            <ArchivedInfo
+              componentType="ordered"
+              dataObjPropName="orderedBookInfo"
+              url={`/users/${user._id}/ordered-books/archive`}
+            />
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: "История арендованных",
+        pane: (
+          <Tab.Pane attached={false} className={s.tabPane}>
+            <ArchivedInfo
+              componentType="booked"
+              dataObjPropName="bookedBookInfo"
+              url={`/users/${user._id}/booked-books/archive`}
+            />
+          </Tab.Pane>
+        )
+      }
+    ];
+  }
+
   render() {
     const { user, isLoading } = this.state;
+    const { userInfoFromStore, userRoles } = this.props;
+    const isMyProfileOrAdmin =
+      userInfoFromStore._id === user._id ||
+      userInfoFromStore.userGroup === userRoles.admin.value;
+
     return (
       <>
         {isLoading ? (
@@ -109,6 +162,9 @@ class ProfilePage extends Component {
                         </b>
                       </span>
                     </Card.Meta>
+                    <p>
+                      № читательского билета: <b>{user.readerId}</b>
+                    </p>
                   </Card.Content>
                 </Card>
               </Grid.Column>
@@ -118,16 +174,14 @@ class ProfilePage extends Component {
                     {user.lastName} {user.firstName} {user.patronymic}{" "}
                     <Label>{userGroup[user.userGroup]}</Label>
                   </Header>
-                  <Divider />
-                  <Stats
-                    label="Арендовано книг"
-                    reqTo={`/users/${user._id}/booked-books`}
-                  />
-                  <Stats
-                    label="Книг на руках"
-                    reqTo={`/users/${user._id}/ordered-books`}
-                  />
                 </Segment>
+                {isMyProfileOrAdmin && (
+                  <Tab
+                    renderActiveOnly={false}
+                    menu={{ secondary: true, pointing: true }}
+                    panes={this.renderTabContent(user)}
+                  />
+                )}
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -139,7 +193,8 @@ class ProfilePage extends Component {
 
 export default branch(
   {
-    userInfoFromStore: PARAMS.USER_INFO
+    userInfoFromStore: PARAMS.USER_INFO,
+    userRoles: PARAMS.USER_ROLES
   },
   ProfilePage
 );

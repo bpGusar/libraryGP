@@ -46,9 +46,18 @@ export const getInitialState = () => ({
   [PARAMS.PUBLISHERS]: [],
   [PARAMS.BOOK]: {},
   [PARAMS.USER_ROLES]: {
-    notLogged: "notLogged",
-    user: 0,
-    admin: 1
+    notLogged: {
+      value: "notLogged",
+      name: "Не залогинен"
+    },
+    user: {
+      value: 0,
+      name: "Пользователь"
+    },
+    admin: {
+      value: 1,
+      name: "Администратор"
+    }
   },
   [PARAMS.BOOK_TO_DB]: {
     flag: bookFlag.new,

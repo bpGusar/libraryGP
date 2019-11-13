@@ -10,12 +10,15 @@ export default function ResultFilters(props) {
         selection
         defaultValue={options.sort}
         onChange={(e, { value }) =>
-          _this.setState({
-            options: {
-              ...options,
-              sort: value
-            }
-          })
+          _this.setState(
+            {
+              options: {
+                ...options,
+                sort: value
+              }
+            },
+            () => _this.handleSearchBooks()
+          )
         }
         options={[
           {

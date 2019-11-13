@@ -6,15 +6,21 @@ import { getRespData } from "../DB/config";
 
 import User from "../DB/models/User";
 
+/**
+ * Middleware функция для верификации доступа к определенным URL API.
+ * @param {Object} req Express request
+ * @param {Object} res Express response
+ * @param {Function} next
+ * @param {Array} accessRoles Роли доступа. Если не указать то будет выполнена проверка лишь на авторизацию пользователя.
+ */
 const withAuth = (req, res, next, accessRoles = []) => {
   const token =
     req.body.token ||
     req.query.token ||
     req.headers["x-access-token"] ||
     req.cookies.token;
-  // TODO: сделать проверку доступа на основе списка разрешенных URL из базы данных
 
-  // присутствует проверка на существование пользователя в БД И его группы
+  // присутствует проверка на существование пользователя в БД и его группы
   // изза того что в local storage мог храниться валидный токен а сам пользователь из базы удален
   // могла возникать ошибка
   if (!token) {
