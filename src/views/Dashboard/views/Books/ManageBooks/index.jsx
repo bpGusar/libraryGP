@@ -247,6 +247,9 @@ class ManageBooks extends Component {
     } = this.state;
     return (
       <Segment.Group>
+        <Segment>
+          <Header as="h3">Список книг</Header>
+        </Segment>
         <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
             <Form.Input

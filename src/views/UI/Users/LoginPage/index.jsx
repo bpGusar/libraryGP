@@ -1,3 +1,5 @@
+/* eslint-disable no-script-url */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -128,7 +130,6 @@ class loginPage extends Component {
               iconPosition="left"
               label="Пароль"
             />
-
             <Form.Field>
               <Checkbox
                 name="rememberMe"
@@ -147,6 +148,10 @@ class loginPage extends Component {
             >
               Войти
             </Button>
+            <br />
+            <center>
+              <Link to="/reset-password">Забыли пароль?</Link>
+            </center>
           </Segment>
         </Form>
         <Message>

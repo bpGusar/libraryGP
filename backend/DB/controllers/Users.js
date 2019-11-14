@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import fs from "fs-extra";
 import _ from "lodash";
+import uniqid from "uniqid";
 
 import User from "../models/User";
 
@@ -12,6 +13,7 @@ import MSG from "../../server/config/msgCodes";
 import servConf from "../../server/config/server.json";
 
 import { EmailVerifyTemplate } from "../../server/emailTemplates/EmailVerify";
+import { ResetPasswordEmail } from "../../server/emailTemplates/ResetPassword";
 
 const transporter = nodemailer.createTransport(servConf.emailConfig);
 
@@ -259,10 +261,42 @@ function emailVerification(req, res) {
   });
 }
 
+function resetPassword(req, res) {
+  const { email } = req.body;
+
+  const newPassword = uniqid();
+  User.findOne({ email }, (findOneError, user) => {
+    if (findOneError) {
+      res.json(config.getRespData(true, MSG.internalServerErr, findOneError));
+    } else if (!user) {
+      res.json(config.getRespData(true));
+    } else {
+      User.updateOne({ email }, { password: newPassword }, err => {
+        if (err) {
+          res.json(config.getRespData(true, MSG.userUpdateError, err));
+        } else {
+          transporter.sendMail(ResetPasswordEmail(email, newPassword), function(
+            emailSentError
+          ) {
+            if (emailSentError) {
+              res.json(
+                config.getRespData(true, MSG.internalServerErr, emailSentError)
+              );
+            } else {
+              res.send(config.getRespData(false));
+            }
+          });
+        }
+      });
+    }
+  });
+}
+
 export default {
   findUsers,
   addNewUser,
   emailVerification,
   logInUser,
-  updateUser
+  updateUser,
+  resetPassword
 };

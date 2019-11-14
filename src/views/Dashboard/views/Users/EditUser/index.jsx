@@ -10,10 +10,11 @@ import {
   Image,
   Button,
   Message,
-  Divider,
-  Select
+  Divider
 } from "semantic-ui-react";
 import _ from "lodash";
+
+import CustomSelect from "@views/common/CustomSelect";
 
 import MSG from "@msg";
 import axs from "@axios";
@@ -362,15 +363,13 @@ class EditUser extends Component {
               iconPosition="left"
               label="E-mail"
             />
-            <Select
+            <CustomSelect
               label="Группа пользователя"
               name="userGroup"
               placeholder="Select your country"
               options={this.handleGetUserGroupsOptions(userRoles)}
               defaultValue={updateData.userGroup}
-              onChange={(e, { value, name }) =>
-                this.handleInputChange(value, name)
-              }
+              onChange={this.handleInputChange}
             />
           </Form.Group>
           <Form.Group widths="equal">

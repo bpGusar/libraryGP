@@ -98,6 +98,10 @@ app.post("/api/users/service/login", (req, res) =>
   UsersContr.logInUser(req, res)
 );
 
+app.post("/api/users/service/reset-password", (req, res) =>
+  UsersContr.resetPassword(req, res)
+);
+
 /**
  * проверяет токен пользователя и если все норм то на фронт уйдет error false а если токен не валидный то error true
  * и на фронте уже можно делать манипуляции с этими данными

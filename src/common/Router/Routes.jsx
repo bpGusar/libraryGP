@@ -12,6 +12,7 @@ import Dashboard from "@views/Layouts/Dashboard/index";
 /** вьюхи сайта */
 import LoginPage from "@UI/Users/LoginPage";
 import RegistrationPage from "@UI/Users/RegistrationPage/index";
+import ResetPasswordPage from "@UI/Users/ResetPasswordPage";
 import MainPage from "@UI/MainPage";
 import InfoPage from "@views/common/InfoPage";
 import BookPage from "@UI/Books/BookPage";
@@ -156,6 +157,12 @@ function AppRotes(props) {
         path="/signup"
         layout={LoginAndRegister}
         component={RegistrationPage}
+      />
+      <AppRoute
+        exact
+        path="/reset-password"
+        layout={LoginAndRegister}
+        component={ResetPasswordPage}
       />
       <AppRoute
         exact

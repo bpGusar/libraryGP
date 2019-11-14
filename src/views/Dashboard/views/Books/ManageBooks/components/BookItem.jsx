@@ -35,26 +35,29 @@ export default function BookItem(props) {
             {book.bookInfo.authors.map(el => el.authorName).join(", ")}
           </span>
         </Item.Meta>
+        <Item.Description>
+          {book.bookInfo.description.substring(0, 200)}...
+        </Item.Description>
         <Item.Extra>
-          <Label>
+          <Label color="blue">
             <Icon name="calendar" />
             Опубликовано: {book.bookInfo.publishedDate}
           </Label>
-          <Label>
+          <Label color="brown">
             <Icon name="calendar" />
             Добавлено: {book.dateAdded}
           </Label>
-          <Label>
+          <Label color="black">
             <Icon name="window restore" />
             Издатель:{" "}
             {book.bookInfo.publisher.map(el => el.publisherName).join(", ")}
           </Label>
-          <Label>
+          <Label color="green">
             <Icon name="unordered list" />
             Категория:{" "}
             {book.bookInfo.categories.map(el => el.categoryName).join(", ")}
           </Label>
-          <Label>
+          <Label color="orange">
             <Icon name="language" />
             Язык: {book.bookInfo.language.map(el => el.languageName).join(", ")}
           </Label>

@@ -8,7 +8,8 @@ import {
   Item,
   Dropdown,
   Modal,
-  Divider
+  Divider,
+  Label
 } from "semantic-ui-react";
 import _ from "lodash";
 import { Link } from "react-router-dom";
@@ -177,11 +178,13 @@ class UsersList extends Component {
                       </Dropdown.Menu>
                     </Dropdown>
                   </Item.Header>
-                  <Item.Meta>Description</Item.Meta>
-                  <Item.Description>
-                    {/* <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" /> */}
-                  </Item.Description>
-                  <Item.Extra>Additional Details</Item.Extra>
+                  <Item.Meta>{user.readerId}</Item.Meta>
+                  <Item.Extra>
+                    <Label color="blue">
+                      <Icon name="calendar" />
+                      Email: {user.email}
+                    </Label>
+                  </Item.Extra>
                 </Item.Content>
               </Item>
             ))}
