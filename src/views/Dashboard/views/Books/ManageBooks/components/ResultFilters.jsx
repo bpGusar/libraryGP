@@ -2,24 +2,14 @@ import React from "react";
 import { Form } from "semantic-ui-react";
 
 export default function ResultFilters(props) {
-  const { options, _this } = props;
+  const { options, onChangeLimit, onChangeSort } = props;
   return (
     <Form.Group widths="equal">
       <Form.Dropdown
         label="Сортировка"
         selection
         defaultValue={options.sort}
-        onChange={(e, { value }) =>
-          _this.setState(
-            {
-              options: {
-                ...options,
-                sort: value
-              }
-            },
-            () => _this.handleSearchBooks()
-          )
-        }
+        onChange={(e, { value }) => onChangeSort(value)}
         options={[
           {
             key: "asc",
@@ -39,14 +29,7 @@ export default function ResultFilters(props) {
         max={99}
         min={1}
         defaultValue={options.limit}
-        onChange={(e, { value }) =>
-          _this.setState({
-            options: {
-              ...options,
-              limit: Number(value)
-            }
-          })
-        }
+        onChange={(e, { value }) => onChangeLimit(value)}
       />
     </Form.Group>
   );

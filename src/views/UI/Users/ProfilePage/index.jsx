@@ -1,18 +1,14 @@
+/* eslint-disable react/sort-comp */
+/* eslint-disable react/no-unused-state */
 import React, { Component } from "react";
-import {
-  Grid,
-  Image,
-  Card,
-  Segment,
-  Header,
-  Label,
-  Tab
-} from "semantic-ui-react";
+import { Grid, Segment, Header, Label, Tab, Button } from "semantic-ui-react";
 import { branch } from "baobab-react/higher-order";
-import { DateTime } from "luxon";
+
 import Loader from "@views/common/Loader";
 import OrdersInfo from "./components/OrdersInfo";
 import ArchivedInfo from "./components/ArchivedInfo";
+import EditUser from "./components/EditUser";
+import Avatar from "./components/Avatar";
 
 import { PARAMS } from "@store";
 
@@ -32,7 +28,8 @@ class ProfilePage extends Component {
     this.state = {
       isLoading: true,
       user: {},
-      currentUser: ""
+      currentUser: "",
+      oldAvatar: ""
     };
   }
 
@@ -41,6 +38,7 @@ class ProfilePage extends Component {
     if (match.params.userId === userInfoFromStore._id) {
       this.setState({
         user: userInfoFromStore,
+        oldAvatar: userInfoFromStore.avatar,
         isLoading: false,
         currentUser: userInfoFromStore._id
       });
@@ -79,6 +77,7 @@ class ProfilePage extends Component {
       if (!resp.data.error) {
         this.setState({
           user: resp.data.payload[0],
+          oldAvatar: resp.data.payload[0].avatar,
           isLoading: false,
           currentUser: resp.data.payload[0].userId
         });
@@ -133,8 +132,46 @@ class ProfilePage extends Component {
     ];
   }
 
+  handleAvatarChange = data =>
+    this.setState(prevState => ({
+      user: {
+        ...prevState.user,
+        avatar: data
+      }
+    }));
+
+  handleCancelAvatarChange = () => {
+    const { oldAvatar, user } = this.state;
+    this.setState({
+      user: {
+        ...user,
+        avatar: oldAvatar
+      }
+    });
+  };
+
+  handleSaveAvatar = () => {
+    const { user: updateData } = this.state;
+
+    axs.put("/users", { send_email: false, updateData }).then(resp => {
+      if (!resp.data.error) {
+        this.handleGetUserInfo();
+      }
+    });
+  };
+
+  deleteAvatar = () => {
+    const { user } = this.state;
+    this.setState({
+      user: {
+        ...user,
+        avatar: ""
+      }
+    });
+  };
+
   render() {
-    const { user, isLoading } = this.state;
+    const { user, isLoading, oldAvatar } = this.state;
     const { userInfoFromStore, userRoles } = this.props;
     const isMyProfileOrAdmin =
       userInfoFromStore._id === user._id ||
@@ -148,25 +185,17 @@ class ProfilePage extends Component {
           <Grid>
             <Grid.Row>
               <Grid.Column width={4}>
-                <Card>
-                  <Image src={user.avatar} wrapped ui={false} />
-                  <Card.Content>
-                    <Card.Header>{user.login}</Card.Header>
-                    <Card.Meta>
-                      <span className="date">
-                        Дата регистрации:{" "}
-                        <b>
-                          {DateTime.fromISO(user.createdAt)
-                            .setLocale("ru")
-                            .toFormat("dd LLL yyyy")}
-                        </b>
-                      </span>
-                    </Card.Meta>
-                    <p>
-                      № читательского билета: <b>{user.readerId}</b>
-                    </p>
-                  </Card.Content>
-                </Card>
+                <Avatar
+                  user={user}
+                  onDelete={this.deleteAvatar}
+                  onChange={this.handleAvatarChange}
+                  onCancelChange={this.handleCancelAvatarChange}
+                  onSave={this.handleSaveAvatar}
+                  oldAvatar={oldAvatar}
+                />
+                <EditUser
+                  trigger={<Button fluid>Редактировать профиль</Button>}
+                />
               </Grid.Column>
               <Grid.Column width={12}>
                 <Segment>

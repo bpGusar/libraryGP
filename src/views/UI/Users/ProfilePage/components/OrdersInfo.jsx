@@ -1,7 +1,9 @@
+/* eslint-disable class-methods-use-this */
 import React, { Component } from "react";
-import { Segment, Header, List, Image, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
+
+import { Segment, Header, List, Image, Label, Button } from "semantic-ui-react";
 
 import axs from "@axios";
 
@@ -17,6 +19,7 @@ export default class OrdersInfo extends Component {
     super(props);
     this.state = {
       isLoading: true,
+      isCancelingInPropgress: {},
       books: []
     };
   }
@@ -35,9 +38,42 @@ export default class OrdersInfo extends Component {
     });
   }
 
+  handleCancelReservation(bookedBook) {
+    const { isCancelingInPropgress } = this.state;
+    this.setState({
+      isCancelingInPropgress: {
+        ...isCancelingInPropgress,
+        [bookedBook._id]: "loading"
+      }
+    });
+    axs
+      .post(`/booked-books/cancel-reservation`, {
+        bookedBookInfo: {
+          createdAt: bookedBook.createdAt,
+          bookId: bookedBook.bookId._id,
+          userId: bookedBook.userId._id,
+          readerId: bookedBook.readerId
+        },
+        status: "canceled",
+        comment: "Отмена по инициативе пользователя"
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          this.setState({
+            isCancelingInPropgress: {
+              ...isCancelingInPropgress,
+              [bookedBook._id]: "done"
+            }
+          });
+        }
+      });
+  }
+
   render() {
-    const { books, isLoading } = this.state;
+    const { books, isLoading, isCancelingInPropgress } = this.state;
     const { label, type } = this.props;
+    const isOrdered = type === "ordered";
+    const isBooked = type === "booked";
 
     return (
       <>
@@ -55,14 +91,36 @@ export default class OrdersInfo extends Component {
                   bookId: { bookInfo }
                 } = book;
                 return (
-                  <List.Item key={book._id}>
+                  <List.Item
+                    key={book._id}
+                    disabled={isCancelingInPropgress[book._id] === "done"}
+                    style={{
+                      opacity:
+                        isCancelingInPropgress[book._id] === "done" && 0.3
+                    }}
+                  >
+                    <List.Content floated="right">
+                      {isBooked && (
+                        <Button
+                          onClick={() => this.handleCancelReservation(book)}
+                          content="Удалить"
+                          icon="remove"
+                          labelPosition="left"
+                          secondary
+                          disabled={isCancelingInPropgress[book._id] === "done"}
+                          loading={
+                            isCancelingInPropgress[book._id] === "loading"
+                          }
+                        />
+                      )}
+                    </List.Content>
                     <Image avatar src={bookInfo.imageLinks.poster} />
                     <List.Content>
                       <List.Header as={Link} to={`/book/${bookId._id}`}>
                         {bookInfo.title}
                       </List.Header>
                       <List.Description as={Link} to={`/book/${bookId._id}`}>
-                        {type === "ordered" && (
+                        {isOrdered && (
                           <span>
                             {" "}
                             Книга на руках до:{" "}
@@ -73,7 +131,7 @@ export default class OrdersInfo extends Component {
                             </b>
                           </span>
                         )}
-                        {type === "booked" && (
+                        {isBooked && (
                           <span>
                             Книга забронирована до:{" "}
                             <b>

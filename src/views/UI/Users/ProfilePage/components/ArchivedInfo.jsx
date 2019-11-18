@@ -8,6 +8,7 @@ import {
   Label
 } from "semantic-ui-react";
 import { DateTime } from "luxon";
+import _ from "lodash";
 
 import Pagination from "./Pagination";
 
@@ -74,6 +75,9 @@ export default class ArchivedInfo extends Component {
   render() {
     const { isLoading, archivedBooks, maxElements, options } = this.state;
     const { dataObjPropName, componentType } = this.props;
+    const isRejected = archivedBook => archivedBook.status === "rejected";
+    const isOrdered = archivedBook => archivedBook.status === "ordered";
+    const isCanceled = archivedBook => archivedBook.status === "canceled";
 
     return (
       <>
@@ -87,6 +91,11 @@ export default class ArchivedInfo extends Component {
               <List divided relaxed>
                 {archivedBooks.map(archivedBook => {
                   const bookInfoProp = archivedBook[dataObjPropName];
+                  if (
+                    _.isNull(bookInfoProp.bookId) ||
+                    _.isNull(bookInfoProp.userId)
+                  )
+                    return;
                   const {
                     bookId: { bookInfo }
                   } = bookInfoProp;
@@ -98,11 +107,17 @@ export default class ArchivedInfo extends Component {
                         <List.Header>
                           {bookInfo.title}{" "}
                           {componentType === "booked" &&
-                            (archivedBook.status === "rejected" ? (
+                            isRejected(archivedBook) && (
                               <Label color="red">Отказ</Label>
-                            ) : (
+                            )}
+                          {componentType === "booked" &&
+                            isOrdered(archivedBook) && (
                               <Label color="green">Выдана</Label>
-                            ))}
+                            )}
+                          {componentType === "booked" &&
+                            isCanceled(archivedBook) && (
+                              <Label color="grey">Отмена</Label>
+                            )}
                         </List.Header>
                         <List.Description>
                           {componentType === "ordered" && (
@@ -126,7 +141,7 @@ export default class ArchivedInfo extends Component {
                           )}
                           {componentType === "booked" && (
                             <>
-                              {archivedBook.status === "rejected" && (
+                              {isRejected && (
                                 <p>Причина отказа: {archivedBook.comment}</p>
                               )}
                               <p>

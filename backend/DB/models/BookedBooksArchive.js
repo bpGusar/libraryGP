@@ -24,7 +24,7 @@ const BookedBooksArchiveSchema = new Schema({
   status: {
     type: String,
     required: true,
-    enum: ["rejected", "ordered"]
+    enum: ["rejected", "ordered", "canceled"]
   },
   comment: {
     type: String,

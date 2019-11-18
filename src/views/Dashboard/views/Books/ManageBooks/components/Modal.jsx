@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Header, Button, Icon, Message, Label } from "semantic-ui-react";
 
 export default function ModalWindow(props) {
-  const { deleteBookModal, _this } = props;
+  const { deleteBookModal, onBookDeleteClick } = props;
 
   return (
     <Modal open={deleteBookModal.open} size="small">
@@ -47,7 +47,7 @@ export default function ModalWindow(props) {
           disabled={deleteBookModal.isLoading}
           basic
           color="grey"
-          onClick={() => _this.deleteBook(false)}
+          onClick={() => onBookDeleteClick(false)}
         >
           <Icon name="remove" /> Нет
         </Button>
@@ -59,7 +59,7 @@ export default function ModalWindow(props) {
           }
           loading={deleteBookModal.isLoading}
           color="red"
-          onClick={() => _this.deleteBook(true)}
+          onClick={() => onBookDeleteClick(true)}
         >
           <Icon name="checkmark" /> Удалить
         </Button>

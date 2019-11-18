@@ -5,8 +5,8 @@ import withAuth from "../middleware";
 import UsersContr from "../../DB/controllers/Users";
 import BookedBooksContr from "../../DB/controllers/BookedBooks";
 import OrderedBooksContr from "../../DB/controllers/OrderedBooks";
-import OrderedBooksArchive from "../../DB/controllers/OrderedBooksArchive";
-import BookedBooksArchive from "../../DB/controllers/BookedBooksArchive";
+import OrderedBooksArchiveContr from "../../DB/controllers/OrderedBooksArchive";
+import BookedBooksArchiveContr from "../../DB/controllers/BookedBooksArchive";
 
 import * as config from "../../DB/config";
 
@@ -46,7 +46,7 @@ app.get(
   (req, res) => {
     const { userId } = req.params;
 
-    BookedBooksArchive.findBooks(
+    BookedBooksArchiveContr.findBooks(
       req,
       res,
       JSON.stringify({ "bookedBookInfo.userId": userId })
@@ -70,7 +70,7 @@ app.get(
   (req, res) => {
     const { userId } = req.params;
 
-    OrderedBooksArchive.findBooks(
+    OrderedBooksArchiveContr.findBooks(
       req,
       res,
       JSON.stringify({ "orderedBookInfo.userId": userId })
@@ -80,7 +80,7 @@ app.get(
 
 app.put(
   "/api/users",
-  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res, next) => withAuth(req, res, next),
   (req, res) => UsersContr.updateUser(req, res)
 );
 

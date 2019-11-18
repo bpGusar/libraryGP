@@ -93,6 +93,33 @@ class UsersList extends Component {
       });
   };
 
+  handlePageChange = data =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          page: data.activePage
+        }
+      }),
+      () => this.handleSubmitForm()
+    );
+
+  handleSortChange = value =>
+    this.setState(ps => ({
+      options: {
+        ...ps.options,
+        sort: value
+      }
+    }));
+
+  handleLimitChange = value =>
+    this.setState(ps => ({
+      options: {
+        ...ps.options,
+        limit: Number(value)
+      }
+    }));
+
   render() {
     const { users, isLoading, options, maxElements } = this.state;
     const { history } = this.props;
@@ -135,7 +162,11 @@ class UsersList extends Component {
               Поиск
             </Button>
             <Divider />
-            <ResultFilters options={options} _this={this} />
+            <ResultFilters
+              options={options}
+              onSortChange={this.handleSortChange}
+              onLimitChange={this.handleLimitChange}
+            />
           </Form>
         </Segment>
         <Segment loading={isLoading}>
@@ -195,7 +226,7 @@ class UsersList extends Component {
             <PaginationBlock
               options={options}
               maxElements={maxElements}
-              _this={this}
+              onPageChange={this.handlePageChange}
             />
           </Segment>
         )}

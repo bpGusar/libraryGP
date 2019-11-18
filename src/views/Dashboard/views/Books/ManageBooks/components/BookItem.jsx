@@ -2,7 +2,7 @@ import React from "react";
 import { Item, Label, Icon, Dropdown } from "semantic-ui-react";
 
 export default function BookItem(props) {
-  const { book, _this } = props;
+  const { book, onDeleteClick, onEditClick } = props;
   return (
     <Item>
       <Item.Image
@@ -19,13 +19,13 @@ export default function BookItem(props) {
               <Dropdown.Item
                 text="Редактировать"
                 icon="pencil alternate"
-                onClick={() => _this.putBookDataInToStore(book)}
+                onClick={() => onEditClick(book)}
               />
               <Dropdown.Divider />
               <Dropdown.Item
                 text="Удалить"
                 icon="close"
-                onClick={() => _this.manageConfirmWindow(book)}
+                onClick={() => onDeleteClick(book)}
               />
             </Dropdown.Menu>
           </Dropdown>

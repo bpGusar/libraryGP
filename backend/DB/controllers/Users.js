@@ -101,7 +101,23 @@ function findUsers(res, req, query = {}, selectParams = "") {
 }
 
 function updateUser(req, res) {
+  const { middlewareUserInfo } = req;
   const { updateData, send_email } = req.body;
+
+  if (
+    middlewareUserInfo.userGroup !== 1 &&
+    middlewareUserInfo._id !== updateData._id
+  ) {
+    res.json(
+      config.getRespData(true, MSG.userUpdateError, "Это ваще законно?")
+    );
+    return;
+  }
+
+  if ((!_.isUndefined(send_email) && send_email) || _.isUndefined(send_email)) {
+    updateData.emailVerified = false;
+  }
+
   let clonedUserData = _.cloneDeep(updateData);
   const detectNewAvatar = clonedUserData.avatar.search("base64");
 
@@ -138,7 +154,11 @@ function updateUser(req, res) {
     };
   }
 
-  if (detectNewAvatar !== -1) {
+  if (clonedUserData.avatar === "") {
+    clonedUserData.avatar = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
+
+    saveUser(clonedUserData);
+  } else if (detectNewAvatar !== -1) {
     const base64Poster = clonedUserData.avatar.replace(
       /^data:image\/png;base64,/,
       ""

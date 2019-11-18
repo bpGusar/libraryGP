@@ -33,7 +33,7 @@ export default class ManageBookedBooks extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.initState = {
       readerId: "",
       books: [],
       isDataLoading: false,
@@ -52,6 +52,8 @@ export default class ManageBookedBooks extends Component {
         rejectingInProgress: {}
       }
     };
+
+    this.state = this.initState;
   }
 
   handleSubmitForm(e, getQuery) {
@@ -66,7 +68,7 @@ export default class ManageBookedBooks extends Component {
     }
 
     this.setState({
-      books: [],
+      ...this.initState,
       isDataLoading: true,
       resultsFor: _.isEmpty(getQuery) ? resultsForEnum.all : readerId
     });
@@ -146,9 +148,12 @@ export default class ManageBookedBooks extends Component {
     });
 
     axs
-      .post(`/booked-books/reject-ordering`, {
+      .post(`/booked-books/cancel-reservation`, {
         bookedBookInfo: {
-          ...bookedBook
+          createdAt: bookedBook.createdAt,
+          bookId: bookedBook.bookId._id,
+          userId: bookedBook.userId._id,
+          readerId: bookedBook.readerId
         },
         status: "rejected",
         comment: _.isUndefined(rejecting.rejectMsgs[`${bookedBook._id}-msg`])

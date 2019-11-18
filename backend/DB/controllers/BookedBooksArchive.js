@@ -20,14 +20,14 @@ function rejectOrdering(bookedBookData, res) {
           cb =>
             BookedBooks.deleteOne(
               {
-                bookId: bookedBookData.bookedBookInfo.bookId._id,
+                bookId: bookedBookData.bookedBookInfo.bookId,
                 readerId: bookedBookData.bookedBookInfo.readerId
               },
               cb
             ),
           cb =>
             Book.findOneAndUpdate(
-              { _id: bookedBookData.bookedBookInfo.bookId._id },
+              { _id: bookedBookData.bookedBookInfo.bookId },
               {
                 $inc: { "stockInfo.freeForBooking": 1 }
               },

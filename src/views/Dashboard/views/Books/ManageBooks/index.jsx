@@ -87,7 +87,7 @@ class ManageBooks extends Component {
       });
   };
 
-  handleClick = (e, titleProps) =>
+  handleAccordionClick = (e, titleProps) =>
     this.setState(prevState => {
       const { index } = titleProps;
       const { activeAccordionIndex } = prevState;
@@ -119,55 +119,37 @@ class ManageBooks extends Component {
       };
     });
 
-  putBookDataInToStore(currentBook) {
-    const { dispatch, history, bookToDB } = this.props;
-
-    this.setState({
-      isLoading: true
-    });
-
-    axs
-      .get(`/books/${currentBook._id}`, {
-        params: {
-          options: { fetch_type: 0 }
+  handleChangeSortType = value =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          sort: value
         }
-      })
-      .then(resp => {
-        if (!resp.data.error) {
-          const clonedResp = resp;
-          delete clonedResp.data.payload[0].__v;
+      }),
+      () => this.handleSearchBooks()
+    );
 
-          this.setState(
-            {
-              isLoading: false
-            },
-            () => {
-              dispatch(storeData, PARAMS.BOOK_TO_DB, {
-                ...bookToDB,
-                flag: "edit",
-                book: {
-                  ...clonedResp.data.payload[0]
-                }
-              });
-              history.push("/dashboard/books/new");
-            }
-          );
+  handleChangeLimit = value =>
+    this.setState(prevState => ({
+      options: {
+        ...prevState.options,
+        limit: Number(value)
+      }
+    }));
+
+  handlePageChange = data =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          page: data.activePage
         }
-      });
-  }
+      }),
+      () => this.handleSearchBooks()
+    );
 
-  manageConfirmWindow(book) {
-    const { deleteBookModal } = this.state;
-    this.setState({
-      deleteBookModal: {
-        ...deleteBookModal,
-        open: true
-      },
-      bookToDeleteId: book._id
-    });
-  }
-
-  deleteBook(deleteBook) {
+  deleteBook = deleteBook => {
     const { bookToDeleteId, deleteBookModal } = this.state;
 
     if (deleteBook) {
@@ -225,13 +207,66 @@ class ManageBooks extends Component {
         }
       });
     }
+  };
+
+  putBookDataInToStore(currentBook) {
+    const { dispatch, history, bookToDB } = this.props;
+
+    this.setState({
+      isLoading: true
+    });
+
+    axs
+      .get(`/books/${currentBook._id}`, {
+        params: {
+          options: { fetch_type: 0 }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          const clonedResp = resp;
+          delete clonedResp.data.payload[0].__v;
+
+          this.setState(
+            {
+              isLoading: false
+            },
+            () => {
+              dispatch(storeData, PARAMS.BOOK_TO_DB, {
+                ...bookToDB,
+                flag: "edit",
+                book: {
+                  ...clonedResp.data.payload[0]
+                }
+              });
+              history.push("/dashboard/books/new");
+            }
+          );
+        }
+      });
+  }
+
+  manageConfirmWindow(book) {
+    const { deleteBookModal } = this.state;
+    this.setState({
+      deleteBookModal: {
+        ...deleteBookModal,
+        open: true
+      },
+      bookToDeleteId: book._id
+    });
   }
 
   renderBookList() {
     const { books } = this.state;
 
     return books.map(book => (
-      <BookItem key={book._id} book={book} _this={this} />
+      <BookItem
+        key={book._id}
+        book={book}
+        onEditClick={data => this.putBookDataInToStore(data)}
+        onDeleteClick={data => this.manageConfirmWindow(data)}
+      />
     ));
   }
 
@@ -268,7 +303,12 @@ class ManageBooks extends Component {
             <Filters
               activeAccordionIndex={activeAccordionIndex}
               searchQuery={searchQuery}
-              _this={this}
+              onChangeSearchQuery={(value, name) =>
+                this.handleChangeSearchQuery(value, name)
+              }
+              onClickAccorion={(e, titleProp) =>
+                this.handleAccordionClick(e, titleProp)
+              }
             />
             <Divider />
             <Button icon type="submit" primary labelPosition="left">
@@ -276,7 +316,11 @@ class ManageBooks extends Component {
               Поиск
             </Button>
             <Divider />
-            <ResultFilters options={options} _this={this} />
+            <ResultFilters
+              options={options}
+              onChangeSort={this.handleChangeSortType}
+              onChangeLimit={this.handleChangeLimit}
+            />
           </Form>
         </Segment>
         <Segment placeholder={_.isEmpty(books)} loading={isLoading}>
@@ -293,13 +337,16 @@ class ManageBooks extends Component {
         {!_.isEmpty(books) && (
           <Segment>
             <PaginationBlock
+              onPageChange={this.handlePageChange}
               options={options}
               maxElements={maxElements}
-              _this={this}
             />
           </Segment>
         )}
-        <ModalWindow deleteBookModal={deleteBookModal} _this={this} />
+        <ModalWindow
+          deleteBookModal={deleteBookModal}
+          onBookDeleteClick={this.deleteBook}
+        />
       </Segment.Group>
     );
   }

@@ -7,13 +7,18 @@ import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
 import { PARAMS } from "@store";
 
 export default function Filters(props) {
-  const { activeAccordionIndex, _this, searchQuery } = props;
+  const {
+    activeAccordionIndex,
+    onChangeSearchQuery,
+    onClickAccorion,
+    searchQuery
+  } = props;
   return (
     <Accordion className="mb-3">
       <Accordion.Title
         active={activeAccordionIndex === 0}
         index={0}
-        onClick={_this.handleClick}
+        onClick={(e, titleProp) => onClickAccorion(e, titleProp)}
       >
         <Icon name="dropdown" />
         Дополнительные фильтры
@@ -26,9 +31,7 @@ export default function Filters(props) {
             storeParam={PARAMS.AUTHORS}
             multiple
             required
-            onChange={value =>
-              _this.handleChangeSearchQuery(value, "bookInfo.authors")
-            }
+            onChange={value => onChangeSearchQuery(value, "bookInfo.authors")}
             label="Автор"
             dropdownValueName="authorName"
             showClear
@@ -44,9 +47,7 @@ export default function Filters(props) {
             storeParam={PARAMS.PUBLISHERS}
             multiple
             required
-            onChange={value =>
-              _this.handleChangeSearchQuery(value, "bookInfo.publisher")
-            }
+            onChange={value => onChangeSearchQuery(value, "bookInfo.publisher")}
             label="Издательство"
             dropdownValueName="publisherName"
             showClear
@@ -63,7 +64,7 @@ export default function Filters(props) {
             multiple
             required
             onChange={value =>
-              _this.handleChangeSearchQuery(value, "bookInfo.categories")
+              onChangeSearchQuery(value, "bookInfo.categories")
             }
             label="Категория"
             dropdownValueName="categoryName"
@@ -80,9 +81,7 @@ export default function Filters(props) {
             storeParam={PARAMS.LANGUAGES}
             multiple
             required
-            onChange={value =>
-              _this.handleChangeSearchQuery(value, "bookInfo.language")
-            }
+            onChange={value => onChangeSearchQuery(value, "bookInfo.language")}
             label="Язык"
             dropdownValueName="languageName"
             showClear

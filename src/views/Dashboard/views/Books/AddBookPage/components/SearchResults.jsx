@@ -31,7 +31,6 @@ class SearchResults extends React.Component {
     };
 
     const promises = [];
-
     data.forEach(el =>
       promises.push(
         axs.get(`${url}${el}`).then(resp => {
@@ -50,9 +49,9 @@ class SearchResults extends React.Component {
       )
     );
 
-    return new Promise(resolve => {
-      Promise.all(promises).then(() => resolve(results));
-    });
+    return new Promise(resolve =>
+      Promise.all(promises).then(() => resolve(results))
+    );
   }
 
   constructor(props) {
@@ -124,7 +123,10 @@ class SearchResults extends React.Component {
 
     const generatePromiseArr = dataList => {
       dataList.forEach(el => {
-        if (_.has(book.volumeInfo, el.name)) {
+        if (
+          _.has(book.volumeInfo, el.name) &&
+          !_.isEmpty(book.volumeInfo[el.name])
+        ) {
           promises.push(
             SearchResults.handleFindInfoInDB(
               el.url,
@@ -265,7 +267,11 @@ class SearchResults extends React.Component {
             <ResultsModal
               modalOpen={modalOpen}
               dbResp={dbResp}
-              _this={this}
+              onModalClose={() =>
+                this.setState({
+                  modalOpen: false
+                })
+              }
               history={history}
             />
           </>

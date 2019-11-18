@@ -73,18 +73,10 @@ class ResultsModal extends Component {
   }
 
   render() {
-    const { modalOpen, dbResp, _this, history } = this.props;
+    const { modalOpen, dbResp, history, onModalClose } = this.props;
     const { isLoading, someLoading } = this.state;
     return (
-      <Modal
-        open={modalOpen}
-        onClose={() =>
-          _this.setState({
-            modalOpen: false
-          })
-        }
-        size="small"
-      >
+      <Modal open={modalOpen} onClose={() => onModalClose()} size="small">
         <Header
           icon="browser"
           content="Следующие данные отсутствуют в базе данных"

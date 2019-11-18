@@ -2,7 +2,7 @@ import React from "react";
 import { Pagination, Icon } from "semantic-ui-react";
 
 export default function PaginationBlock(props) {
-  const { options, _this, maxElements } = props;
+  const { options, maxElements, onPageChange } = props;
   return (
     <Pagination
       activePage={options.page}
@@ -21,17 +21,7 @@ export default function PaginationBlock(props) {
       prevItem={{ content: <Icon name="angle left" />, icon: true }}
       nextItem={{ content: <Icon name="angle right" />, icon: true }}
       totalPages={Math.ceil(maxElements / options.limit)}
-      onPageChange={(e, data) =>
-        _this.setState(
-          {
-            options: {
-              ...options,
-              page: data.activePage
-            }
-          },
-          () => _this.handleSearchBooks()
-        )
-      }
+      onPageChange={(e, data) => onPageChange(data)}
     />
   );
 }
