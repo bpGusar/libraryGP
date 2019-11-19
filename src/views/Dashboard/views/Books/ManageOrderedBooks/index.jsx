@@ -9,19 +9,19 @@ import {
   Card,
   Image,
   Message,
-  Dimmer,
-  Loader,
-  Icon,
   Label
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import _ from "lodash";
+
+import CustomDimmer from "@commonViews/CustomDimmer";
 
 import axs from "@axios";
 import * as util from "@utils";
 import MSG from "@msg";
 
 import s from "./index.module.scss";
+import Reject from "./components/Reject";
 
 const resultsForEnum = {
   all: "все"
@@ -51,6 +51,29 @@ export default class ManageOrderedBooks extends Component {
       }
     };
   }
+
+  handleSetComment = (value, orderedBook) =>
+    this.setState(ps => ({
+      bookReturn: {
+        ...ps.bookReturn,
+        returnMsgs: {
+          ...ps.bookReturn.returnMsgs,
+          [`${orderedBook._id}-msg`]: value
+        }
+      }
+    }));
+
+  handleClickCancel = orderedBook => {
+    this.setState(ps => ({
+      bookReturn: {
+        ...ps.bookReturn,
+        bookReturnInProgress: {
+          ...ps.bookReturn.bookReturnInProgress,
+          [orderedBook._id]: false
+        }
+      }
+    }));
+  };
 
   handleSubmitForm(e, getQuery) {
     const { readerId } = this.state;
@@ -146,7 +169,10 @@ export default class ManageOrderedBooks extends Component {
     axs
       .post(`/ordered-books/return`, {
         orderedBookInfo: {
-          ...orderedBook
+          bookId: orderedBook.bookId._id,
+          userId: orderedBook.userId._id,
+          orderedAt: orderedBook.orderedAt,
+          orderedUntil: orderedBook.orderedUntil
         },
         comment: _.isUndefined(bookReturn.returnMsgs[`${orderedBook._id}-msg`])
           ? ""
@@ -178,52 +204,17 @@ export default class ManageOrderedBooks extends Component {
 
     if (bookReturn.bookReturnInProgress[orderedBook._id]) {
       return (
-        <>
-          <Header as="h5">Возврат</Header>
-          <Form.Input
-            label="Введите комментарий или оставьте поле пустым."
-            className={s.rejectInput}
-            onChange={(e, { value }) =>
-              this.setState({
-                bookReturn: {
-                  ...bookReturn,
-                  returnMsgs: {
-                    ...bookReturn.returnMsgs,
-                    [`${orderedBook._id}-msg`]: value
-                  }
-                }
-              })
-            }
-          />
-          <div className="ui two buttons">
-            <Button
-              basic
-              color="green"
-              onClick={() => this.handleRejectOrdering(orderedBook)}
-              disabled={bookReturn.successfullyReturned[orderedBook._id]}
-            >
-              Выполнить
-            </Button>
-            <Button
-              basic
-              color="grey"
-              onClick={() =>
-                this.setState({
-                  bookReturn: {
-                    ...bookReturn,
-                    bookReturnInProgress: {
-                      ...bookReturn.bookReturnInProgress,
-                      [orderedBook._id]: false
-                    }
-                  }
-                })
-              }
-              disabled={bookReturn.successfullyReturned[orderedBook._id]}
-            >
-              Отмена
-            </Button>
-          </div>
-        </>
+        <Reject
+          onChangeComment={value => this.handleSetComment(value, orderedBook)}
+          onClickReject={() => this.handleRejectOrdering(orderedBook)}
+          onClickCancel={() => this.handleClickCancel(orderedBook)}
+          rejectButtonDisabled={
+            bookReturn.successfullyReturned[orderedBook._id]
+          }
+          cancelButtonDisabled={
+            bookReturn.successfullyReturned[orderedBook._id]
+          }
+        />
       );
     }
     return false;
@@ -277,32 +268,6 @@ export default class ManageOrderedBooks extends Component {
     return false;
   }
 
-  renderDimmer(orderedBook) {
-    const { actionWithOrderedBookInProgress, bookReturn } = this.state;
-
-    return (
-      <Dimmer
-        active={
-          actionWithOrderedBookInProgress[orderedBook._id] ||
-          bookReturn.successfullyReturnedBooks[orderedBook._id] ||
-          bookReturn.successfullyReturned[orderedBook._id]
-        }
-      >
-        {actionWithOrderedBookInProgress[orderedBook._id] && (
-          <Loader>Выполняется</Loader>
-        )}
-        {bookReturn.successfullyReturned[orderedBook._id] && (
-          <>
-            <Header as="h5" icon inverted>
-              <Icon name="check" />
-              Книга успешно возвращена
-            </Header>
-          </>
-        )}
-      </Dimmer>
-    );
-  }
-
   // TODO: сделать ссылку на профиль пользователя
 
   render() {
@@ -312,7 +277,8 @@ export default class ManageOrderedBooks extends Component {
       isDataLoading,
       emptyResults,
       bookReturn,
-      resultsFor
+      resultsFor,
+      actionWithOrderedBookInProgress
     } = this.state;
 
     return (
@@ -358,7 +324,24 @@ export default class ManageOrderedBooks extends Component {
 
                   return (
                     <Card key={orderedBook._id}>
-                      {this.renderDimmer(orderedBook)}
+                      <CustomDimmer
+                        loaderText="Выполняется"
+                        successIcon="check"
+                        successText="Книга успешно возвращена"
+                        active={
+                          actionWithOrderedBookInProgress[orderedBook._id] ||
+                          bookReturn.successfullyReturnedBooks[
+                            orderedBook._id
+                          ] ||
+                          bookReturn.successfullyReturned[orderedBook._id]
+                        }
+                        showLoader={
+                          actionWithOrderedBookInProgress[orderedBook._id]
+                        }
+                        success={
+                          bookReturn.successfullyReturned[orderedBook._id]
+                        }
+                      />
                       <Card.Content>
                         <Image
                           floated="right"
@@ -379,8 +362,11 @@ export default class ManageOrderedBooks extends Component {
                           Дата брони: {util.convertDate(orderedBook.orderedAt)}
                         </Card.Meta>
                         <Card.Description>
-                          На руках у: {user.lastName} {user.firstName}{" "}
-                          {user.patronymic} <br />
+                          На руках у:{" "}
+                          <Link target="blank" to={`/profile/${user._id}`}>
+                            {user.lastName} {user.firstName} {user.patronymic}
+                          </Link>{" "}
+                          <br />
                         </Card.Description>
                         <Card.Description>
                           Чит. билет №: {orderedBook.readerId} <br />

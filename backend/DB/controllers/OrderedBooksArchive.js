@@ -7,51 +7,76 @@ import * as config from "../config";
 import OrderedBooksArchive from "../models/OrderedBooksArchive";
 import OrderedBooks from "../models/OrderedBooks";
 import Book from "../models/Book";
+import User from "../models/User";
 
 function bookReturn(req, res) {
-  let orderedBookData = { ...req.body };
+  const orderedBookData = req.body;
 
-  orderedBookData = {
-    ...orderedBookData,
-    userId: req.middlewareUserInfo._id
-  };
+  parallel(
+    {
+      bookData: cb =>
+        Book.find({ _id: orderedBookData.orderedBookInfo.bookId })
+          .populate([
+            {
+              path: "bookInfo.authors"
+            },
+            {
+              path: "bookInfo.categories"
+            },
+            {
+              path: "bookInfo.publisher"
+            },
+            {
+              path: "bookInfo.language"
+            }
+          ])
+          .exec(cb),
+      userData: cb =>
+        User.find({ _id: orderedBookData.orderedBookInfo.userId })
+          .select("-password -emailVerified")
+          .exec(cb),
+      deleteBookedBook: cb =>
+        OrderedBooks.deleteOne(
+          {
+            bookId: orderedBookData.orderedBookInfo.bookId,
+            userId: orderedBookData.orderedBookInfo.userId
+          },
+          cb
+        ),
+      findOneAndUpdateBook: cb =>
+        Book.findOneAndUpdate(
+          { _id: orderedBookData.orderedBookInfo.bookId._id },
+          {
+            $inc: { "stockInfo.freeForBooking": 1 }
+          },
+          { new: true },
+          cb
+        )
+    },
+    (parErr, result) => {
+      if (parErr) {
+        res.json(config.getRespData(true, MSG.internalServerErr, parErr));
+      } else {
+        const newArchivedOrder = new OrderedBooksArchive({
+          ...orderedBookData,
+          orderedBookInfo: {
+            ...orderedBookData.orderedBookInfo,
+            bookInfo: result.bookData[0],
+            userInfo: result.userData[0]
+          },
+          userId: req.middlewareUserInfo._id
+        });
 
-  const newArchivedOrder = new OrderedBooksArchive({ ...orderedBookData });
-
-  newArchivedOrder.save(saveErr => {
-    if (saveErr) {
-      res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
-    } else {
-      parallel(
-        [
-          cb =>
-            OrderedBooks.deleteOne(
-              {
-                bookId: orderedBookData.orderedBookInfo.bookId._id,
-                readerId: orderedBookData.orderedBookInfo.readerId
-              },
-              cb
-            ),
-          cb =>
-            Book.findOneAndUpdate(
-              { _id: orderedBookData.orderedBookInfo.bookId._id },
-              {
-                $inc: { "stockInfo.freeForBooking": 1 }
-              },
-              { new: true },
-              cb
-            )
-        ],
-        parErr => {
-          if (parErr) {
+        newArchivedOrder.save(saveErr => {
+          if (saveErr) {
             res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
           } else {
             res.send(config.getRespData(false));
           }
-        }
-      );
+        });
+      }
     }
-  });
+  );
 }
 
 /**
@@ -67,6 +92,8 @@ function bookReturn(req, res) {
  * Если например `{ _id: id_книги }` то будет найдена именно книга с указанным `_id`.
  * Кейсы по составлению запросов к MongoDB можно загуглить.
  * Запросы делаются напрямую в базу, поэтому необходимо валидно составлять объект запроса.
+ *
+ * @param {Boolean} useParse Используется для определения необходимо ли парсить данные из JSON.
  *
  * @param {Object=} options Объект с опциями поиска. Будет задан данными по умолчанию при полном отсутствии.
  * @param {Number} options.fetch_type Вид возвращаемых данных. По умолчанию `0`.
@@ -88,7 +115,7 @@ function bookReturn(req, res) {
  *
  * `max-elements` Количество элементов в базе, подходящих под запрос.
  */
-function findBooks(req, res, data = {}) {
+function findBooks(req, res, data = {}, useParse = true) {
   let { options } = req.query;
 
   if (_.isUndefined(options)) {
@@ -130,14 +157,16 @@ function findBooks(req, res, data = {}) {
     2: ""
   };
 
+  const queryData = useParse ? JSON.parse(data) : data;
+
   OrderedBooksArchive.countDocuments(
-    _.isEmpty(data) ? {} : JSON.parse(data),
+    _.isEmpty(data) ? {} : queryData,
     (countError, count) => {
       res.set({
         "max-elements": count,
         ...options
       });
-      OrderedBooksArchive.find(_.isEmpty(data) ? {} : JSON.parse(data))
+      OrderedBooksArchive.find(_.isEmpty(data) ? {} : queryData)
         .sort({ createdAt: options.sort })
         .skip(getSkip())
         .limit(options.limit)
