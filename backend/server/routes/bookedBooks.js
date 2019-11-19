@@ -25,7 +25,7 @@ app.post(
   "/api/booked-books/cancel-reservation",
   (req, res, next) => withAuth(req, res, next),
   (req, res) => {
-    BookedBooksArchiveContr.rejectOrdering(req.body, res);
+    BookedBooksArchiveContr.rejectOrdering(req, res);
   }
 );
 

@@ -152,8 +152,7 @@ export default class ManageBookedBooks extends Component {
         bookedBookInfo: {
           createdAt: bookedBook.createdAt,
           bookId: bookedBook.bookId._id,
-          userId: bookedBook.userId._id,
-          readerId: bookedBook.readerId
+          userId: bookedBook.userId._id
         },
         status: "rejected",
         comment: _.isUndefined(rejecting.rejectMsgs[`${bookedBook._id}-msg`])

@@ -8,7 +8,6 @@ import {
   Label
 } from "semantic-ui-react";
 import { DateTime } from "luxon";
-import _ from "lodash";
 
 import Pagination from "./Pagination";
 
@@ -21,7 +20,6 @@ export default class ArchivedInfo extends Component {
       isLoading: false,
       archivedBooks: [],
       options: {
-        fetch_type: 1,
         sort: "desc",
         limit: 5,
         page: 1
@@ -78,7 +76,6 @@ export default class ArchivedInfo extends Component {
     const isRejected = archivedBook => archivedBook.status === "rejected";
     const isOrdered = archivedBook => archivedBook.status === "ordered";
     const isCanceled = archivedBook => archivedBook.status === "canceled";
-
     return (
       <>
         <Header as="h3" attached="top">
@@ -91,13 +88,8 @@ export default class ArchivedInfo extends Component {
               <List divided relaxed>
                 {archivedBooks.map(archivedBook => {
                   const bookInfoProp = archivedBook[dataObjPropName];
-                  if (
-                    _.isNull(bookInfoProp.bookId) ||
-                    _.isNull(bookInfoProp.userId)
-                  )
-                    return;
                   const {
-                    bookId: { bookInfo }
+                    bookInfo: { bookInfo }
                   } = bookInfoProp;
 
                   return (

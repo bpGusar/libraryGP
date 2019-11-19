@@ -66,7 +66,6 @@ class ResetPasswordPage extends Component {
       [name]: value
     });
   }
-  // TODO: сделать редактирование профиля на сайте
 
   render() {
     const { email, isResetInProcess, emailChecked } = this.state;

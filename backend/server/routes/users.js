@@ -10,6 +10,8 @@ import BookedBooksArchiveContr from "../../DB/controllers/BookedBooksArchive";
 
 import * as config from "../../DB/config";
 
+const { ObjectId } = require("mongoose").Types;
+
 const app = express();
 
 app.get(
@@ -49,7 +51,8 @@ app.get(
     BookedBooksArchiveContr.findBooks(
       req,
       res,
-      JSON.stringify({ "bookedBookInfo.userId": userId })
+      { "bookedBookInfo.userInfo._id": ObjectId(userId) },
+      false
     );
   }
 );

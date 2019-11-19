@@ -51,8 +51,7 @@ export default class OrdersInfo extends Component {
         bookedBookInfo: {
           createdAt: bookedBook.createdAt,
           bookId: bookedBook.bookId._id,
-          userId: bookedBook.userId._id,
-          readerId: bookedBook.readerId
+          userId: bookedBook.userId._id
         },
         status: "canceled",
         comment: "Отмена по инициативе пользователя"

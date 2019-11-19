@@ -7,44 +7,75 @@ import * as config from "../config";
 import BookedBooksArchive from "../models/BookedBooksArchive";
 import BookedBooks from "../models/BookedBooks";
 import Book from "../models/Book";
+import User from "../models/User";
 
-function rejectOrdering(bookedBookData, res) {
-  const newArchivedReservation = new BookedBooksArchive({ ...bookedBookData });
+function rejectOrdering(req, res) {
+  const bookedBookData = req.body;
+  parallel(
+    {
+      bookData: cb =>
+        Book.find({ _id: bookedBookData.bookedBookInfo.bookId })
+          .populate([
+            {
+              path: "bookInfo.authors"
+            },
+            {
+              path: "bookInfo.categories"
+            },
+            {
+              path: "bookInfo.publisher"
+            },
+            {
+              path: "bookInfo.language"
+            }
+          ])
+          .exec(cb),
+      userData: cb =>
+        User.find({ _id: bookedBookData.bookedBookInfo.userId })
+          .select("-password -emailVerified")
+          .exec(cb),
+      deleteBookedBook: cb =>
+        BookedBooks.deleteOne(
+          {
+            bookId: bookedBookData.bookedBookInfo.bookId,
+            userId: bookedBookData.bookedBookInfo.userId
+          },
+          cb
+        ),
+      findOneAndUpdateBook: cb =>
+        Book.findOneAndUpdate(
+          { _id: bookedBookData.bookedBookInfo.bookId },
+          {
+            $inc: { "stockInfo.freeForBooking": 1 }
+          },
+          { new: true },
+          cb
+        )
+    },
+    (parErr, result) => {
+      if (parErr) {
+        res.json(config.getRespData(true, MSG.internalServerErr, parErr));
+      } else {
+        const newArchivedReservation = new BookedBooksArchive({
+          ...bookedBookData,
+          bookedBookInfo: {
+            bookInfo: result.bookData[0],
+            userInfo: result.userData[0],
+            createdAt: bookedBookData.bookedBookInfo.createdAt
+          },
+          userId: req.middlewareUserInfo._id
+        });
 
-  newArchivedReservation.save(saveErr => {
-    if (saveErr) {
-      res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
-    } else {
-      parallel(
-        [
-          cb =>
-            BookedBooks.deleteOne(
-              {
-                bookId: bookedBookData.bookedBookInfo.bookId,
-                readerId: bookedBookData.bookedBookInfo.readerId
-              },
-              cb
-            ),
-          cb =>
-            Book.findOneAndUpdate(
-              { _id: bookedBookData.bookedBookInfo.bookId },
-              {
-                $inc: { "stockInfo.freeForBooking": 1 }
-              },
-              { new: true },
-              cb
-            )
-        ],
-        parErr => {
-          if (parErr) {
+        newArchivedReservation.save(saveErr => {
+          if (saveErr) {
             res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
           } else {
             res.send(config.getRespData(false));
           }
-        }
-      );
+        });
+      }
     }
-  });
+  );
 }
 
 /**
@@ -60,6 +91,8 @@ function rejectOrdering(bookedBookData, res) {
  * Если например `{ _id: id_книги }` то будет найдена именно книга с указанным `_id`.
  * Кейсы по составлению запросов к MongoDB можно загуглить.
  * Запросы делаются напрямую в базу, поэтому необходимо валидно составлять объект запроса.
+ *
+ * @param {Boolean} useParse Используется для определения нужно ли парсить данные из JSON.
  *
  * @param {Object=} options Объект с опциями поиска. Будет задан данными по умолчанию при полном отсутствии.
  * @param {Number} options.fetch_type Вид возвращаемых данных. По умолчанию `0`.
@@ -81,14 +114,13 @@ function rejectOrdering(bookedBookData, res) {
  *
  * `max-elements` Количество элементов в базе, подходящих под запрос.
  */
-function findBooks(req, res, data = {}) {
+function findBooks(req, res, data = {}, useParse = true) {
   let { options } = req.query;
 
   if (_.isUndefined(options)) {
     options = {
       page: 1,
       limit: 99,
-      fetch_type: 0,
       sort: "desc"
     };
   } else {
@@ -98,9 +130,6 @@ function findBooks(req, res, data = {}) {
   options.page = _.isUndefined(options.page) ? 1 : options.page;
   options.sort = _.isUndefined(options.sort) ? 1 : options.sort;
   options.limit = _.isUndefined(options.limit) ? 99 : options.limit;
-  options.fetch_type = _.isUndefined(options.fetch_type)
-    ? 0
-    : options.fetch_type;
 
   const getSkip = () => {
     if (options.page === 1) {
@@ -109,32 +138,19 @@ function findBooks(req, res, data = {}) {
     return options.limit * (options.page - 1);
   };
 
-  const fetchTypes = {
-    0: {
-      path: "bookedBookInfo.bookId"
-    },
-    1: {
-      path: "bookedBookInfo.bookId",
-      populate: {
-        path:
-          "bookInfo.authors bookInfo.categories bookInfo.publisher bookInfo.language"
-      }
-    },
-    2: ""
-  };
+  const queryData = useParse ? JSON.parse(data) : data;
 
   BookedBooksArchive.countDocuments(
-    _.isEmpty(data) ? {} : JSON.parse(data),
+    _.isEmpty(data) ? {} : queryData,
     (countError, count) => {
       res.set({
         "max-elements": count,
         ...options
       });
-      BookedBooksArchive.find(_.isEmpty(data) ? {} : JSON.parse(data))
+      BookedBooksArchive.find(_.isEmpty(data) ? {} : queryData)
         .sort({ createdAt: options.sort })
         .skip(getSkip())
         .limit(options.limit)
-        .populate(fetchTypes[options.fetch_type])
         .exec((findBookError, books) => {
           if (findBookError) {
             res.json(config.getRespData(true, MSG.bookNotFound, findBookError));
