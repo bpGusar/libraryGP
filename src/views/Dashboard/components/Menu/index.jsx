@@ -71,7 +71,7 @@ class DashboardMenu extends Component {
   render() {
     const { isLoading } = this.state;
     const { menu } = this.props;
-
+    console.log(menu.dashboardMenu.always);
     return (
       <>
         {_.isEmpty(menu.dashboardMenu) || isLoading ? (

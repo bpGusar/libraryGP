@@ -1,16 +1,27 @@
 import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import cn from "classnames";
 
-const MenuItemWrapper = ({ index, moveCard, cildren }) => {
+const MenuItemWrapper = ({
+  index,
+  itemId,
+  moveCard,
+  children,
+  isChildItem,
+  style,
+  className,
+  dragClassName
+}) => {
   const ref = useRef(null);
+
   const [, drop] = useDrop({
     accept: "card",
     hover(item, monitor) {
-      const clonedItem = item;
+      const draggedItem = item;
       if (!ref.current) {
         return;
       }
-      const dragIndex = clonedItem.index;
+      const dragIndex = draggedItem.index;
       const hoverIndex = index;
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
@@ -36,26 +47,36 @@ const MenuItemWrapper = ({ index, moveCard, cildren }) => {
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
         return;
       }
+      // Если двигаем родителя и он попадает на дочерние элементы происходит копирование элементов
+      // Для этого сравниваем что, если ховер элемент дочерний, делаем остановку выполнения
+      if (isChildItem !== draggedItem.isChildItem) {
+        return;
+      }
       // Time to actually perform the action
-      moveCard(dragIndex, hoverIndex);
+      moveCard(itemId, draggedItem.itemId);
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
-      clonedItem.index = hoverIndex;
+      draggedItem.index = hoverIndex;
     }
   });
   const [{ isDragging }, drag] = useDrag({
-    item: { type: "card", index },
+    item: { type: "card", index, itemId, isChildItem },
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
   });
-  const opacity = isDragging ? 0 : 1;
+  const zIndex = isDragging ? 2 : 1;
   drag(drop(ref));
+
   return (
-    <div ref={ref} style={{ opacity }}>
-      {cildren}
+    <div
+      ref={ref}
+      className={cn(isDragging ? dragClassName : "", className)}
+      style={{ zIndex, ...style }}
+    >
+      {children}
     </div>
   );
 };

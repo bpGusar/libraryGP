@@ -1,76 +1,27 @@
+/* eslint-disable prefer-template */
+/* eslint-disable no-plusplus */
+/* eslint-disable react/no-children-prop */
 import React, { Component } from "react";
-import { DndProvider } from "react-dnd";
-import HTML5Backend from "react-dnd-html5-backend";
 import { branch } from "baobab-react/higher-order";
 import _ from "lodash";
+import { DndProvider } from "react-dnd";
+import HTML5Backend from "react-dnd-html5-backend";
+import { Motion, spring } from "react-motion";
 
-import { List } from "semantic-ui-react";
-import MenuItemWrapper from "./MenuItemWrapper";
+import SimpleItem from "./components/SimpleItem";
+import ParentItem from "./components/ParentItem";
 
 import { PARAMS } from "@store";
+
+import s from "./index.module.scss";
+
 // TODO: доделать редактирование меню
-// eslint-disable-next-line react/prefer-stateless-function
 class Menus extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       menus: props.menu
-    };
-
-    this.menuItems = {
-      dropdown: (el, i) => {
-        const dropItem = dropItemEl => (
-          <MenuItemWrapper
-            key={el.text}
-            index={i}
-            moveCard={this.moveCard}
-            cildren={
-              <List.Item>
-                {!_.isEmpty(dropItemEl.icon) && (
-                  <List.Icon name={dropItemEl.icon} />
-                )}
-                <List.Content>
-                  <List.Header>{dropItemEl.text}</List.Header>
-                </List.Content>
-              </List.Item>
-            }
-          />
-        );
-        return (
-          <MenuItemWrapper
-            key={el.text}
-            index={i}
-            moveCard={this.moveCard}
-            cildren={
-              <List.Item>
-                {!_.isEmpty(el.icon) && <List.Icon name={el.icon} />}
-                <List.Content>
-                  <List.Header>{el.text}</List.Header>
-                  <List.List>
-                    {el.items.map(menuItem => dropItem(menuItem))}
-                  </List.List>
-                </List.Content>
-              </List.Item>
-            }
-          />
-        );
-      },
-      simple: (el, i) => (
-        <MenuItemWrapper
-          key={el.to}
-          index={i}
-          moveCard={this.moveCard}
-          cildren={
-            <List.Item>
-              {!_.isEmpty(el.icon) && <List.Icon name={el.icon} />}
-              <List.Content>
-                <List.Header>{el.text}</List.Header>
-              </List.Content>
-            </List.Item>
-          }
-        />
-      )
     };
   }
 
@@ -97,13 +48,72 @@ class Menus extends Component {
     return false;
   }
 
-  moveCard = (dragIndex, hoverIndex) => {
+  menuItems = () => ({
+    dropdown: (el, i, parentYCoord) => (
+      <ParentItem
+        element={el}
+        motionYCoord={parentYCoord}
+        index={i}
+        moveCard={this.moveCard}
+      >
+        {el.items.map((menuItem, idx) => (
+          <Motion
+            key={menuItem.id}
+            style={{
+              childYCoord: spring(idx * 5, { stiffness: 500, damping: 32 })
+            }}
+          >
+            {({ childYCoord }) => (
+              <SimpleItem
+                isChildItem
+                itemType="child"
+                className={s.childItem}
+                element={menuItem}
+                index={idx}
+                motionYCoord={childYCoord}
+                moveCard={this.moveCard}
+              />
+            )}
+          </Motion>
+        ))}
+      </ParentItem>
+    ),
+    simple: (el, i, YCoord) => (
+      <SimpleItem
+        itemType="simple"
+        isChildItem={false}
+        className={s.parentItem}
+        element={el}
+        index={i}
+        motionYCoord={YCoord}
+        moveCard={this.moveCard}
+      />
+    )
+  });
+
+  moveCard = (hoverId, itemId) => {
     const { menus } = this.state;
     const clonedMenu = _.cloneDeep(menus);
-    const dragCard = clonedMenu.dashboardMenu.always[dragIndex];
 
-    clonedMenu.dashboardMenu.always.splice(dragIndex, 1); // removing what you are dragging.
-    clonedMenu.dashboardMenu.always.splice(hoverIndex, 0, dragCard); // inserting it into hoverIndex.
+    const getSubMenuItem = (subMenuItems, id) => {
+      const hoverIndex = subMenuItems.findIndex(fiEl => fiEl.id === hoverId);
+      if (subMenuItems) {
+        subMenuItems.forEach(el => {
+          if (el.id === id && hoverIndex !== -1) {
+            const dragCard = el;
+            subMenuItems.splice(
+              subMenuItems.findIndex(fiEl => fiEl.id === el.id),
+              1
+            );
+            subMenuItems.splice(hoverIndex, 0, dragCard);
+            return;
+          }
+          if (_.has(el, "items")) getSubMenuItem(el.items, id);
+        });
+      }
+    };
+
+    getSubMenuItem(clonedMenu.dashboardMenu.always, itemId);
 
     this.setState({
       menus: clonedMenu
@@ -113,15 +123,24 @@ class Menus extends Component {
   render() {
     const { menus } = this.state;
     return (
-      <DndProvider backend={HTML5Backend}>
+      <>
         {!_.isEmpty(menus.dashboardMenu.always) && (
-          <List>
-            {menus.dashboardMenu.always.map((el, i) =>
-              this.menuItems[el.type](el, i)
-            )}
-          </List>
+          <DndProvider backend={HTML5Backend}>
+            <div className={s.menuList}>
+              {menus.dashboardMenu.always.map((el, i) => (
+                <Motion
+                  key={el.id}
+                  style={{
+                    y: spring(i * 5, { stiffness: 500, damping: 32 })
+                  }}
+                >
+                  {({ y }) => this.menuItems()[el.type](el, i, y)}
+                </Motion>
+              ))}
+            </div>
+          </DndProvider>
         )}
-      </DndProvider>
+      </>
     );
   }
 }

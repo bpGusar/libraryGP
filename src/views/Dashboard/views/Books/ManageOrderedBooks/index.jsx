@@ -199,57 +199,6 @@ export default class ManageOrderedBooks extends Component {
       });
   }
 
-  renderRejectBlock(orderedBook) {
-    const { bookReturn } = this.state;
-
-    if (bookReturn.bookReturnInProgress[orderedBook._id]) {
-      return (
-        <Reject
-          onChangeComment={value => this.handleSetComment(value, orderedBook)}
-          onClickReject={() => this.handleRejectOrdering(orderedBook)}
-          onClickCancel={() => this.handleClickCancel(orderedBook)}
-          rejectButtonDisabled={
-            bookReturn.successfullyReturned[orderedBook._id]
-          }
-          cancelButtonDisabled={
-            bookReturn.successfullyReturned[orderedBook._id]
-          }
-        />
-      );
-    }
-    return false;
-  }
-
-  renderOrderBlock(orderedBook) {
-    const { bookReturn } = this.state;
-
-    if (!bookReturn.bookReturnInProgress[orderedBook._id]) {
-      return (
-        <div className="ui two buttons">
-          <Button
-            basic
-            color="green"
-            onClick={() =>
-              this.setState({
-                bookReturn: {
-                  ...bookReturn,
-                  bookReturnInProgress: {
-                    ...bookReturn.bookReturnInProgress,
-                    [orderedBook._id]: true
-                  }
-                }
-              })
-            }
-            disabled={bookReturn.successfullyReturnedBooks[orderedBook._id]}
-          >
-            Оформить возврат
-          </Button>
-        </div>
-      );
-    }
-    return false;
-  }
-
   renderEmptyResultsBlock(emptyResults) {
     const { resultsFor } = this.state;
 
@@ -267,8 +216,6 @@ export default class ManageOrderedBooks extends Component {
     }
     return false;
   }
-
-  // TODO: сделать ссылку на профиль пользователя
 
   render() {
     const {
@@ -380,8 +327,51 @@ export default class ManageOrderedBooks extends Component {
                             : ""
                         }
                       >
-                        {this.renderRejectBlock(orderedBook)}
-                        {this.renderOrderBlock(orderedBook)}
+                        {bookReturn.bookReturnInProgress[orderedBook._id] && (
+                          <Reject
+                            onChangeComment={value =>
+                              this.handleSetComment(value, orderedBook)
+                            }
+                            onClickReject={() =>
+                              this.handleRejectOrdering(orderedBook)
+                            }
+                            onClickCancel={() =>
+                              this.handleClickCancel(orderedBook)
+                            }
+                            rejectButtonDisabled={
+                              bookReturn.successfullyReturned[orderedBook._id]
+                            }
+                            cancelButtonDisabled={
+                              bookReturn.successfullyReturned[orderedBook._id]
+                            }
+                          />
+                        )}
+                        {!bookReturn.bookReturnInProgress[orderedBook._id] && (
+                          <div className="ui two buttons">
+                            <Button
+                              basic
+                              color="green"
+                              onClick={() =>
+                                this.setState({
+                                  bookReturn: {
+                                    ...bookReturn,
+                                    bookReturnInProgress: {
+                                      ...bookReturn.bookReturnInProgress,
+                                      [orderedBook._id]: true
+                                    }
+                                  }
+                                })
+                              }
+                              disabled={
+                                bookReturn.successfullyReturnedBooks[
+                                  orderedBook._id
+                                ]
+                              }
+                            >
+                              Оформить возврат
+                            </Button>
+                          </div>
+                        )}
                       </Card.Content>
                     </Card>
                   );

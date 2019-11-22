@@ -54,8 +54,8 @@ export default function ModalWindow(props) {
         <Button
           disabled={
             deleteBookModal.isLoading ||
-            (deleteBookModal.result.BookedBooks !== 0 ||
-              deleteBookModal.result.OrderedBooks !== 0)
+            deleteBookModal.result.BookedBooks !== 0 ||
+            deleteBookModal.result.OrderedBooks !== 0
           }
           loading={deleteBookModal.isLoading}
           color="red"
