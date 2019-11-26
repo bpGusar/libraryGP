@@ -8,7 +8,6 @@ const MenuItemWrapper = ({
   moveCard,
   children,
   isChildItem,
-  style,
   className,
   dragClassName
 }) => {
@@ -74,7 +73,7 @@ const MenuItemWrapper = ({
     <div
       ref={ref}
       className={cn(isDragging ? dragClassName : "", className)}
-      style={{ zIndex, ...style }}
+      style={{ zIndex }}
     >
       {children}
     </div>

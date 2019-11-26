@@ -54,11 +54,18 @@
     padding: 10px 13px;
     border-radius: 0.28571429rem;
     border: 1px solid rgba(34, 36, 38, 0.15);
+    .itemInfo {
+      float: left;
+    }
     .header {
       display: inline-block;
       font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
       font-weight: 700;
       color: rgba(0, 0, 0, 0.87);
+    }
+    .link {
+      color: grey;
+      font-size: 12px;
     }
     .content {
       width: 100%;

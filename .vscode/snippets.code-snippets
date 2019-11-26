@@ -21,6 +21,17 @@
     ],
     "description": "Axios  post"
   },
+  "Axios Put": {
+    "prefix": "axsput",
+    "body": [
+      "axs.put(`$1`).then(resp => {",
+      "  if (!resp.data.error) {",
+      "    $2",
+      "  }",
+      "});"
+    ],
+    "description": "Axios  post"
+  },
   "JavaScript constructor": {
     "prefix": "constr",
     "body": ["constructor(props){", "  super(props)", "    $1", "}", ""],

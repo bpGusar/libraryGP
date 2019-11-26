@@ -3,48 +3,58 @@
 import React from "react";
 import cn from "classnames";
 import _ from "lodash";
-import { Icon, Button } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 
 import MenuItemWrapper from "./MenuItemWrapper";
 import ManipulateButtons from "./ManipulateButtons";
+import NewItem from "./NewItem";
 
 import s from "../index.module.scss";
 
-export default function ChildItem(props) {
-  const { element, motionYCoord, index, moveCard, children } = props;
-
+export default function ParentItem(props) {
+  const {
+    element,
+    index,
+    moveCard,
+    children,
+    onSubmit,
+    status,
+    onDelete,
+    onEdit
+  } = props;
+  const isNewItem = status === "new";
+  const isEdited = status === "edited";
   return (
     <MenuItemWrapper
-      key={element.id}
       itemId={element.id}
       isChildItem={false}
-      style={{
-        transform: "translate3d(0, " + motionYCoord + "px, 0)"
-      }}
       className={cn(s.dragItem, s.parentItem)}
       dragClassName={s.dragged}
       index={index}
       moveCard={moveCard}
       children={
-        <div className={cn(s.dropBlock, s.item)}>
+        <div
+          className={cn(
+            s.dropBlock,
+            s.item,
+            isNewItem && s.newItem,
+            isEdited && s.editedItem
+          )}
+        >
           <div className={s.content}>
             <Icon
               name={!_.isEmpty(element.icon) ? element.icon : "angle right"}
             />
             <div className={s.header}>{element.text}</div>
-            <ManipulateButtons />
+            <ManipulateButtons
+              element={element}
+              onDelete={onDelete}
+              onEdit={onEdit}
+            />
           </div>
           <div className={s.list}>
             {children}
-            <Button
-              size="tiny"
-              icon
-              labelPosition="left"
-              className={s.addButton}
-            >
-              Добавить
-              <Icon name="plus" />
-            </Button>
+            <NewItem onSubmit={onSubmit} element={element} onEdit={onEdit} />
           </div>
         </div>
       }

@@ -24,13 +24,13 @@ class DashboardMenu extends Component {
     this.menuItems = {
       dropdown: el => {
         const dropItem = dropItemEl => (
-          <Dropdown.Item key={dropItemEl.to} as={Link} to={dropItemEl.to}>
+          <Dropdown.Item key={dropItemEl.id} as={Link} to={dropItemEl.to}>
             {!_.isEmpty(dropItemEl.icon) && <Icon name={dropItemEl.icon} />}
             {dropItemEl.text}
           </Dropdown.Item>
         );
         return (
-          <Dropdown item text={el.text} className={s.menuItem}>
+          <Dropdown key={el.id} item text={el.text} className={s.menuItem}>
             <Dropdown.Menu>
               {el.items.map(menuItem => dropItem(menuItem))}
             </Dropdown.Menu>
@@ -38,7 +38,7 @@ class DashboardMenu extends Component {
         );
       },
       simple: el => (
-        <Menu.Item className={s.menuItem} as={Link} to={el.to}>
+        <Menu.Item key={el.id} className={s.menuItem} as={Link} to={el.to}>
           {!_.isEmpty(el.icon) && <Icon name={el.icon} />}
           {el.text}
         </Menu.Item>
@@ -58,7 +58,7 @@ class DashboardMenu extends Component {
       if (!resp.data.error) {
         dispatch(storeData, PARAMS.MENU, {
           ...clonedMenu,
-          dashboardMenu: resp.data.payload.menu
+          dashboardMenu: resp.data.payload
         });
 
         this.setState({
@@ -71,14 +71,15 @@ class DashboardMenu extends Component {
   render() {
     const { isLoading } = this.state;
     const { menu } = this.props;
-    console.log(menu.dashboardMenu.always);
     return (
       <>
-        {_.isEmpty(menu.dashboardMenu) || isLoading ? (
+        {_.isEmpty(menu.dashboardMenu.menu) || isLoading ? (
           "Загрузка меню..."
         ) : (
           <>
-            {menu.dashboardMenu.always.map(el => this.menuItems[el.type](el))}
+            {menu.dashboardMenu.menu.always.map(el =>
+              this.menuItems[el.type](el)
+            )}
             <Menu.Item
               as={Link}
               to="/"
