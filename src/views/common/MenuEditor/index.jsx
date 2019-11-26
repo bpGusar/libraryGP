@@ -43,7 +43,7 @@ class MenuEditor extends Component {
           onSubmit={this.addNewItem}
           status={modifiedOrNewItems[el.id]}
           onDelete={this.handleDeleteItem}
-          onEdit={this.handleEditItem}
+          onSaveEdit={this.handleEditItem}
         >
           {el.items.map((menuItem, idx) => (
             <SimpleItem
@@ -56,7 +56,7 @@ class MenuEditor extends Component {
               moveCard={this.moveCard}
               status={modifiedOrNewItems[menuItem.id]}
               onDelete={this.handleDeleteItem}
-              onEdit={this.handleEditItem}
+              onSaveEdit={this.handleEditItem}
             />
           ))}
         </ParentItem>
@@ -73,7 +73,7 @@ class MenuEditor extends Component {
           moveCard={this.moveCard}
           status={modifiedOrNewItems[el.id]}
           onDelete={this.handleDeleteItem}
-          onEdit={this.handleEditItem}
+          onSaveEdit={this.handleEditItem}
         />
       )
     };
@@ -115,8 +115,7 @@ class MenuEditor extends Component {
     const { menu, modifiedOrNewItems } = this.state;
 
     const clonedMenu = _.cloneDeep(menu);
-    const menuItem =
-      _.has(element, "id") && this.recursivelyFindItem(clonedMenu, element.id);
+    const menuItem = this.recursivelyFindItem(clonedMenu, element.id);
 
     if (menuItem && menuItem.element.type === "dropdown") {
       menuItem.element.items.push(itemData);
@@ -141,6 +140,7 @@ class MenuEditor extends Component {
 
   /**
    * ВНИМАНИЕ!
+   *
    * Возвращает ССЫЛКИ на объекты или массивы!
    */
   recursivelyFindItem = (subMenuItems, id) => {
@@ -190,8 +190,29 @@ class MenuEditor extends Component {
     });
   };
 
-  handleEditItem = el => {
-    console.log(el);
+  handleEditItem = elem => {
+    const { menu, modifiedOrNewItems } = this.state;
+    const { menuData } = this.props;
+
+    const clonedMenu = _.cloneDeep(menu);
+    const menuItem = this.recursivelyFindItem(clonedMenu, elem.id);
+
+    Object.keys(elem).forEach(key => {
+      menuItem.element[key] = elem[key];
+    });
+
+    this.setState({
+      menu: clonedMenu,
+      modifiedOrNewItems:
+        !_.isUndefined(modifiedOrNewItems[elem.id]) &&
+        modifiedOrNewItems[elem.id] !== "edited"
+          ? modifiedOrNewItems
+          : {
+              ...modifiedOrNewItems,
+              [elem.id]: "edited"
+            },
+      showSave: JSON.stringify(menuData) !== JSON.stringify(clonedMenu)
+    });
   };
 
   handleSave = () => {
@@ -209,6 +230,7 @@ class MenuEditor extends Component {
     const { menuData } = this.props;
     this.setState({
       menu: menuData,
+      modifiedOrNewItems: {},
       showSave: false
     });
   };

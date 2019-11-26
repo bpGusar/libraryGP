@@ -22,7 +22,7 @@ export default function SimpleItem(props) {
     status,
     onSubmit,
     onDelete,
-    onEdit
+    onSaveEdit
   } = props;
   const isNewItem = status === "new";
   const isEdited = status === "edited";
@@ -55,7 +55,7 @@ export default function SimpleItem(props) {
               <ManipulateButtons
                 element={element}
                 onDelete={onDelete}
-                onEdit={onEdit}
+                onSaveEdit={onSaveEdit}
               />
             </div>
           )) ||
@@ -68,13 +68,16 @@ export default function SimpleItem(props) {
               )}
             >
               <div className={s.content}>
-                {!_.isEmpty(element.icon) && <Icon name={element.icon} />}
                 <div className={s.itemInfo}>
+                  {!_.isEmpty(element.icon) && <Icon name={element.icon} />}
                   <div className={s.header}>{element.text}</div>
                   <br />
-                  <div className={s.link}>{element.to}</div>
+                  {!_.isEmpty(element.to) ? (
+                    <div className={s.link}>{element.to}</div>
+                  ) : (
+                    <div className={s.linkEmpty}>отсутствует</div>
+                  )}
                 </div>
-
                 <NewItem
                   buttonClassName={s.simpleBlock}
                   onSubmit={onSubmit}
@@ -83,7 +86,7 @@ export default function SimpleItem(props) {
                 <ManipulateButtons
                   element={element}
                   onDelete={onDelete}
-                  onEdit={onEdit}
+                  onSaveEdit={onSaveEdit}
                 />
               </div>
             </div>

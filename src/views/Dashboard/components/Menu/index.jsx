@@ -39,7 +39,6 @@ class DashboardMenu extends Component {
       },
       simple: el => (
         <Menu.Item key={el.id} className={s.menuItem} as={Link} to={el.to}>
-          {!_.isEmpty(el.icon) && <Icon name={el.icon} />}
           {el.text}
         </Menu.Item>
       )

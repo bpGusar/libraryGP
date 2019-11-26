@@ -20,7 +20,7 @@ export default function ParentItem(props) {
     onSubmit,
     status,
     onDelete,
-    onEdit
+    onSaveEdit
   } = props;
   const isNewItem = status === "new";
   const isEdited = status === "edited";
@@ -49,12 +49,12 @@ export default function ParentItem(props) {
             <ManipulateButtons
               element={element}
               onDelete={onDelete}
-              onEdit={onEdit}
+              onSaveEdit={onSaveEdit}
             />
           </div>
           <div className={s.list}>
             {children}
-            <NewItem onSubmit={onSubmit} element={element} onEdit={onEdit} />
+            <NewItem onSubmit={onSubmit} element={element} />
           </div>
         </div>
       }

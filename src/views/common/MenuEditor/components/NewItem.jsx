@@ -34,7 +34,13 @@ export default class NewItem extends React.Component {
     const { onSubmit } = this.props;
     onSubmit(element, itemData);
 
-    this.setState(initialState);
+    this.setState({
+      ...initialState,
+      itemData: {
+        ...initialState.itemData,
+        id: uniqid()
+      }
+    });
   }
 
   handleChangeValue({ value, name }) {
@@ -60,8 +66,11 @@ export default class NewItem extends React.Component {
           <Icon name="plus" />
         </Button>
         {isOpen && (
-          <Segment>
-            <Form onSubmit={() => this.handleSubmit(element, itemData)}>
+          <Segment inverted>
+            <Form
+              inverted
+              onSubmit={() => this.handleSubmit(element, itemData)}
+            >
               <Form.Group widths="equal">
                 <Form.Input
                   fluid
@@ -75,6 +84,7 @@ export default class NewItem extends React.Component {
                 />
                 <Form.Input
                   fluid
+                  required
                   label="Заголовок"
                   placeholder="Заголовок"
                   value={itemData.text}
@@ -85,6 +95,7 @@ export default class NewItem extends React.Component {
                 />
                 <Form.Input
                   fluid
+                  required
                   label="URL"
                   placeholder="URL"
                   value={itemData.to}
@@ -94,7 +105,7 @@ export default class NewItem extends React.Component {
                   }
                 />
               </Form.Group>
-              <Form.Button>Добавить</Form.Button>
+              <Form.Button color="green">Добавить</Form.Button>
             </Form>
           </Segment>
         )}
