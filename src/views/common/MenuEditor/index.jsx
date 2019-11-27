@@ -12,6 +12,58 @@ import SaveChanges from "./components/SaveChanges";
 
 import s from "./index.module.scss";
 
+/**
+ * Визуальный редактор меню.
+ *
+ * @param {String} menuId Уникальное ID меню. Если не указано вернет `undefined`.
+ * @param {Array} menuData Массив с элементами меню.
+ * @example
+ *
+ * // Пример простого элемента
+   // type = simple
+   // Не имеет параметра items
+ *  [
+      {
+        "id": "zzivh3sck3fmwqlt",
+        "text": "Главная",
+        "type": "simple",
+        "to": "/test",
+        "icon": ""
+      }
+      ...
+    ]
+
+    // Пример элемента с дочерними элементами
+    // type = dropdown
+    // Имеет параметр items с дочерними элементами
+    // Если в items не будет элементов, родитель будет преобразован в type = simple элемент
+    // Элементы в items могут быть только type simple
+    // Не имеет параметра to
+    [
+      {
+        "id": "zzivh3sck3fmwqlu",
+        "type": "dropdown",
+        "text": "Главная",
+        "icon": "",
+        "items": [
+          {
+            "id": "zzivh3sck3fmwqlv",
+            "type": "simple",
+            "text": "Дочерняя ссылка",
+            "to": "/child-link",
+            "icon": "add"
+          }
+          ...
+        ]
+      }
+      ...
+    ]
+ *
+ * @param {Boolean} isLoading Параметр определеяет, будет ли показываться кольцо загрузки или нет.
+ * @param {Function} onSave Функция которая вернет два параметра:
+ * @param {Array} menu Массив с измененным меню.
+ * @param {String} menuId Уникальное ID меню. Если не указано вернет `undefined`.
+ */
 class MenuEditor extends Component {
   constructor(props) {
     super(props);

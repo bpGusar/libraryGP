@@ -133,6 +133,14 @@ function AppRotes(props) {
       />
       <PrivateRoute
         exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/authors/new"
+        component={MenusPage}
+      />
+      <PrivateRoute
+        exact
         layout={MainLayout}
         accessRole={[userRoles.admin.value, userRoles.user.value]}
         checkAuth={checkAuth}

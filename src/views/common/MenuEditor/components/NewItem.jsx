@@ -7,21 +7,19 @@ import cn from "classnames";
 
 import s from "../index.module.scss";
 
-const initialState = {
-  isOpen: false,
-  itemData: {
-    id: `${uniqid()}_${uniqid()}`,
-    icon: "",
-    text: "",
-    to: "",
-    type: "simple"
-  }
-};
-
 export default class NewItem extends React.Component {
   constructor(props) {
     super(props);
-    this.state = initialState;
+    this.state = {
+      isOpen: false,
+      itemData: {
+        id: uniqid("menuItem_"),
+        icon: "",
+        text: "",
+        to: "",
+        type: "simple"
+      }
+    };
   }
 
   handleCloseOpen = () => {
@@ -35,10 +33,13 @@ export default class NewItem extends React.Component {
     onSubmit(element, itemData);
 
     this.setState({
-      ...initialState,
+      isOpen: false,
       itemData: {
-        ...initialState.itemData,
-        id: `${uniqid()}_${uniqid()}`
+        id: uniqid("menuItem_"),
+        icon: "",
+        text: "",
+        to: "",
+        type: "simple"
       }
     });
   }
