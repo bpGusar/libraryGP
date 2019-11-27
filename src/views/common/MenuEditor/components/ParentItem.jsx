@@ -1,6 +1,8 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-children-prop */
 /* eslint-disable prefer-template */
-import React from "react";
+import React, { useState } from "react";
 import cn from "classnames";
 import _ from "lodash";
 import { Icon } from "semantic-ui-react";
@@ -12,6 +14,8 @@ import NewItem from "./NewItem";
 import s from "../index.module.scss";
 
 export default function ParentItem(props) {
+  const [isOpen, setState] = useState(false);
+
   const {
     element,
     index,
@@ -24,6 +28,9 @@ export default function ParentItem(props) {
   } = props;
   const isNewItem = status === "new";
   const isEdited = status === "edited";
+
+  const angleDirection = isOpen ? "down" : "right";
+
   return (
     <MenuItemWrapper
       itemId={element.id}
@@ -42,20 +49,28 @@ export default function ParentItem(props) {
           )}
         >
           <div className={s.content}>
-            <Icon
-              name={!_.isEmpty(element.icon) ? element.icon : "angle right"}
-            />
-            <div className={s.header}>{element.text}</div>
+            <span onClick={() => setState(!isOpen)}>
+              <Icon
+                name={
+                  !_.isEmpty(element.icon)
+                    ? element.icon
+                    : `angle ${angleDirection}`
+                }
+              />
+              <div className={s.header}>{element.text}</div>
+            </span>
             <ManipulateButtons
               element={element}
               onDelete={onDelete}
               onSaveEdit={onSaveEdit}
             />
           </div>
-          <div className={s.list}>
-            {children}
-            <NewItem onSubmit={onSubmit} element={element} />
-          </div>
+          {isOpen && (
+            <div className={s.list}>
+              {children}
+              <NewItem onSubmit={onSubmit} element={element} />
+            </div>
+          )}
         </div>
       }
     />

@@ -12,7 +12,6 @@ import SaveChanges from "./components/SaveChanges";
 
 import s from "./index.module.scss";
 
-// TODO: доделать редактирование меню
 class MenuEditor extends Component {
   constructor(props) {
     super(props);

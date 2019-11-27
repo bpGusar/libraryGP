@@ -10,7 +10,7 @@ import s from "../index.module.scss";
 const initialState = {
   isOpen: false,
   itemData: {
-    id: uniqid(),
+    id: `${uniqid()}_${uniqid()}`,
     icon: "",
     text: "",
     to: "",
@@ -38,7 +38,7 @@ export default class NewItem extends React.Component {
       ...initialState,
       itemData: {
         ...initialState.itemData,
-        id: uniqid()
+        id: `${uniqid()}_${uniqid()}`
       }
     });
   }
@@ -95,7 +95,6 @@ export default class NewItem extends React.Component {
                 />
                 <Form.Input
                   fluid
-                  required
                   label="URL"
                   placeholder="URL"
                   value={itemData.to}

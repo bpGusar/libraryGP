@@ -9,7 +9,8 @@ const MenuItemWrapper = ({
   children,
   isChildItem,
   className,
-  dragClassName
+  dragClassName,
+  style
 }) => {
   const ref = useRef(null);
 
@@ -73,7 +74,7 @@ const MenuItemWrapper = ({
     <div
       ref={ref}
       className={cn(isDragging ? dragClassName : "", className)}
-      style={{ zIndex }}
+      style={{ zIndex, ...style }}
     >
       {children}
     </div>
