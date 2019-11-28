@@ -1,6 +1,6 @@
 {
   "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
-  "plugins": ["react", "prettier"],
+  "plugins": ["react", "prettier", "react-hooks"],
   "parser": "babel-eslint",
   "rules": {
     "no-underscore-dangle": "off",
@@ -8,7 +8,9 @@
     "import/no-unresolved": "off",
     "no-console": "warn",
     "consistent-return": "off",
-    "array-callback-return": "off"
+    "array-callback-return": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "env": {
     "browser": true,

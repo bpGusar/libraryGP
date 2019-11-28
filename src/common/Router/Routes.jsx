@@ -20,6 +20,8 @@ import EmailVerify from "@UI/Users/EmailVerify";
 import ProfilePage from "@UI/Users/ProfilePage";
 
 /** вьюхи дашборда */
+import AddAuthor from "@DUI/views/Authors/AddAuthor";
+import AuthorsList from "@DUI/views/Authors/AuthorsList";
 import FindBookPage from "@DUI/views/Books/AddBookPage";
 import AddBookForm from "@DUI/views/Books/AddBookPage/Form/index";
 import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
@@ -137,7 +139,15 @@ function AppRotes(props) {
         accessRole={[userRoles.admin.value]}
         checkAuth={checkAuth}
         path="/dashboard/authors/new"
-        component={MenusPage}
+        component={AddAuthor}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/authors/list"
+        component={AuthorsList}
       />
       <PrivateRoute
         exact

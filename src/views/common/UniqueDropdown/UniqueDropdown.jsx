@@ -42,6 +42,20 @@ class UniqueDropdown extends React.Component {
     this.handleGetAll();
   }
 
+  // Если в одном компоненте собирается много экземпляров данного компонента это вызвает дикие лаги.
+  // Поэтому смотрим что, обновление данного компонента будет происходить только при изменении всего двух параметров.
+  shouldComponentUpdate(nextProps, nextState) {
+    const { currentValue } = this.props;
+    const { options } = this.state;
+    if (
+      JSON.stringify(currentValue) !== JSON.stringify(nextProps.currentValue) ||
+      JSON.stringify(options) !== JSON.stringify(nextState.options)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   handleGetAll() {
     const { dispatch, axiosGetLink, storeParam, axsQuery } = this.props;
 

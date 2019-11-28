@@ -11,7 +11,8 @@ const AuthorsSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now()
-  }
+  },
+  addedByUser: String
 });
 
 export default Mongoose.model("Authors", AuthorsSchema);

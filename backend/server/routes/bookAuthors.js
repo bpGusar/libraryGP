@@ -9,11 +9,18 @@ const app = express();
 app.post(
   "/api/book-authors",
   (req, res, next) => withAuth(req, res, next, [1]),
-  (req, res) => BookAuthorsContr.addOneAuthor(req.body, res)
+  (req, res) => BookAuthorsContr.addOneAuthor(req, res)
+);
+
+app.delete(
+  "/api/book-authors/:id",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => BookAuthorsContr.deleteAuthor(res, req)
 );
 
 app.get("/api/book-authors", (req, res) => {
-  BookAuthorsContr.findAuthors(res);
+  const { searchQuery } = req.query;
+  BookAuthorsContr.findAuthors(res, searchQuery);
 });
 
 app.get("/api/book-authors/byid/:id", (req, res) => {
