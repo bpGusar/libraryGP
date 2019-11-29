@@ -7,14 +7,15 @@ import {
   Segment,
   Header,
   Item,
-  Dropdown,
-  Icon
+  Icon,
+  Message
 } from "semantic-ui-react";
-import cn from "classnames";
+
+import ItemElement from "./components/ItemElement";
+import Pagination from "./components/Pagination";
+import ResultFilters from "./components/ResultFilters";
 
 import axs from "@axios";
-
-import s from "./index.module.scss";
 
 export default class ShowElements extends Component {
   constructor(props) {
@@ -22,46 +23,146 @@ export default class ShowElements extends Component {
     this.state = {
       inputValue: "",
       isLoading: false,
-      data: []
+      data: [],
+      message: {
+        type: "",
+        message: ""
+      },
+      options: {
+        page: 1,
+        limit: 10,
+        sort: "desc"
+      },
+      maxElements: 0
     };
+  }
+
+  componentDidMount() {
+    this.handleGetItems(true);
   }
 
   handleGetItems = getAll => {
     const { linkPrefix, dbPropertyName } = this.props;
-    const { inputValue } = this.state;
+    const { inputValue, options } = this.state;
+    const clonedOptions = { ...options };
+
+    if (getAll) {
+      clonedOptions.page = 1;
+    }
 
     this.setState({
       isLoading: true,
       inputValue: getAll ? "" : inputValue,
-      data: []
+      data: [],
+      message: {
+        type: "",
+        message: ""
+      }
     });
 
     axs
-      .get(
-        linkPrefix,
-        getAll
-          ? {}
-          : {
-              params: {
-                searchQuery: {
-                  [dbPropertyName]: { $regex: inputValue, $options: "i" }
-                }
-              }
-            }
-      )
+      .get(linkPrefix, {
+        params: {
+          searchQuery: getAll
+            ? {}
+            : {
+                [dbPropertyName]: { $regex: inputValue, $options: "i" }
+              },
+          options
+        }
+      })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
             isLoading: false,
-            data: resp.data.payload
+            data: resp.data.payload,
+            maxElements: resp.headers["max-elements"]
           });
         }
       });
   };
 
+  handleDeleteBook = el => {
+    const { linkPrefix, dbPropertyName } = this.props;
+
+    this.setState({
+      isLoading: true,
+      message: {
+        type: "",
+        message: ""
+      }
+    });
+
+    axs.delete(`${linkPrefix}${el._id}`).then(resp => {
+      if (!resp.data.error) {
+        this.handleGetItems(true);
+        this.setState({
+          isLoading: true,
+          message: {
+            type: "success",
+            message: `Элемент ${el[dbPropertyName]} успешно удален.`
+          }
+        });
+      } else {
+        this.setState({
+          isLoading: false,
+          message: {
+            type: "error",
+            message: `Ошибка удаления эелемента ${el[dbPropertyName]}.`
+          }
+        });
+      }
+    });
+  };
+
+  handlePageChange = data =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          page: data.activePage
+        }
+      }),
+      () => this.handleGetItems(false)
+    );
+
+  handleChangeSortType = value =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          sort: value
+        }
+      }),
+      () => this.handleGetItems(false)
+    );
+
+  handleChangeLimit = value =>
+    this.setState(prevState => ({
+      options: {
+        ...prevState.options,
+        limit: Number(value)
+      }
+    }));
+
   render() {
-    const { isLoading, inputValue, data } = this.state;
-    const { dbPropertyName, formHeaderText, inputLabel } = this.props;
+    const {
+      isLoading,
+      inputValue,
+      data,
+      message,
+      options,
+      maxElements
+    } = this.state;
+    const {
+      dbPropertyName,
+      formHeaderText,
+      inputLabel,
+      linkPrefix
+    } = this.props;
+
+    const isError = message.type === "error";
+    const isSuccess = message.type === "success";
 
     return (
       <>
@@ -69,6 +170,15 @@ export default class ShowElements extends Component {
           {formHeaderText}
         </Header>
         <Segment attached loading={isLoading}>
+          {!_.isEmpty(message.type) && (
+            <Message negative={isError} positive={isSuccess}>
+              <Message.Header>
+                {isSuccess && "Успешно"}
+                {isError && "Ошибка"}
+              </Message.Header>
+              <p>{message.message}</p>
+            </Message>
+          )}
           <Form onSubmit={this.handleGetElements}>
             <Form.Input
               fluid
@@ -78,10 +188,16 @@ export default class ShowElements extends Component {
               value={inputValue}
               onChange={(e, { value }) => this.setState({ inputValue: value })}
             />
+            <ResultFilters
+              sort={options.sort}
+              limit={options.limit}
+              onChangeSort={this.handleChangeSortType}
+              onChangeLimit={this.handleChangeLimit}
+            />
             <Button
               disabled={_.isEmpty(inputValue)}
               type="submit"
-              color="green"
+              primary
               onClick={() => this.handleGetItems(false)}
             >
               Поиск
@@ -101,28 +217,28 @@ export default class ShowElements extends Component {
           {!_.isEmpty(data) && (
             <Item.Group divided>
               {data.map(el => (
-                <Item key={el._id}>
-                  <Item.Content>
-                    <Item.Header>{el[dbPropertyName]}</Item.Header>
-                    <Dropdown
-                      icon="ellipsis horizontal"
-                      floating
-                      button
-                      className={cn(s.headerDrop, "icon")}
-                    >
-                      <Dropdown.Menu>
-                        <Dropdown.Menu scrolling>
-                          <Dropdown.Item icon="pencil" text="Редактировать" />
-                          <Dropdown.Item icon="trash" text="Удалить" />
-                        </Dropdown.Menu>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </Item.Content>
-                </Item>
+                <ItemElement
+                  key={el._id}
+                  element={el}
+                  dbPropertyName={dbPropertyName}
+                  onDelete={this.handleDeleteBook}
+                  linkPrefix={linkPrefix}
+                  onEditSubmit={() => this.handleGetItems(true)}
+                />
               ))}
             </Item.Group>
           )}
         </Segment>
+        {!_.isEmpty(data) && (
+          <Segment attached>
+            <Pagination
+              onPageChange={this.handlePageChange}
+              page={options.page}
+              limit={options.limit}
+              maxElements={maxElements}
+            />
+          </Segment>
+        )}
       </>
     );
   }

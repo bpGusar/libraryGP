@@ -36,6 +36,9 @@ const MSG = {
   userUpdateError: {
     ru: "Ошибка при обновлении пользователя."
   },
+  authorUpdateError: {
+    ru: "Ошибка при обновлении автора."
+  },
   registrationSuccess: {
     ru: "Успешная регистрация."
   },
@@ -84,11 +87,17 @@ const MSG = {
   cantDeleteBook: {
     ru: "Произошла ошибка при удалении книги."
   },
+  cantDeleteAuthor: {
+    ru: "Произошла ошибка при удалении автора."
+  },
   bookWasUpdated: {
     ru: "Книга успешно обновлена."
   },
   bookWasDeleted: {
     ru: "Книга успешно удалена."
+  },
+  authorWasDeleted: {
+    ru: "Автор успешно удален."
   },
   thisCredsAreFree: {
     ru: "Введенные данные сободны."

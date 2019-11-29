@@ -11,7 +11,11 @@ export default class AddAuthor extends Component {
     this.state = {
       [props.dbPropertyName]: "",
       isLoading: false,
-      addedElement: ""
+      addedElement: "",
+      errorData: {
+        error: false,
+        value: ""
+      }
     };
   }
 
@@ -19,8 +23,13 @@ export default class AddAuthor extends Component {
     const { postLink, dbPropertyName } = this.props;
     this.setState({
       isLoading: true,
-      addedElement: ""
+      addedElement: "",
+      errorData: {
+        error: false,
+        value: ""
+      }
     });
+    // dfghdfgh
     axs
       .post(postLink, { [dbPropertyName]: this.state[dbPropertyName] })
       .then(resp => {
@@ -30,12 +39,20 @@ export default class AddAuthor extends Component {
             isLoading: false,
             addedElement: ps[dbPropertyName]
           }));
+        } else {
+          this.setState(ps => ({
+            isLoading: false,
+            errorData: {
+              error: true,
+              value: ps[dbPropertyName]
+            }
+          }));
         }
       });
   };
 
   render() {
-    const { isLoading, addedElement } = this.state;
+    const { isLoading, addedElement, errorData } = this.state;
     const { dbPropertyName, formHeaderText, inputLabel } = this.props;
     const inputValue = this.state[dbPropertyName];
     return (
@@ -44,7 +61,11 @@ export default class AddAuthor extends Component {
           {formHeaderText}
         </Header>
         <Segment attached loading={isLoading}>
-          <Form onSubmit={this.handlePost} success={!isEmpty(addedElement)}>
+          <Form
+            onSubmit={this.handlePost}
+            success={!isEmpty(addedElement)}
+            error={errorData.error}
+          >
             <Form.Input
               fluid
               label={inputLabel}
@@ -62,6 +83,18 @@ export default class AddAuthor extends Component {
                 content={
                   <p>
                     Элемент <b>{addedElement}</b> успешно добавлен!
+                  </p>
+                }
+              />
+            )}
+            {errorData.error && (
+              <Message
+                error
+                header="Ошибка"
+                content={
+                  <p>
+                    Элемент <b>{errorData.value}</b> не может быть добавлен так
+                    как он не уникален!
                   </p>
                 }
               />

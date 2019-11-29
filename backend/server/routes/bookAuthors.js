@@ -18,19 +18,25 @@ app.delete(
   (req, res) => BookAuthorsContr.deleteAuthor(res, req)
 );
 
+app.put(
+  "/api/book-authors/:id",
+  (req, res, next) => withAuth(req, res, next),
+  (req, res) => BookAuthorsContr.updateAuthor(req, res)
+);
+
 app.get("/api/book-authors", (req, res) => {
   const { searchQuery } = req.query;
-  BookAuthorsContr.findAuthors(res, searchQuery);
+  BookAuthorsContr.findAuthors(res, req, searchQuery);
 });
 
 app.get("/api/book-authors/byid/:id", (req, res) => {
   const { id } = req.params;
-  BookAuthorsContr.findAuthors(res, JSON.stringify({ _id: id }));
+  BookAuthorsContr.findAuthors(res, req, JSON.stringify({ _id: id }));
 });
 
 app.get("/api/book-authors/byname/:authorName", (req, res) => {
   const { authorName } = req.params;
-  BookAuthorsContr.findAuthors(res, JSON.stringify({ authorName }));
+  BookAuthorsContr.findAuthors(res, req, JSON.stringify({ authorName }));
 });
 
 export default app;
