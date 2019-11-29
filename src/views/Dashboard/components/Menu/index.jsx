@@ -30,7 +30,19 @@ class DashboardMenu extends Component {
           </Dropdown.Item>
         );
         return (
-          <Dropdown key={el.id} item text={el.text} className={s.menuItem}>
+          <Dropdown
+            key={el.id}
+            item
+            text={
+              <p>
+                {!_.isEmpty(el.icon) && (
+                  <Icon name={el.icon} className={s.dropdownIcon} />
+                )}
+                {el.text}
+              </p>
+            }
+            className={s.menuItem}
+          >
             <Dropdown.Menu>
               {el.items.map(menuItem => dropItem(menuItem))}
             </Dropdown.Menu>
@@ -39,7 +51,10 @@ class DashboardMenu extends Component {
       },
       simple: el => (
         <Menu.Item key={el.id} className={s.menuItem} as={Link} to={el.to}>
-          {el.text}
+          {!_.isEmpty(el.icon) && (
+            <Icon name={el.icon} className={s.menuItemIcon} />
+          )}
+          <span>{el.text}</span>
         </Menu.Item>
       )
     };

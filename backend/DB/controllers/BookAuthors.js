@@ -41,13 +41,18 @@ function updateAuthor(req, res) {
   const updateData = req.body;
   const { id } = req.params;
 
-  Authors.updateOne({ _id: id }, { ...updateData }, err => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.authorUpdateError, err));
-    } else {
-      res.send(config.getRespData(false));
+  Authors.updateOne(
+    { _id: id },
+    { ...updateData },
+    { runValidators: true, context: "query" },
+    err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.authorUpdateError, err));
+      } else {
+        res.send(config.getRespData(false));
+      }
     }
-  });
+  );
 }
 
 function addOneAuthor(req, res) {

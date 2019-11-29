@@ -5,7 +5,7 @@
 import React, { useState } from "react";
 import cn from "classnames";
 import _ from "lodash";
-import { Icon } from "semantic-ui-react";
+import { Icon, Label } from "semantic-ui-react";
 
 import MenuItemWrapper from "./MenuItemWrapper";
 import ManipulateButtons from "./ManipulateButtons";
@@ -57,7 +57,9 @@ export default function ParentItem(props) {
                     : `angle ${angleDirection}`
                 }
               />
-              <div className={s.header}>{element.text}</div>
+              <div className={s.header}>
+                {element.text} <Label>{element.items.length} дочерних</Label>
+              </div>
             </span>
             <ManipulateButtons
               element={element}

@@ -68,7 +68,7 @@ export default class ShowElements extends Component {
             : {
                 [dbPropertyName]: { $regex: inputValue, $options: "i" }
               },
-          options
+          options: { ...clonedOptions }
         }
       })
       .then(resp => {
@@ -108,7 +108,7 @@ export default class ShowElements extends Component {
           isLoading: false,
           message: {
             type: "error",
-            message: `Ошибка удаления эелемента ${el[dbPropertyName]}.`
+            message: `Ошибка удаления элемента ${el[dbPropertyName]}.`
           }
         });
       }
@@ -134,7 +134,7 @@ export default class ShowElements extends Component {
           sort: value
         }
       }),
-      () => this.handleGetItems(false)
+      () => this.handleGetItems(true)
     );
 
   handleChangeLimit = value =>
@@ -179,7 +179,7 @@ export default class ShowElements extends Component {
               <p>{message.message}</p>
             </Message>
           )}
-          <Form onSubmit={this.handleGetElements}>
+          <Form>
             <Form.Input
               fluid
               label={inputLabel}

@@ -1,5 +1,4 @@
 import React from "react";
-import _ from "lodash";
 import { Button, Popup, Icon, Form } from "semantic-ui-react";
 
 import s from "../index.module.scss";
@@ -56,8 +55,6 @@ export default class EditItem extends React.Component {
     const { element } = this.props;
 
     const isDrop = element.type === "dropdown";
-    const isSimpleWOItems =
-      element.type === "simple" && !_.has(element, "items");
 
     return (
       <Popup
@@ -79,18 +76,16 @@ export default class EditItem extends React.Component {
       >
         <Form inverted onSubmit={() => this.handleSubmit(itemData)}>
           <Form.Group widths="equal">
-            {(!isDrop || isSimpleWOItems) && (
-              <Form.Input
-                fluid
-                onChange={(e, { value, name }) =>
-                  this.handleChangeValue({ value, name })
-                }
-                value={itemData.icon}
-                label="Иконка"
-                placeholder="Иконка"
-                name="icon"
-              />
-            )}
+            <Form.Input
+              fluid
+              onChange={(e, { value, name }) =>
+                this.handleChangeValue({ value, name })
+              }
+              value={itemData.icon}
+              label="Иконка"
+              placeholder="Иконка"
+              name="icon"
+            />
             <Form.Input
               fluid
               onChange={(e, { value, name }) =>

@@ -22,6 +22,10 @@ import ProfilePage from "@UI/Users/ProfilePage";
 /** вьюхи дашборда */
 import AddAuthor from "@DUI/views/Authors/AddAuthor";
 import AuthorsList from "@DUI/views/Authors/AuthorsList";
+import AddPublisher from "@DUI/views/Publishers/AddPublisher";
+import PublishersList from "@DUI/views/Publishers/PublishersList";
+import AddCategory from "@DUI/views/Categories/AddCategory";
+import CategoryList from "@DUI/views/Categories/CategoryList";
 import FindBookPage from "@DUI/views/Books/AddBookPage";
 import AddBookForm from "@DUI/views/Books/AddBookPage/Form/index";
 import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
@@ -148,6 +152,38 @@ function AppRotes(props) {
         checkAuth={checkAuth}
         path="/dashboard/authors/list"
         component={AuthorsList}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/categories/new"
+        component={AddCategory}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/categories/list"
+        component={CategoryList}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/publishers/list"
+        component={PublishersList}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/publishers/new"
+        component={AddPublisher}
       />
       <PrivateRoute
         exact

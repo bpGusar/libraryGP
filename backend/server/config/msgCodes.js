@@ -39,6 +39,12 @@ const MSG = {
   authorUpdateError: {
     ru: "Ошибка при обновлении автора."
   },
+  publisherUpdateError: {
+    ru: "Ошибка при обновлении издателя."
+  },
+  categoryUpdateError: {
+    ru: "Ошибка при обновлении категории."
+  },
   registrationSuccess: {
     ru: "Успешная регистрация."
   },
@@ -90,6 +96,12 @@ const MSG = {
   cantDeleteAuthor: {
     ru: "Произошла ошибка при удалении автора."
   },
+  cantDeletePublisher: {
+    ru: "Произошла ошибка при удалении издателя."
+  },
+  cantDeleteCategory: {
+    ru: "Произошла ошибка при удалении категории."
+  },
   bookWasUpdated: {
     ru: "Книга успешно обновлена."
   },
@@ -98,6 +110,12 @@ const MSG = {
   },
   authorWasDeleted: {
     ru: "Автор успешно удален."
+  },
+  publisherWasDeleted: {
+    ru: "Издатель успешно удален."
+  },
+  categoryWasDeleted: {
+    ru: "Категория успешно удалена."
   },
   thisCredsAreFree: {
     ru: "Введенные данные сободны."
