@@ -9,7 +9,6 @@ import Book from "../models/Book";
 
 function findPublishers(res, req, data = {}) {
   let { options } = req.query;
-
   if (_.isUndefined(options)) {
     options = {
       page: 1,

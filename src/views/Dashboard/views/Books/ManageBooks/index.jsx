@@ -12,12 +12,12 @@ import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
 import { toast } from "react-semantic-toasts";
 
+import PaginationBlock from "@commonViews/Pagination";
 import Filters from "./components/Filters";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
 import BookItem from "./components/BookItem";
-import PaginationBlock from "./components/Pagination";
 import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";

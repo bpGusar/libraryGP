@@ -122,8 +122,8 @@ function findBooks(res, req, data = {}) {
  */
 function addBook(req, res) {
   const { book: bodyBook } = req.body;
+  const base64StringToReplace = /^data:image\/png;base64,/;
   const posterName = `book_poster_${Date.now()}.png`;
-
   const pathToNewPoster = path.join(
     __dirname,
     `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
@@ -143,17 +143,19 @@ function addBook(req, res) {
   };
 
   const clonedBookObj = { ...bodyBook };
+
+  clonedBookObj.addedByUser = req.middlewareUserInfo._id;
+
   if (bodyBook.bookInfo.imageLinks.poster === "") {
     clonedBookObj.bookInfo.imageLinks.poster = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
 
     saveBook(clonedBookObj);
   } else if (
-    clonedBookObj.bookInfo.imageLinks.poster.search(
-      /^data:image\/png;base64,/
-    ) !== -1
+    clonedBookObj.bookInfo.imageLinks.poster.search(base64StringToReplace) !==
+    -1
   ) {
     const base64Poster = clonedBookObj.bookInfo.imageLinks.poster.replace(
-      /^data:image\/png;base64,/,
+      base64StringToReplace,
       ""
     );
 

@@ -7,18 +7,11 @@ import EditElement from "../../EditElement";
 import s from "../index.module.scss";
 
 export default function ItemElement(props) {
-  const {
-    element,
-    dbPropertyName,
-    onDelete,
-    linkPrefix,
-    onEditSubmit,
-    isItemDeleted
-  } = props;
+  const { element, onDelete, linkPrefix, onEditSubmit, isItemDeleted } = props;
   return (
     <Item className={isItemDeleted ? s.isItemDeleted : ""}>
       <Item.Content>
-        <Item.Header>{element[dbPropertyName]}</Item.Header>
+        <Item.Header>{element.languageName}</Item.Header>
         <Dropdown
           icon="ellipsis horizontal"
           floating
@@ -36,7 +29,6 @@ export default function ItemElement(props) {
                   <Modal.Description>
                     <EditElement
                       element={element}
-                      dbPropertyName={dbPropertyName}
                       linkPrefix={linkPrefix}
                       onEditSubmit={onEditSubmit}
                     />
@@ -51,6 +43,9 @@ export default function ItemElement(props) {
             </Dropdown.Menu>
           </Dropdown.Menu>
         </Dropdown>
+        <p>
+          <b>Код</b>: {element.langCode}
+        </p>
       </Item.Content>
     </Item>
   );

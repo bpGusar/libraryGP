@@ -356,14 +356,15 @@ class EditUser extends Component {
                     iconPosition="left"
                     label="E-mail"
                   />
-                  <CustomSelect
-                    label="Группа пользователя"
-                    name="userGroup"
-                    placeholder="Select your country"
-                    options={this.handleGetUserGroupsOptions(userRoles)}
-                    defaultValue={updateData.userGroup}
-                    onChange={this.handleInputChange}
-                  />
+                  {user.userGroup === userRoles.admin.value && (
+                    <CustomSelect
+                      label="Группа пользователя"
+                      name="userGroup"
+                      options={this.handleGetUserGroupsOptions(userRoles)}
+                      defaultValue={updateData.userGroup}
+                      onChange={this.handleInputChange}
+                    />
+                  )}
                 </Form.Group>
                 <Form.Group widths="equal">
                   <Form.Input

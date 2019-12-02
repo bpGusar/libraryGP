@@ -23,8 +23,8 @@ export default class ShowElements extends Component {
     this.state = {
       inputValue: "",
       isLoading: false,
-      data: [],
       deletedItems: {},
+      data: [],
       message: {
         type: "",
         message: ""
@@ -43,7 +43,7 @@ export default class ShowElements extends Component {
   }
 
   handleGetItems = getAll => {
-    const { linkPrefix, dbPropertyName } = this.props;
+    const { linkPrefix } = this.props;
     const { inputValue, options } = this.state;
     const clonedOptions = { ...options };
 
@@ -55,11 +55,12 @@ export default class ShowElements extends Component {
       isLoading: true,
       inputValue: getAll ? "" : inputValue,
       data: [],
+      maxElements: 0,
+      deletedItems: {},
       message: {
         type: "",
         message: ""
-      },
-      deletedItems: {}
+      }
     });
 
     axs
@@ -68,7 +69,7 @@ export default class ShowElements extends Component {
           searchQuery: getAll
             ? {}
             : {
-                [dbPropertyName]: { $regex: inputValue, $options: "i" }
+                languageName: { $regex: inputValue, $options: "i" }
               },
           options: { ...clonedOptions }
         }
@@ -85,7 +86,7 @@ export default class ShowElements extends Component {
   };
 
   handleDeleteItem = el => {
-    const { linkPrefix, dbPropertyName } = this.props;
+    const { linkPrefix } = this.props;
 
     this.setState({
       isLoading: true,
@@ -101,7 +102,7 @@ export default class ShowElements extends Component {
           isLoading: false,
           message: {
             type: "success",
-            message: `Элемент ${el[dbPropertyName]} успешно удален.`
+            message: `Элемент ${el.languageName} успешно удален.`
           },
           deletedItems: { ...ps.deletedItems, [el._id]: true }
         }));
@@ -110,7 +111,7 @@ export default class ShowElements extends Component {
           isLoading: false,
           message: {
             type: "error",
-            message: `Ошибка удаления элемента ${el[dbPropertyName]}.`
+            message: `Ошибка удаления элемента ${el.languageName}.`
           }
         });
       }
@@ -154,15 +155,10 @@ export default class ShowElements extends Component {
       data,
       message,
       options,
-      maxElements,
-      deletedItems
+      deletedItems,
+      maxElements
     } = this.state;
-    const {
-      dbPropertyName,
-      formHeaderText,
-      inputLabel,
-      linkPrefix
-    } = this.props;
+    const { formHeaderText, inputLabel, linkPrefix } = this.props;
 
     const isError = message.type === "error";
     const isSuccess = message.type === "success";
@@ -186,7 +182,7 @@ export default class ShowElements extends Component {
             <Form.Input
               fluid
               label={inputLabel}
-              name={dbPropertyName}
+              name="languageName"
               placeholder={inputLabel}
               value={inputValue}
               onChange={(e, { value }) => this.setState({ inputValue: value })}
@@ -224,7 +220,6 @@ export default class ShowElements extends Component {
                   key={el._id}
                   element={el}
                   isItemDeleted={deletedItems[el._id]}
-                  dbPropertyName={dbPropertyName}
                   onDelete={this.handleDeleteItem}
                   linkPrefix={linkPrefix}
                   onEditSubmit={() => this.handleGetItems(true)}

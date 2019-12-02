@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 import { DateTime } from "luxon";
 
-import Pagination from "./Pagination";
+import Pagination from "@commonViews/Pagination";
 
 import axs from "@axios";
 
@@ -165,7 +165,7 @@ export default class ArchivedInfo extends Component {
                   <Pagination
                     options={options}
                     maxElements={maxElements}
-                    handleOnPageChange={this.handleOnPageChange}
+                    onPageChange={this.handleOnPageChange}
                   />
                 </>
               )}

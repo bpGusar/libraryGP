@@ -30,7 +30,6 @@ export default function EditElement(props) {
   };
 
   const { updateData, errorMsg, isLoading } = state;
-  const { dbPropertyName } = props;
   return (
     <Form onSubmit={handleSubmitChanges} loading={isLoading}>
       {!_.isEmpty(errorMsg) && (
@@ -41,14 +40,34 @@ export default function EditElement(props) {
       )}
       <Form.Input
         type="text"
-        id={dbPropertyName}
-        value={updateData[dbPropertyName]}
-        name={dbPropertyName}
-        onChange={(e, { value }) =>
+        id="languageName"
+        value={updateData.languageName}
+        name="languageName"
+        onChange={(e, { value, name }) =>
           setState({
             updateData: {
               ...updateData,
-              [dbPropertyName]: value
+              [name]: value
+            }
+          })
+        }
+        required
+        fluid
+        icon="pencil"
+        iconPosition="left"
+        label="Название"
+      />
+      <Form.Input
+        type="text"
+        label="Код языка"
+        id="langCode"
+        value={updateData.langCode}
+        name="langCode"
+        onChange={(e, { value, name }) =>
+          setState({
+            updateData: {
+              ...updateData,
+              [name]: value
             }
           })
         }

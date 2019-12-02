@@ -1,7 +1,9 @@
 .menuItem {
   text-align: left !important;
-  > .menuItemIcon {
+  .menuItemIcon {
     display: inline-block !important;
+    margin: 0 !important;
+    width: 26px;
   }
 }
 .backtoToSite {
@@ -12,5 +14,5 @@
 }
 
 .dropdownIcon {
-  margin: 0 9px 0 0px !important;
+  width: 23px !important;
 }

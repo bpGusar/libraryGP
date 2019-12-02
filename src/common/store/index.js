@@ -62,7 +62,7 @@ export const getInitialState = () => ({
   [PARAMS.BOOK_TO_DB]: {
     flag: bookFlag.new,
     book: {
-      userIdWhoAddedBookInDb: "",
+      addedByUser: "",
       dateAdded: "",
       bookInfo: {
         title: "",

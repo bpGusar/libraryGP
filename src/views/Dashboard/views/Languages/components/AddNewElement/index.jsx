@@ -9,7 +9,10 @@ export default class AddAuthor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      [props.dbPropertyName]: "",
+      langData: {
+        languageName: "",
+        langCode: ""
+      },
       isLoading: false,
       addedElement: "",
       errorData: {
@@ -20,7 +23,8 @@ export default class AddAuthor extends Component {
   }
 
   handlePost = () => {
-    const { postLink, dbPropertyName } = this.props;
+    const { postLink } = this.props;
+    const { langData } = this.state;
     this.setState({
       isLoading: true,
       addedElement: "",
@@ -29,32 +33,33 @@ export default class AddAuthor extends Component {
         value: ""
       }
     });
-    // dfghdfgh
-    axs
-      .post(postLink, { [dbPropertyName]: this.state[dbPropertyName] })
-      .then(resp => {
-        if (!resp.data.error) {
-          this.setState(ps => ({
-            [dbPropertyName]: "",
-            isLoading: false,
-            addedElement: ps[dbPropertyName]
-          }));
-        } else {
-          this.setState(ps => ({
-            isLoading: false,
-            errorData: {
-              error: true,
-              value: ps[dbPropertyName]
-            }
-          }));
-        }
-      });
+
+    axs.post(postLink, langData).then(resp => {
+      if (!resp.data.error) {
+        this.setState(ps => ({
+          langData: {
+            languageName: "",
+            langCode: ""
+          },
+          isLoading: false,
+          addedElement: ps.langData.languageName
+        }));
+      } else {
+        this.setState(ps => ({
+          isLoading: false,
+          errorData: {
+            error: true,
+            value: ps.langData.languageName
+          }
+        }));
+      }
+    });
   };
 
   render() {
-    const { isLoading, addedElement, errorData } = this.state;
-    const { dbPropertyName, formHeaderText, inputLabel } = this.props;
-    const inputValue = this.state[dbPropertyName];
+    const { isLoading, addedElement, errorData, langData } = this.state;
+    const { formHeaderText } = this.props;
+    const { languageName, langCode } = langData;
     return (
       <>
         <Header as="h3" attached="top">
@@ -69,12 +74,23 @@ export default class AddAuthor extends Component {
             <Form.Input
               fluid
               required
-              label={inputLabel}
-              name={dbPropertyName}
-              placeholder={inputLabel}
-              value={inputValue}
+              label="Название языка"
+              name="languageName"
+              placeholder="Название языка"
+              value={languageName}
               onChange={(e, { name, value }) =>
-                this.setState({ [name]: value })
+                this.setState({ langData: { ...langData, [name]: value } })
+              }
+            />
+            <Form.Input
+              fluid
+              required
+              label="Код языка"
+              name="langCode"
+              placeholder="Код языка"
+              value={langCode}
+              onChange={(e, { name, value }) =>
+                this.setState({ langData: { ...langData, [name]: value } })
               }
             />
             {!isEmpty(addedElement) && (

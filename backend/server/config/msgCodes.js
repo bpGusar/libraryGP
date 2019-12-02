@@ -39,6 +39,9 @@ const MSG = {
   authorUpdateError: {
     ru: "Ошибка при обновлении автора."
   },
+  langUpdateError: {
+    ru: "Ошибка при обновлении языка."
+  },
   publisherUpdateError: {
     ru: "Ошибка при обновлении издателя."
   },
@@ -56,6 +59,9 @@ const MSG = {
   },
   authorMustBeUnique: {
     ru: "Имя автора должно быть уникальным. Такой автор уже существует."
+  },
+  langMustBeUnique: {
+    ru: "Язык должен быть уникальным. Такой язык уже существует."
   },
   categoryNameMustBeUnique: {
     ru: "Имя категории должно быть уникальным."
@@ -96,6 +102,9 @@ const MSG = {
   cantDeleteAuthor: {
     ru: "Произошла ошибка при удалении автора."
   },
+  cantDeleteLang: {
+    ru: "Произошла ошибка при удалении языка."
+  },
   cantDeletePublisher: {
     ru: "Произошла ошибка при удалении издателя."
   },
@@ -110,6 +119,9 @@ const MSG = {
   },
   authorWasDeleted: {
     ru: "Автор успешно удален."
+  },
+  langWasDeleted: {
+    ru: "Язык успешно удален."
   },
   publisherWasDeleted: {
     ru: "Издатель успешно удален."

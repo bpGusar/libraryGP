@@ -14,8 +14,8 @@ import {
 import _ from "lodash";
 import { Link } from "react-router-dom";
 
+import PaginationBlock from "@commonViews/Pagination";
 import EditUser from "../EditUser";
-import PaginationBlock from "./components/Pagination";
 import ResultFilters from "./components/ResultFilters";
 
 import axs from "@axios";

@@ -3,7 +3,7 @@ import Mongoose from "mongoose";
 const { Schema } = Mongoose;
 
 const BookSchema = new Schema({
-  userIdWhoAddedBookInDb: { type: String, required: true },
+  addedByUser: { type: String, required: true },
   dateAdded: { type: String, required: true },
   bookInfo: {
     title: { type: String, required: true },

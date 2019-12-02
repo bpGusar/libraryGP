@@ -22,6 +22,8 @@ import ProfilePage from "@UI/Users/ProfilePage";
 /** вьюхи дашборда */
 import AddAuthor from "@DUI/views/Authors/AddAuthor";
 import AuthorsList from "@DUI/views/Authors/AuthorsList";
+import LangList from "@DUI/views/Languages/LangList";
+import AddLang from "@DUI/views/Languages/AddLang";
 import AddPublisher from "@DUI/views/Publishers/AddPublisher";
 import PublishersList from "@DUI/views/Publishers/PublishersList";
 import AddCategory from "@DUI/views/Categories/AddCategory";
@@ -184,6 +186,22 @@ function AppRotes(props) {
         checkAuth={checkAuth}
         path="/dashboard/publishers/new"
         component={AddPublisher}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/languages/list"
+        component={LangList}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/languages/new"
+        component={AddLang}
       />
       <PrivateRoute
         exact

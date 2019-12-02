@@ -31,7 +31,11 @@ app.put(
 
 app.get("/api/book-publishers/byname/:publisherName", (req, res) => {
   const { publisherName } = req.params;
-  BookPublishersContr.findPublishers(res, JSON.stringify({ publisherName }));
+  BookPublishersContr.findPublishers(
+    res,
+    req,
+    JSON.stringify({ publisherName })
+  );
 });
 
 export default app;

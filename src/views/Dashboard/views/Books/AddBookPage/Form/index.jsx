@@ -39,8 +39,6 @@ class AddBookForm extends React.Component {
     const { bookToDB, user, dispatch } = this.props;
     const bookClone = _.cloneDeep(bookToDB);
     const today = DateTime.local().toISODate();
-
-    _.set(bookClone.book, "userIdWhoAddedBookInDb", user._id);
     _.set(bookClone.book, "dateAdded", today);
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
