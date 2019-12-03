@@ -37,10 +37,14 @@ function findOrderedBooks(res, getQery = {}) {
 }
 
 function addOrderedBook(req, res) {
-  const orderBookData = req.body;
-  orderBookData.userId = req.middlewareUserInfo._id;
+  const bookedBookData = req.body;
+  bookedBookData.userId = req.middlewareUserInfo._id;
 
-  const newOrderedBook = new OrderedBooks({ ...orderBookData.bookedBookInfo });
+  const newOrderedBook = new OrderedBooks({
+    bookId: bookedBookData.bookedBookInfo.book._id,
+    userId: bookedBookData.bookedBookInfo.user._id,
+    readerId: bookedBookData.bookedBookInfo.readerId
+  });
 
   newOrderedBook.save(saveErr => {
     if (saveErr) {
@@ -51,14 +55,20 @@ function addOrderedBook(req, res) {
           callback =>
             BookedBooks.deleteOne(
               {
-                bookId: orderBookData.bookedBookInfo.bookId,
-                readerId: orderBookData.bookedBookInfo.readerId
+                bookId: bookedBookData.bookedBookInfo.book._id,
+                readerId: bookedBookData.bookedBookInfo.readerId
               },
               callback
             ),
           callback => {
             const newArchivedBookedBook = new BookedBooksArchive({
-              ...orderBookData
+              bookedBookInfo: {
+                bookInfo: bookedBookData.bookedBookInfo.book,
+                userInfo: bookedBookData.bookedBookInfo.user,
+                createdAt: bookedBookData.bookedBookInfo.createdAt
+              },
+              status: bookedBookData.status,
+              comment: bookedBookData.comment
             });
 
             newArchivedBookedBook.save(callback);
@@ -76,4 +86,14 @@ function addOrderedBook(req, res) {
   });
 }
 
-export default { addOrderedBook, findOrderedBooks };
+function getOrderedBooksCount(res) {
+  OrderedBooks.countDocuments({}, (err, number) => {
+    if (err) {
+      res.json(config.getRespData(true, null, err));
+    } else {
+      res.json(config.getRespData(false, null, number));
+    }
+  });
+}
+
+export default { addOrderedBook, findOrderedBooks, getOrderedBooksCount };

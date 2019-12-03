@@ -34,6 +34,10 @@ export default class MainPage extends React.Component {
             isLoaded: true,
             books: [...resp.data.payload]
           });
+        } else {
+          this.setState({
+            isLoaded: true
+          });
         }
       });
   }

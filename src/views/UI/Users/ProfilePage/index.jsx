@@ -81,6 +81,10 @@ class ProfilePage extends Component {
           isLoading: false,
           currentUser: resp.data.payload[0].userId
         });
+      } else {
+        this.setState({
+          isLoading: false
+        });
       }
     });
   }

@@ -74,6 +74,10 @@ class SearchBox extends Component {
                   : [],
                 isLoading: false
               });
+            } else {
+              this.setState({
+                isLoading: false
+              });
             }
           });
       }

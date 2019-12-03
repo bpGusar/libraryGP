@@ -68,6 +68,14 @@ class ResultsModal extends Component {
             dispatch(storeData, PARAMS.BOOK_TO_DB, clonedBookToDB);
           }
         );
+      } else {
+        this.setState({
+          isLoading: {
+            ...isLoading,
+            [uniqId]: "done"
+          },
+          someLoading: false
+        });
       }
     });
   }

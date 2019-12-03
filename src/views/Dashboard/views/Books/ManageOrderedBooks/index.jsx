@@ -117,45 +117,6 @@ export default class ManageOrderedBooks extends Component {
       });
   }
 
-  handleOrderBook(orderedBook) {
-    const { bookReturn, actionWithOrderedBookInProgress } = this.state;
-
-    this.setState({
-      actionWithOrderedBookInProgress: {
-        ...actionWithOrderedBookInProgress,
-        [orderedBook._id]: true
-      }
-    });
-
-    axs
-      .post("/ordered-books", {
-        orderedBookInfo: {
-          ...orderedBook
-        },
-        status: "ordered",
-        comment: ""
-      })
-      .then(resp => {
-        if (!resp.data.error) {
-          this.setState({
-            bookReturn: {
-              ...bookReturn,
-              successfullyReturnedBooks: {
-                ...bookReturn.successfullyReturnedBooks,
-                [orderedBook._id]: true
-              }
-            },
-            actionWithOrderedBookInProgress: {
-              ...actionWithOrderedBookInProgress,
-              [orderedBook._id]: false
-            }
-          });
-        } else {
-          toast(MSG.toastClassicError(resp.data.message));
-        }
-      });
-  }
-
   handleRejectOrdering(orderedBook) {
     const { bookReturn, actionWithOrderedBookInProgress } = this.state;
 

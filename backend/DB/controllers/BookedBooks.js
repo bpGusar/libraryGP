@@ -179,4 +179,14 @@ function findBookedBooks(res, data = {}) {
     });
 }
 
-export default { bookABook, findBookedBooks };
+function getBookedBooksCount(res) {
+  BookedBooks.countDocuments({}, (err, number) => {
+    if (err) {
+      res.json(config.getRespData(true, null, err));
+    } else {
+      res.json(config.getRespData(false, null, number));
+    }
+  });
+}
+
+export default { bookABook, findBookedBooks, getBookedBooksCount };

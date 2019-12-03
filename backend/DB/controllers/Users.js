@@ -185,7 +185,7 @@ function updateUser(req, res) {
 }
 
 function addNewUser(req, res) {
-  const { send_email, regInfo } = req.body;
+  const { send_email, regData } = req.body;
 
   const avatarName = `avatar_${Date.now()}.png`;
 
@@ -229,7 +229,7 @@ function addNewUser(req, res) {
     });
   };
 
-  let clonedUserObj = { ...regInfo };
+  let clonedUserObj = { ...regData };
 
   if (!send_email) {
     clonedUserObj = {

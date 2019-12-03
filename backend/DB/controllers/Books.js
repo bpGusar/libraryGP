@@ -53,13 +53,17 @@ function findBooks(res, req, data = {}) {
       page: 1,
       limit: 99,
       fetch_type: 0,
-      sort: "desc"
+      sort: "desc",
+      notShowDeleted: true
     };
   } else {
     options = JSON.parse(options);
   }
 
   options.page = _.isUndefined(options.page) ? 1 : options.page;
+  options.notShowDeleted = _.isUndefined(options.notShowDeleted)
+    ? true
+    : options.notShowDeleted;
   options.sort = _.isUndefined(options.sort) ? 1 : options.sort;
   options.limit = _.isUndefined(options.limit) ? 99 : options.limit;
   options.fetch_type = _.isUndefined(options.fetch_type)

@@ -29,7 +29,7 @@ export default class AddAuthor extends Component {
         value: ""
       }
     });
-    // dfghdfgh
+
     axs
       .post(postLink, { [dbPropertyName]: this.state[dbPropertyName] })
       .then(resp => {

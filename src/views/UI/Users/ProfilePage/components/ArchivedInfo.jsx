@@ -163,7 +163,8 @@ export default class ArchivedInfo extends Component {
                 <>
                   <Divider />
                   <Pagination
-                    options={options}
+                    page={options.page}
+                    limit={options.limit}
                     maxElements={maxElements}
                     onPageChange={this.handleOnPageChange}
                   />

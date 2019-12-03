@@ -89,6 +89,10 @@ class UsersList extends Component {
             isLoading: false,
             maxElements: resp.headers["max-elements"]
           });
+        } else {
+          this.setState({
+            isLoading: false
+          });
         }
       });
   };
@@ -204,8 +208,6 @@ class UsersList extends Component {
                             </Modal.Description>
                           </Modal.Content>
                         </Modal>
-                        <Dropdown.Divider />
-                        <Dropdown.Item text="Удалить" icon="close" />
                       </Dropdown.Menu>
                     </Dropdown>
                   </Item.Header>
@@ -221,10 +223,11 @@ class UsersList extends Component {
             ))}
           </Item.Group>
         </Segment>
-        {!_.isEmpty(users) && (
+        {Number(maxElements) > options.limit && (
           <Segment>
             <PaginationBlock
-              options={options}
+              page={options.page}
+              limit={options.limit}
               maxElements={maxElements}
               onPageChange={this.handlePageChange}
             />

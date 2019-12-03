@@ -80,6 +80,10 @@ export default class ShowElements extends Component {
             data: resp.data.payload,
             maxElements: resp.headers["max-elements"]
           });
+        } else {
+          this.setState({
+            isLoading: false
+          });
         }
       });
   };

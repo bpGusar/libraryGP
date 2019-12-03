@@ -111,7 +111,11 @@ export default class ManageBookedBooks extends Component {
     axs
       .post("/ordered-books", {
         bookedBookInfo: {
-          ...bookedBook
+          book: bookedBook.bookId,
+          user: bookedBook.userId,
+          readerId: bookedBook.readerId,
+          _id: bookedBook._id,
+          createdAt: bookedBook.createdAt
         },
         status: "ordered",
         comment: ""

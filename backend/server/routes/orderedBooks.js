@@ -25,6 +25,12 @@ app.get(
   }
 );
 
+app.get(
+  "/api/ordered-books/count",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => OrderedBooksContr.getOrderedBooksCount(res)
+);
+
 app.post(
   "/api/ordered-books/return",
   (req, res, next) => withAuth(req, res, next, [1]),

@@ -83,6 +83,10 @@ class ManageBooks extends Component {
             isLoading: false,
             maxElements: resp.headers["max-elements"]
           });
+        } else {
+          this.setState({
+            isLoading: false
+          });
         }
       });
   };
@@ -242,6 +246,10 @@ class ManageBooks extends Component {
               history.push("/dashboard/books/new");
             }
           );
+        } else {
+          this.setState({
+            isLoading: false
+          });
         }
       });
   }
@@ -334,11 +342,12 @@ class ManageBooks extends Component {
             <Item.Group divided>{this.renderBookList()}</Item.Group>
           )}
         </Segment>
-        {!_.isEmpty(books) && (
+        {Number(maxElements) > options.limit && (
           <Segment>
             <PaginationBlock
               onPageChange={this.handlePageChange}
-              options={options}
+              page={options.page}
+              limit={options.limit}
               maxElements={maxElements}
             />
           </Segment>
