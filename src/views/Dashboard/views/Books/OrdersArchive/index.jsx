@@ -10,7 +10,6 @@ import {
 } from "semantic-ui-react";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
-import { toast } from "react-semantic-toasts";
 
 import PaginationBlock from "@commonViews/Pagination";
 import BookItem from "@DUI/common/BookItem";
@@ -18,13 +17,10 @@ import BookFilters from "@DUI/common/BookFilters";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
-import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";
-import { storeData } from "@act";
-import MSG from "@msg";
 
-class ManageBooks extends Component {
+class OrdersArchive extends Component {
   constructor(props) {
     super(props);
 
@@ -38,15 +34,6 @@ class ManageBooks extends Component {
         sort: "desc",
         limit: 10,
         page: 1
-      },
-      bookToDeleteId: "",
-      deleteBookModal: {
-        open: false,
-        isLoading: false,
-        result: {
-          BookedBooks: 0,
-          OrderedBooks: 0
-        }
       }
     };
   }
@@ -144,131 +131,12 @@ class ManageBooks extends Component {
       () => this.handleSearchBooks()
     );
 
-  deleteBook = deleteBook => {
-    const { bookToDeleteId, deleteBookModal } = this.state;
-
-    if (deleteBook) {
-      this.setState({
-        isLoading: true,
-        deleteBookModal: {
-          ...deleteBookModal,
-          isLoading: true
-        }
-      });
-      axs.delete(`/books/${bookToDeleteId}`).then(resp => {
-        if (!resp.data.error) {
-          this.setState(
-            {
-              isLoading: false,
-              bookToDeleteId: "",
-              deleteBookModal: {
-                ...deleteBookModal,
-                open: false
-              }
-            },
-            () => {
-              this.handleSearchBooks(true);
-              toast(MSG.toastClassicSuccess(resp.data.message));
-            }
-          );
-        } else if (resp.data.error && _.has(resp.data.payload, "bookOnHand")) {
-          this.setState({
-            isLoading: false,
-            deleteBookModal: {
-              ...deleteBookModal,
-              isLoading: false,
-              result: {
-                BookedBooks: resp.data.payload.result.BookedBooks,
-                OrderedBooks: resp.data.payload.result.OrderedBooks
-              }
-            }
-          });
-        } else {
-          this.setState({
-            isLoading: false
-          });
-          toast(MSG.toastClassicError(resp.data.message));
-        }
-      });
-    } else {
-      this.setState({
-        deleteBookModal: {
-          ...deleteBookModal,
-          open: false,
-          result: {
-            BookedBooks: 0,
-            OrderedBooks: 0
-          }
-        }
-      });
-    }
-  };
-
-  putBookDataInToStore(currentBook) {
-    const { dispatch, history, bookToDB } = this.props;
-
-    this.setState({
-      isLoading: true
-    });
-
-    axs
-      .get(`/books/${currentBook._id}`, {
-        params: {
-          options: { fetch_type: 0 }
-        }
-      })
-      .then(resp => {
-        if (!resp.data.error) {
-          const clonedResp = resp;
-          delete clonedResp.data.payload[0].__v;
-
-          this.setState(
-            {
-              isLoading: false
-            },
-            () => {
-              dispatch(storeData, PARAMS.BOOK_TO_DB, {
-                ...bookToDB,
-                flag: "edit",
-                book: {
-                  ...clonedResp.data.payload[0]
-                }
-              });
-              history.push("/dashboard/books/new");
-            }
-          );
-        } else {
-          this.setState({
-            isLoading: false
-          });
-        }
-      });
-  }
-
-  manageConfirmWindow(book) {
-    const { deleteBookModal } = this.state;
-    this.setState({
-      deleteBookModal: {
-        ...deleteBookModal,
-        open: true
-      },
-      bookToDeleteId: book._id
-    });
-  }
-
   render() {
-    const {
-      books,
-      isLoading,
-      searchQuery,
-      options,
-      maxElements,
-      deleteBookModal
-    } = this.state;
+    const { books, isLoading, searchQuery, options, maxElements } = this.state;
     return (
       <Segment.Group>
         <Segment>
-          <Header as="h3">Список книг</Header>
+          <Header as="h3">Архив выданных книг</Header>
         </Segment>
         <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
@@ -314,12 +182,7 @@ class ManageBooks extends Component {
           {!_.isEmpty(books) && (
             <Item.Group divided>
               {books.map(book => (
-                <BookItem
-                  key={book._id}
-                  book={book}
-                  onEditClick={bookData => this.putBookDataInToStore(bookData)}
-                  onDeleteClick={bookData => this.manageConfirmWindow(bookData)}
-                />
+                <BookItem key={book._id} book={book} />
               ))}
             </Item.Group>
           )}
@@ -334,10 +197,6 @@ class ManageBooks extends Component {
             />
           </Segment>
         )}
-        <ModalWindow
-          deleteBookModal={deleteBookModal}
-          onBookDeleteClick={this.deleteBook}
-        />
       </Segment.Group>
     );
   }
@@ -347,5 +206,5 @@ export default branch(
   {
     bookToDB: PARAMS.BOOK_TO_DB
   },
-  ManageBooks
+  OrdersArchive
 );

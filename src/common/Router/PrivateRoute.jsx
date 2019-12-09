@@ -69,7 +69,7 @@ function PrivateRoute({ component: Component, layout: Layout, ...rest }) {
 
 export default branch(
   {
-    globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
+    globalPageLoader: PARAMS.IS_SOME_DATA_LOADING,
     user: PARAMS.USER_INFO,
     pageTitle: PARAMS.PAGE_TITLE,
     isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,

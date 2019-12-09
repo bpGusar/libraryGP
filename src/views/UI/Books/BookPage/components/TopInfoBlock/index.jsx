@@ -271,7 +271,7 @@ class TopInfoBlock extends React.Component {
 export default branch(
   {
     book: PARAMS.BOOK,
-    globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
+    globalPageLoader: PARAMS.IS_SOME_DATA_LOADING,
     userInfo: PARAMS.USER_INFO,
     isUserAuthorized: PARAMS.IS_USER_AUTHORIZED
   },

@@ -17,10 +17,7 @@ const OrderedBooksArchiveSchema = new Schema({
     type: String,
     default: ""
   },
-  userId: {
-    type: String,
-    required: true
-  }
+  userId: String
 });
 
 export default Mongoose.model(

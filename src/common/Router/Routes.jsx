@@ -33,6 +33,7 @@ import AddBookForm from "@DUI/views/Books/AddBookPage/Form/index";
 import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
 import ManageOrderedBooks from "@DUI/views/Books/ManageOrderedBooks";
 import ManageBooks from "@DUI/views/Books/ManageBooks";
+import OrdersArchive from "@DUI/views/Books/OrdersArchive";
 import AddNewUser from "@DUI/views/Users/AddNew";
 import MenusPage from "@DUI/views/MenusPage";
 import UsersList from "@DUI/views/Users/UsersListPage";
@@ -122,6 +123,14 @@ function AppRotes(props) {
         checkAuth={checkAuth}
         path="/dashboard/books/book-list"
         component={ManageBooks}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/books/orders-archive"
+        component={OrdersArchive}
       />
       <PrivateRoute
         exact

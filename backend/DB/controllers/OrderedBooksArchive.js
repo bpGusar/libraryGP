@@ -45,7 +45,7 @@ function bookReturn(req, res) {
         ),
       findOneAndUpdateBook: cb =>
         Book.findOneAndUpdate(
-          { _id: orderedBookData.orderedBookInfo.bookId._id },
+          { _id: orderedBookData.orderedBookInfo.bookId },
           {
             $inc: { "stockInfo.freeForBooking": 1 }
           },
@@ -60,9 +60,10 @@ function bookReturn(req, res) {
         const newArchivedOrder = new OrderedBooksArchive({
           ...orderedBookData,
           orderedBookInfo: {
-            ...orderedBookData.orderedBookInfo,
             bookInfo: result.bookData[0],
-            userInfo: result.userData[0]
+            userInfo: result.userData[0],
+            orderedAt: orderedBookData.orderedBookInfo.orderedAt,
+            orderedUntil: orderedBookData.orderedBookInfo.orderedUntil
           },
           userId: req.middlewareUserInfo._id
         });
@@ -71,7 +72,7 @@ function bookReturn(req, res) {
           if (saveErr) {
             res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
           } else {
-            res.send(config.getRespData(false));
+            res.send(config.getRespData(false, null, result));
           }
         });
       }
@@ -80,7 +81,7 @@ function bookReturn(req, res) {
 }
 
 /**
- * Функция поиска книг на руках.
+ * Функция поиска книг в архиве выданных.
  *
  * Express параметры:
  * @param {Object} res Response
@@ -95,7 +96,7 @@ function bookReturn(req, res) {
  *
  * @param {Boolean} useParse Используется для определения необходимо ли парсить данные из JSON.
  *
- * @param {Object=} options Объект с опциями поиска. Будет задан данными по умолчанию при полном отсутствии.
+ * @param {Object} options Объект с опциями поиска. Будет задан данными по умолчанию при полном отсутствии.
  * @param {Number} options.fetch_type Вид возвращаемых данных. По умолчанию `0`.
  *
  * `0` - вернуть данные по выдаче книги с данными по книге как есть (прим.: авторы будут возвращены в виде массива id и т.д. смотри модель `Book`).

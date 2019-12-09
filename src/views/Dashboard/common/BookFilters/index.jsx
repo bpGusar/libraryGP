@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Icon, Accordion } from "semantic-ui-react";
 import _ from "lodash";
 
@@ -7,18 +7,21 @@ import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
 import { PARAMS } from "@store";
 
 export default function Filters(props) {
-  const {
-    activeAccordionIndex,
-    onChangeSearchQuery,
-    onClickAccorion,
-    searchQuery
-  } = props;
+  const [activeAccordionIndex, setActiveAccordionIndex] = useState(-1);
+
+  const handleShowOpenAccordion = titleProps => {
+    const { index } = titleProps;
+    const newIndex = activeAccordionIndex === index ? -1 : index;
+    setActiveAccordionIndex(newIndex);
+  };
+
+  const { onChangeSearchQuery, searchQuery } = props;
   return (
     <Accordion className="mb-3">
       <Accordion.Title
         active={activeAccordionIndex === 0}
         index={0}
-        onClick={(e, titleProp) => onClickAccorion(e, titleProp)}
+        onClick={(e, titleProp) => handleShowOpenAccordion(titleProp)}
       >
         <Icon name="dropdown" />
         Дополнительные фильтры

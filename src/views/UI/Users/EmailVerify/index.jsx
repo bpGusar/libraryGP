@@ -26,4 +26,7 @@ function EmailVerify(props) {
   return <b>Выполняем...</b>;
 }
 
-export default branch({ globalLoader: PARAMS.GLOBAL_PAGE_LOADER }, EmailVerify);
+export default branch(
+  { globalLoader: PARAMS.IS_SOME_DATA_LOADING },
+  EmailVerify
+);

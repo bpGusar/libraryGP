@@ -1,5 +1,8 @@
 import React from "react";
 import { Item, Label, Icon, Dropdown } from "semantic-ui-react";
+import cn from "classnames";
+
+import s from "./index.module.scss";
 
 export default function BookItem(props) {
   const { book, onDeleteClick, onEditClick } = props;
@@ -13,23 +16,37 @@ export default function BookItem(props) {
         src={book.bookInfo.imageLinks.poster}
       />
       <Item.Content>
-        <Item.Header target="blanc">
-          <Dropdown text={book.bookInfo.title}>
+        <Item.Header as="a" href={`/book/${book._id}`} target="blanc">
+          {book.bookInfo.title}
+        </Item.Header>
+        {(onEditClick || onDeleteClick) && (
+          <Dropdown
+            icon="ellipsis horizontal"
+            floating
+            button
+            className={cn(s.headerDrop, "icon")}
+          >
             <Dropdown.Menu>
-              <Dropdown.Item
-                text="Редактировать"
-                icon="pencil alternate"
-                onClick={() => onEditClick(book)}
-              />
-              <Dropdown.Divider />
-              <Dropdown.Item
-                text="Удалить"
-                icon="close"
-                onClick={() => onDeleteClick(book)}
-              />
+              <Dropdown.Menu scrolling>
+                {onEditClick && (
+                  <Dropdown.Item
+                    text="Редактировать"
+                    icon="pencil alternate"
+                    onClick={() => onEditClick(book)}
+                  />
+                )}
+                {onEditClick && onDeleteClick && <Dropdown.Divider />}
+                {onDeleteClick && (
+                  <Dropdown.Item
+                    text="Удалить"
+                    icon="close"
+                    onClick={() => onDeleteClick(book)}
+                  />
+                )}
+              </Dropdown.Menu>
             </Dropdown.Menu>
           </Dropdown>
-        </Item.Header>
+        )}
         <Item.Meta>
           <span className="cinema">
             {book.bookInfo.authors.map(el => el.authorName).join(", ")}

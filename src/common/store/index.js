@@ -9,7 +9,7 @@ export const PARAMS = {
   MENU: "menu",
   BOOK_TO_DB: "book to db",
   BOOK: "book",
-  GLOBAL_PAGE_LOADER: "is some data is loading?",
+  IS_SOME_DATA_LOADING: "is some data is loading?",
   AUTHORS: "authors from db",
   CATEGORIES: "categories from db",
   LANGUAGES: "languages from db",
@@ -27,7 +27,7 @@ const bookFlag = {
 
 export const getInitialState = () => ({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
-  [PARAMS.GLOBAL_PAGE_LOADER]: true, // true значит какие то данные загружаются
+  [PARAMS.IS_SOME_DATA_LOADING]: true, // true значит какие то данные загружаются
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.PAGE_TITLE]: "",
