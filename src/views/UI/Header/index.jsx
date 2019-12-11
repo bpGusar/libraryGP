@@ -91,11 +91,11 @@ class Header extends React.Component {
             <Menu.Menu position="left">
               {this.generateMenu().map(el => el)}
             </Menu.Menu>
-            {isUserAuthorized ? (
-              <Menu.Menu position="right" className={s.rightMenu}>
-                <Menu.Item>
-                  <SearchBox />
-                </Menu.Item>
+            <Menu.Menu position="right" className={s.rightMenu}>
+              <Menu.Item>
+                <SearchBox />
+              </Menu.Item>
+              {isUserAuthorized ? (
                 <Menu.Item>
                   <Image src={userInfo.avatar} avatar />
                   <Dropdown item text={userInfo.login}>
@@ -114,10 +114,10 @@ class Header extends React.Component {
                     </Dropdown.Menu>
                   </Dropdown>
                 </Menu.Item>
-              </Menu.Menu>
-            ) : (
-              ""
-            )}
+              ) : (
+                ""
+              )}
+            </Menu.Menu>
           </>
         </Container>
       </Menu>

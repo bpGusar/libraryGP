@@ -117,7 +117,7 @@ export default class ManageOrderedBooks extends Component {
       });
   }
 
-  handleRejectOrdering(orderedBook) {
+  handleReturnBook(orderedBook) {
     const { bookReturn, actionWithOrderedBookInProgress } = this.state;
 
     this.setState({
@@ -294,7 +294,7 @@ export default class ManageOrderedBooks extends Component {
                               this.handleSetComment(value, orderedBook)
                             }
                             onClickReject={() =>
-                              this.handleRejectOrdering(orderedBook)
+                              this.handleReturnBook(orderedBook)
                             }
                             onClickCancel={() =>
                               this.handleClickCancel(orderedBook)

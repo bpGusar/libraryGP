@@ -8,8 +8,8 @@ import OrderedBooks from "../models/OrderedBooks";
 import BookedBooks from "../models/BookedBooks";
 import BookedBooksArchive from "../models/BookedBooksArchive";
 
-function findOrderedBooks(res, getQery = {}) {
-  OrderedBooks.find(_.isEmpty(getQery) ? {} : JSON.parse(getQery))
+function findOrderedBooks(res, getQuery = {}) {
+  OrderedBooks.find(_.isEmpty(getQuery) ? {} : JSON.parse(getQuery))
     .populate(
       "userId",
       "-password -emailVerified -userGroup -createdAt -readerId"
