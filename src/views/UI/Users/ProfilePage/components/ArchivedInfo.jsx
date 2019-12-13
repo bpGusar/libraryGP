@@ -89,7 +89,7 @@ export default class ArchivedInfo extends Component {
                 {archivedBooks.map(archivedBook => {
                   const bookInfoProp = archivedBook[dataObjPropName];
                   const {
-                    bookInfo: { bookInfo }
+                    bookId: { bookInfo }
                   } = bookInfoProp;
 
                   return (

@@ -87,7 +87,7 @@ class UniqueDropdown extends React.Component {
     dataArray.map((el, i) => {
       optionsArr.push({
         key: el._id,
-        text: el[dropdownValueName],
+        text: _.get(el, dropdownValueName),
         value: el._id
       });
       if (dataArray.length - 1 === i) {

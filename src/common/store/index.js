@@ -16,7 +16,8 @@ export const PARAMS = {
   PUBLISHERS: "publishers from db",
   INFO_PAGE: "info page text",
   USER_ROLES: "user roles",
-  PAGE_TITLE: "page title"
+  PAGE_TITLE: "page title",
+  BOOKS_LIST: "books list"
 };
 
 const bookFlag = {
@@ -32,6 +33,7 @@ export const getInitialState = () => ({
   [PARAMS.LOADED]: false,
   [PARAMS.PAGE_TITLE]: "",
   [PARAMS.USER_INFO]: {},
+  [PARAMS.BOOKS_LIST]: [],
   [PARAMS.INFO_PAGE]: {
     text: "",
     type: ""

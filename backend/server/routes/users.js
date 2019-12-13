@@ -76,7 +76,7 @@ app.get(
     OrderedBooksArchiveContr.findBooks(
       req,
       res,
-      { "orderedBookInfo.userInfo._id": ObjectId(userId) },
+      { "orderedBookInfo.userId": ObjectId(userId) },
       false
     );
   }

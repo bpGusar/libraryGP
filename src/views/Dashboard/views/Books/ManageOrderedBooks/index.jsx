@@ -117,40 +117,34 @@ export default class ManageOrderedBooks extends Component {
       });
   }
 
-  handleReturnBook(orderedBook) {
+  handleReturnBook(orderedBookId) {
     const { bookReturn, actionWithOrderedBookInProgress } = this.state;
 
     this.setState({
       actionWithOrderedBookInProgress: {
         ...actionWithOrderedBookInProgress,
-        [orderedBook._id]: true
+        [orderedBookId]: true
       }
     });
 
     axs
-      .post(`/ordered-books/return`, {
-        orderedBookInfo: {
-          bookId: orderedBook.bookId._id,
-          userId: orderedBook.userId._id,
-          orderedAt: orderedBook.orderedAt,
-          orderedUntil: orderedBook.orderedUntil
-        },
-        comment: _.isUndefined(bookReturn.returnMsgs[`${orderedBook._id}-msg`])
+      .post(`/ordered-books/${orderedBookId}/return`, {
+        comment: _.isUndefined(bookReturn.returnMsgs[`${orderedBookId}-msg`])
           ? ""
-          : bookReturn.returnMsgs[`${orderedBook._id}-msg`]
+          : bookReturn.returnMsgs[`${orderedBookId}-msg`]
       })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
             actionWithOrderedBookInProgress: {
               ...actionWithOrderedBookInProgress,
-              [orderedBook._id]: false
+              [orderedBookId]: false
             },
             bookReturn: {
               ...bookReturn,
               successfullyReturned: {
                 ...bookReturn.successfullyReturned,
-                [orderedBook._id]: true
+                [orderedBookId]: true
               }
             }
           });
@@ -294,7 +288,7 @@ export default class ManageOrderedBooks extends Component {
                               this.handleSetComment(value, orderedBook)
                             }
                             onClickReject={() =>
-                              this.handleReturnBook(orderedBook)
+                              this.handleReturnBook(orderedBook._id)
                             }
                             onClickCancel={() =>
                               this.handleClickCancel(orderedBook)

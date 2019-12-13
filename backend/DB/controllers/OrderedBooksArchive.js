@@ -7,77 +7,64 @@ import * as config from "../config";
 import OrderedBooksArchive from "../models/OrderedBooksArchive";
 import OrderedBooks from "../models/OrderedBooks";
 import Book from "../models/Book";
-import User from "../models/User";
 
 function bookReturn(req, res) {
-  const orderedBookData = req.body;
+  const returnComment = req.body.comment;
+  const orderedBookId = req.params.id;
 
-  parallel(
-    {
-      bookData: cb =>
-        Book.find({ _id: orderedBookData.orderedBookInfo.bookId })
-          .populate([
-            {
-              path: "bookInfo.authors"
-            },
-            {
-              path: "bookInfo.categories"
-            },
-            {
-              path: "bookInfo.publisher"
-            },
-            {
-              path: "bookInfo.language"
-            }
-          ])
-          .exec(cb),
-      userData: cb =>
-        User.find({ _id: orderedBookData.orderedBookInfo.userId })
-          .select("-password -emailVerified")
-          .exec(cb),
-      deleteBookedBook: cb =>
-        OrderedBooks.deleteOne(
-          {
-            bookId: orderedBookData.orderedBookInfo.bookId,
-            userId: orderedBookData.orderedBookInfo.userId
-          },
-          cb
-        ),
-      findOneAndUpdateBook: cb =>
-        Book.findOneAndUpdate(
-          { _id: orderedBookData.orderedBookInfo.bookId },
-          {
-            $inc: { "stockInfo.freeForBooking": 1 }
-          },
-          { new: true },
-          cb
-        )
-    },
-    (parErr, result) => {
-      if (parErr) {
-        res.json(config.getRespData(true, MSG.internalServerErr, parErr));
-      } else {
-        const newArchivedOrder = new OrderedBooksArchive({
-          ...orderedBookData,
-          orderedBookInfo: {
-            bookInfo: result.bookData[0],
-            userInfo: result.userData[0],
-            orderedAt: orderedBookData.orderedBookInfo.orderedAt,
-            orderedUntil: orderedBookData.orderedBookInfo.orderedUntil
-          },
-          userId: req.middlewareUserInfo._id
-        });
-
-        newArchivedOrder.save(saveErr => {
-          if (saveErr) {
-            res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
+  OrderedBooks.find({ _id: orderedBookId }, (findOBerr, orderedBook) => {
+    if (findOBerr) {
+      res.json(config.getRespData(true, MSG.internalServerErr, findOBerr));
+    } else {
+      parallel(
+        {
+          deleteBookedBook: cb =>
+            OrderedBooks.deleteOne(
+              {
+                bookId: orderedBook[0].bookId,
+                userId: orderedBook[0].userId
+              },
+              cb
+            ),
+          findOneAndUpdateBook: cb =>
+            Book.findOneAndUpdate(
+              { _id: orderedBook[0].bookId },
+              {
+                $inc: { "stockInfo.freeForBooking": 1 }
+              },
+              { new: true },
+              cb
+            )
+        },
+        parErr => {
+          if (parErr) {
+            res.json(config.getRespData(true, MSG.internalServerErr, parErr));
           } else {
-            res.send(config.getRespData(false, null, result));
+            const newArchivedOrder = new OrderedBooksArchive({
+              comment: returnComment,
+              orderedBookInfo: {
+                bookId: orderedBook[0].bookId,
+                userId: orderedBook[0].userId,
+                orderedAt: orderedBook[0].orderedAt,
+                orderedUntil: orderedBook[0].orderedUntil
+              },
+              userId: req.middlewareUserInfo._id
+            });
+
+            newArchivedOrder.save(saveErr => {
+              if (saveErr) {
+                res.json(
+                  config.getRespData(true, MSG.internalServerErr, saveErr)
+                );
+              } else {
+                res.send(config.getRespData(false, null));
+              }
+            });
           }
-        });
-      }
+        }
+      );
     }
-  );
+  });
 }
 
 /**
@@ -115,6 +102,7 @@ function bookReturn(req, res) {
  * Возвращаемые хедеры:
  *
  * `max-elements` Количество элементов в базе, подходящих под запрос.
+ * `options` Все опции запроса.
  */
 function findBooks(req, res, data = {}, useParse = true) {
   let { options } = req.query;
@@ -145,16 +133,28 @@ function findBooks(req, res, data = {}, useParse = true) {
   };
 
   const fetchTypes = {
-    0: {
-      path: "orderedBookInfo.bookId"
-    },
-    1: {
-      path: "orderedBookInfo.bookId",
-      populate: {
-        path:
-          "bookInfo.authors bookInfo.categories bookInfo.publisher bookInfo.language"
+    0: [
+      {
+        path: "orderedBookInfo.bookId"
+      },
+      {
+        path: "orderedBookInfo.userId",
+        select: "-password -emailVerified -userGroup -createdAt -readerId"
       }
-    },
+    ],
+    1: [
+      {
+        path: "orderedBookInfo.userId",
+        select: "-password -emailVerified -userGroup -createdAt -readerId"
+      },
+      {
+        path: "orderedBookInfo.bookId",
+        populate: {
+          path:
+            "bookInfo.authors bookInfo.categories bookInfo.publisher bookInfo.language"
+        }
+      }
+    ],
     2: ""
   };
 

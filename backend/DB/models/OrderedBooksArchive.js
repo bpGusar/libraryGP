@@ -8,8 +8,14 @@ const OrderedBooksArchiveSchema = new Schema({
     default: Date.now()
   },
   orderedBookInfo: {
-    bookInfo: Object,
-    userInfo: Object,
+    bookId: {
+      type: String,
+      ref: "Book"
+    },
+    userId: {
+      type: String,
+      ref: "User"
+    },
     orderedAt: Date,
     orderedUntil: Date
   },

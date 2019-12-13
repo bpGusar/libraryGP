@@ -14,6 +14,7 @@ import { branch } from "baobab-react/higher-order";
 import PaginationBlock from "@commonViews/Pagination";
 import BookItem from "@DUI/common/BookItem";
 import BookFilters from "@DUI/common/BookFilters";
+import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
@@ -56,7 +57,7 @@ class OrdersArchive extends Component {
     });
 
     axs
-      .get(`/books`, {
+      .get(`/ordered-books/archive`, {
         params: {
           searchQuery,
           options: { ...clonedOptions }
@@ -79,6 +80,7 @@ class OrdersArchive extends Component {
 
   handleChangeSearchQuery = (value, name, regex = false) =>
     this.setState(prevState => {
+      console.log(value);
       const { searchQuery } = prevState;
       let searchQueryCloned = _.cloneDeep(searchQuery);
       if (_.isEmpty(value)) {
@@ -140,17 +142,24 @@ class OrdersArchive extends Component {
         </Segment>
         <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
-            <Form.Input
-              fluid
-              label="Название книги"
-              value={
-                _.has(searchQuery["bookInfo.title"], "$regex")
-                  ? searchQuery["bookInfo.title"].$regex
-                  : ""
+            <UniqueDropdown
+              axiosGetLink="/books"
+              storeParam={PARAMS.BOOKS_LIST}
+              required
+              multiple
+              onChange={value =>
+                this.handleChangeSearchQuery(
+                  value,
+                  "orderedBookInfo.bookId",
+                  false
+                )
               }
-              name="bookInfo.title"
-              onChange={(e, { value, name }) =>
-                this.handleChangeSearchQuery(value, name, true)
+              label="Фильтр по книге"
+              dropdownValueName="bookInfo.title"
+              currentValue={
+                _.has(searchQuery["orderedBookInfo.bookId"], "$in")
+                  ? searchQuery["orderedBookInfo.bookId"].$in
+                  : []
               }
             />
             <BookFilters
@@ -182,7 +191,10 @@ class OrdersArchive extends Component {
           {!_.isEmpty(books) && (
             <Item.Group divided>
               {books.map(book => (
-                <BookItem key={book._id} book={book} />
+                <BookItem
+                  key={book.orderedBookInfo.bookId._id}
+                  book={book.orderedBookInfo.bookId}
+                />
               ))}
             </Item.Group>
           )}

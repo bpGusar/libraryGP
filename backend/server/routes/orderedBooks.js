@@ -32,10 +32,19 @@ app.get(
 );
 
 app.post(
-  "/api/ordered-books/return",
+  "/api/ordered-books/:id/return",
   (req, res, next) => withAuth(req, res, next, [1]),
   (req, res) => {
     OrderedBooksArchiveContr.bookReturn(req, res);
+  }
+);
+
+app.get(
+  "/api/ordered-books/archive",
+  (req, res, next) => withAuth(req, res, next),
+  (req, res) => {
+    const { searchQuery } = req.query;
+    OrderedBooksArchiveContr.findBooks(req, res, searchQuery, true);
   }
 );
 

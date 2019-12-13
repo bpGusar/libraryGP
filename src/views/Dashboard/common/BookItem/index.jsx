@@ -55,6 +55,7 @@ export default function BookItem(props) {
         <Item.Description>
           {book.bookInfo.description.substring(0, 200)}...
         </Item.Description>
+        <hr />
         <Item.Extra>
           <Label color="blue">
             <Icon name="calendar" />
