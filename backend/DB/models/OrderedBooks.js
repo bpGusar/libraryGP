@@ -1,6 +1,6 @@
 import Mongoose from "mongoose";
 
-import servConf from "../../server/config/server.json";
+import servConf from "../../config/server.json";
 
 const { Schema } = Mongoose;
 

@@ -98,17 +98,15 @@ class DashboardMenu extends Component {
     const { menu } = this.props;
     return (
       <>
-        {_.isEmpty(menu.dashboardMenu.menu) || isLoading ? (
+        {_.isEmpty(menu.dashboardMenu) || isLoading ? (
           "Загрузка меню..."
         ) : (
           <>
-            {menu.dashboardMenu.menu.always.map(el =>
-              this.menuItems[el.type](el)
-            )}
+            {menu.dashboardMenu.map(el => this.menuItems[el.type](el))}
             <Menu.Item
               as={Link}
               to="/"
-              className={cn(s.menuItem, s.backtoToSite)}
+              className={cn(s.menuItem, s.backToTheSite)}
             >
               Вернуться на сайт
             </Menu.Item>

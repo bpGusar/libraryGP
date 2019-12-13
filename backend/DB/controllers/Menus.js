@@ -1,18 +1,22 @@
+import fs from "fs";
+import path from "path";
 import * as config from "../config";
-import MSG from "../../server/config/msgCodes";
+// import MSG from "../../config/msgCodes";
 
-import Menu from "../models/Menu";
-
-function getMenus(req, res) {
-  Menu.findOne({ menuName: req.params.menuName }, (err, menu) => {
-    if (err) {
-      res.json(config.getRespData(true, MSG.internalServerErr, err));
-    } else if (!menu) {
-      res.json(config.getRespData(true, MSG.cannotFindMenu));
-    } else {
-      res.json(config.getRespData(false, null, menu));
-    }
-  });
+function getMenus(res) {
+  const jsonFile = fs.readFileSync(
+    path.join(__dirname, `../../config/menus/dashboardMenu.json`)
+  );
+  res.json(config.getRespData(false, null, JSON.parse(jsonFile)));
 }
 
-export default { getMenus };
+function saveMenu(res, newMenu) {
+  const data = JSON.stringify(newMenu);
+  fs.writeFileSync(
+    path.join(__dirname, `../../config/menus/dashboardMenu.json`),
+    data
+  );
+  res.json(config.getRespData(false, null, newMenu));
+}
+
+export default { getMenus, saveMenu };

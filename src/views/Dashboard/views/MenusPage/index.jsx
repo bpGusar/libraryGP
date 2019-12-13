@@ -21,18 +21,18 @@ class Menus extends Component {
     };
   }
 
-  handleSave = (newMenuData, id) => {
+  handleSave = newMenuData => {
     const { menu, dispatch } = this.props;
     const clonedMenu = _.cloneDeep(menu);
 
-    clonedMenu.dashboardMenu.menu.always = newMenuData;
+    clonedMenu.dashboardMenu = newMenuData;
 
     this.setState({
       isLoading: true
     });
 
     axs
-      .put(`/menus/${id}`, {
+      .put(`/menus/dashboard`, {
         newMenu: clonedMenu.dashboardMenu
       })
       .then(resp => {
@@ -58,15 +58,14 @@ class Menus extends Component {
 
     return (
       <>
-        {!_.isEmpty(menu.dashboardMenu) &&
-          !_.isEmpty(menu.dashboardMenu.menu.always) && (
-            <MenuEditor
-              menuId={menu.dashboardMenu._id}
-              menuData={menu.dashboardMenu.menu.always}
-              isLoading={isLoading}
-              onSave={this.handleSave}
-            />
-          )}
+        {!_.isEmpty(menu.dashboardMenu) && !_.isEmpty(menu.dashboardMenu) && (
+          <MenuEditor
+            menuId="dashboardMenu"
+            menuData={menu.dashboardMenu}
+            isLoading={isLoading}
+            onSave={this.handleSave}
+          />
+        )}
       </>
     );
   }

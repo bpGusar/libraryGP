@@ -1,7 +1,7 @@
 import parallel from "async/parallel";
 import _ from "lodash";
 
-import MSG from "../../server/config/msgCodes";
+import MSG from "../../config/msgCodes";
 import * as config from "../config";
 
 import BookedBooksArchive from "../models/BookedBooksArchive";

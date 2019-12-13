@@ -1,4 +1,4 @@
-import servConf from "../config/server.json";
+import servConf from "../../config/server.json";
 import * as utils from "../utils";
 
 // eslint-disable-next-line import/prefer-default-export

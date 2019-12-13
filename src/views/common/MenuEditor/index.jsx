@@ -59,10 +59,9 @@ import s from "./index.module.scss";
       ...
     ]
  *
- * @param {Boolean} isLoading Параметр определеяет, будет ли показываться кольцо загрузки или нет.
+ * @param {Boolean} isLoading Параметр определяет, будет ли показываться кольцо загрузки или нет.
  * @param {Function} onSave Функция которая вернет два параметра:
  * @param {Array} menu Массив с измененным меню.
- * @param {String} menuId Уникальное ID меню. Если не указано вернет `undefined`.
  */
 class MenuEditor extends Component {
   constructor(props) {

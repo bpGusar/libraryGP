@@ -8,10 +8,10 @@ import BookedBooks from "../models/BookedBooks";
 import OrderedBooks from "../models/OrderedBooks";
 import BooksArchive from "../models/BooksArchive";
 
-import MSG from "../../server/config/msgCodes";
+import MSG from "../../config/msgCodes";
 import * as config from "../config";
 
-import servConf from "../../server/config/server.json";
+import servConf from "../../config/server.json";
 
 /**
  * Функция поиска книг.

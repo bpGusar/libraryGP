@@ -6,8 +6,8 @@ import OrderedBooks from "../models/OrderedBooks";
 import Book from "../models/Book";
 
 import * as config from "../config";
-import MSG from "../../server/config/msgCodes";
-import servConf from "../../server/config/server.json";
+import MSG from "../../config/msgCodes";
+import servConf from "../../config/server.json";
 
 /**
  * Функция добавить книгу в список забронированных.

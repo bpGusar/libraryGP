@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import _ from "lodash";
 
-import MSG from "./config/msgCodes";
+import MSG from "../config/msgCodes";
 import { getRespData } from "../DB/config";
 
 import User from "../DB/models/User";

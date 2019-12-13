@@ -8,9 +8,9 @@ import uniqid from "uniqid";
 import User from "../models/User";
 
 import * as config from "../config";
-import MSG from "../../server/config/msgCodes";
+import MSG from "../../config/msgCodes";
 
-import servConf from "../../server/config/server.json";
+import servConf from "../../config/server.json";
 
 import { EmailVerifyTemplate } from "../../server/emailTemplates/EmailVerify";
 import { ResetPasswordEmail } from "../../server/emailTemplates/ResetPassword";
