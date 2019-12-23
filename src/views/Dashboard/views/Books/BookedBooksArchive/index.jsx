@@ -191,7 +191,7 @@ class OrdersArchive extends Component {
                 } = book;
                 return (
                   <BookItem
-                    key={bookId._id}
+                    key={book._id}
                     book={bookId}
                     dividedInfo
                     renderCustomInfo={() => (
