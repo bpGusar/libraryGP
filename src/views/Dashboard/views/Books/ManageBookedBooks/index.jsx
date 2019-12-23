@@ -98,25 +98,18 @@ export default class ManageBookedBooks extends Component {
       });
   }
 
-  handleOrderBook(bookedBook) {
+  handleOrderBook(bookedBookId) {
     const { ordering, actionWithReservationInProgress } = this.state;
 
     this.setState({
       actionWithReservationInProgress: {
         ...actionWithReservationInProgress,
-        [bookedBook._id]: true
+        [bookedBookId]: true
       }
     });
 
     axs
-      .post("/ordered-books", {
-        bookedBookInfo: {
-          book: bookedBook.bookId,
-          user: bookedBook.userId,
-          readerId: bookedBook.readerId,
-          _id: bookedBook._id,
-          createdAt: bookedBook.createdAt
-        },
+      .post(`/ordered-books/${bookedBookId}`, {
         status: "ordered",
         comment: ""
       })
@@ -127,12 +120,12 @@ export default class ManageBookedBooks extends Component {
               ...ordering,
               successfullyOrderedBooks: {
                 ...ordering.successfullyOrderedBooks,
-                [bookedBook._id]: true
+                [bookedBookId]: true
               }
             },
             actionWithReservationInProgress: {
               ...actionWithReservationInProgress,
-              [bookedBook._id]: false
+              [bookedBookId]: false
             }
           });
         } else {
@@ -141,40 +134,35 @@ export default class ManageBookedBooks extends Component {
       });
   }
 
-  handleRejectOrdering(bookedBook) {
+  handleRejectOrdering(bookedBookId) {
     const { rejecting, actionWithReservationInProgress } = this.state;
 
     this.setState({
       actionWithReservationInProgress: {
         ...actionWithReservationInProgress,
-        [bookedBook._id]: true
+        [bookedBookId]: true
       }
     });
 
     axs
-      .post(`/booked-books/cancel-reservation`, {
-        bookedBookInfo: {
-          createdAt: bookedBook.createdAt,
-          bookId: bookedBook.bookId._id,
-          userId: bookedBook.userId._id
-        },
+      .post(`/booked-books/${bookedBookId}/cancel-reservation`, {
         status: "rejected",
-        comment: _.isUndefined(rejecting.rejectMsgs[`${bookedBook._id}-msg`])
+        comment: _.isUndefined(rejecting.rejectMsgs[`${bookedBookId}-msg`])
           ? ""
-          : rejecting.rejectMsgs[`${bookedBook._id}-msg`]
+          : rejecting.rejectMsgs[`${bookedBookId}-msg`]
       })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
             actionWithReservationInProgress: {
               ...actionWithReservationInProgress,
-              [bookedBook._id]: false
+              [bookedBookId]: false
             },
             rejecting: {
               ...rejecting,
               successfullyRejected: {
                 ...rejecting.successfullyRejected,
-                [bookedBook._id]: true
+                [bookedBookId]: true
               }
             }
           });
@@ -210,7 +198,7 @@ export default class ManageBookedBooks extends Component {
             <Button
               basic
               color="red"
-              onClick={() => this.handleRejectOrdering(bookedBook)}
+              onClick={() => this.handleRejectOrdering(bookedBook._id)}
               disabled={rejecting.successfullyRejected[bookedBook._id]}
             >
               Отказать
@@ -249,7 +237,7 @@ export default class ManageBookedBooks extends Component {
           <Button
             basic
             color="green"
-            onClick={() => this.handleOrderBook(bookedBook)}
+            onClick={() => this.handleOrderBook(bookedBook._id)}
             disabled={ordering.successfullyOrderedBooks[bookedBook._id]}
           >
             Выдать

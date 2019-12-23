@@ -8,7 +8,7 @@ import OrderedBooksArchiveContr from "../../DB/controllers/OrderedBooksArchive";
 const app = express();
 
 app.post(
-  "/api/ordered-books",
+  "/api/ordered-books/:id",
   (req, res, next) => withAuth(req, res, next, [1]),
   (req, res) => {
     OrderedBooksContr.addOrderedBook(req, res);

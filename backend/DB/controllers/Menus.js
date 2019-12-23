@@ -1,19 +1,19 @@
 import fs from "fs";
 import path from "path";
 import * as config from "../config";
-// import MSG from "../../config/msgCodes";
+// import Menu from "../models/Menu";
 
-function getMenus(res) {
+function getMenus(req, res) {
   const jsonFile = fs.readFileSync(
-    path.join(__dirname, `../../config/menus/dashboardMenu.json`)
+    path.join(__dirname, `../../config/menus/${req.params.menuName}.json`)
   );
   res.json(config.getRespData(false, null, JSON.parse(jsonFile)));
 }
 
-function saveMenu(res, newMenu) {
+function saveMenu(req, res, newMenu) {
   const data = JSON.stringify(newMenu);
   fs.writeFileSync(
-    path.join(__dirname, `../../config/menus/dashboardMenu.json`),
+    path.join(__dirname, `../../config/menus/${req.params.menuName}.json`),
     data
   );
   res.json(config.getRespData(false, null, newMenu));

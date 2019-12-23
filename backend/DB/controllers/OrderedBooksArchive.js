@@ -139,13 +139,25 @@ function findBooks(req, res, data = {}, useParse = true) {
       },
       {
         path: "orderedBookInfo.userId",
-        select: "-password -emailVerified -userGroup -createdAt -readerId"
+        select:
+          "-password -firstName -lastName -patronymic -email -emailVerified -userGroup -createdAt -readerId"
+      },
+      {
+        path: "userId",
+        select:
+          "-password -firstName -lastName -patronymic -email -emailVerified -userGroup -createdAt -readerId"
       }
     ],
     1: [
       {
         path: "orderedBookInfo.userId",
-        select: "-password -emailVerified -userGroup -createdAt -readerId"
+        select:
+          "-password -firstName -lastName -patronymic -email -emailVerified -userGroup -createdAt -readerId"
+      },
+      {
+        path: "userId",
+        select:
+          "-password -firstName -lastName -patronymic -email -emailVerified -userGroup -createdAt -readerId"
       },
       {
         path: "orderedBookInfo.bookId",

@@ -191,7 +191,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "authors")
                 }
                 label="Автор"
-                dropdownValueName="authorName"
+                getFromObjectProperty="authorName"
                 showAddNewField
                 currentValue={bookInfo.authors}
               />
@@ -205,7 +205,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "publisher")
                 }
                 label="Издательство"
-                dropdownValueName="publisherName"
+                getFromObjectProperty="publisherName"
                 showAddNewField
                 currentValue={bookInfo.publisher}
               />
@@ -221,7 +221,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "categories")
                 }
                 label="Категория"
-                dropdownValueName="categoryName"
+                getFromObjectProperty="categoryName"
                 showAddNewField
                 currentValue={bookInfo.categories}
               />
@@ -268,7 +268,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "language")
                 }
                 label="Язык"
-                dropdownValueName="languageName"
+                getFromObjectProperty="languageName"
                 currentValue={bookInfo.language}
               />
             </Form.Group>

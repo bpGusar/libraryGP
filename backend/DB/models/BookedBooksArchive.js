@@ -8,8 +8,14 @@ const BookedBooksArchiveSchema = new Schema({
     default: Date.now()
   },
   bookedBookInfo: {
-    bookInfo: Object,
-    userInfo: Object,
+    bookId: {
+      type: String,
+      ref: "Book"
+    },
+    userId: {
+      type: String,
+      ref: "User"
+    },
     createdAt: Date
   },
   status: {
@@ -21,7 +27,10 @@ const BookedBooksArchiveSchema = new Schema({
     type: String,
     default: ""
   },
-  userId: String
+  userId: {
+    type: String,
+    ref: "User"
+  }
 });
 
 export default Mongoose.model(

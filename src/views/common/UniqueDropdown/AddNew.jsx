@@ -26,7 +26,11 @@ class AddNew extends React.Component {
 
   handleSetNewInDB(e) {
     e.preventDefault();
-    const { functionOnSuccess, axiosPostLink, dropdownValueName } = this.props;
+    const {
+      functionOnSuccess,
+      axiosPostLink,
+      getFromObjectProperty
+    } = this.props;
     const { inputValue } = this.state;
 
     this.setState({
@@ -43,7 +47,7 @@ class AddNew extends React.Component {
       });
     } else {
       axs
-        .post(axiosPostLink, { [dropdownValueName]: inputValue })
+        .post(axiosPostLink, { [getFromObjectProperty]: inputValue })
         .then(resp => {
           if (!resp.data.error) {
             this.setState({

@@ -59,7 +59,7 @@ class OrdersArchive extends Component {
     });
 
     axs
-      .get(`/ordered-books/archive`, {
+      .get(`/booked-books/archive`, {
         params: {
           searchQuery,
           options: { ...clonedOptions }
@@ -151,15 +151,15 @@ class OrdersArchive extends Component {
               onChange={value =>
                 this.handleChangeSearchQuery(
                   value,
-                  "orderedBookInfo.bookId",
+                  "bookedBookInfo.bookId",
                   false
                 )
               }
               label="Фильтр по книге"
               getFromProperty="bookInfo.title"
               currentValue={
-                _.has(searchQuery["orderedBookInfo.bookId"], "$in")
-                  ? searchQuery["orderedBookInfo.bookId"].$in
+                _.has(searchQuery["bookedBookInfo.bookId"], "$in")
+                  ? searchQuery["bookedBookInfo.bookId"].$in
                   : []
               }
             />
@@ -186,8 +186,8 @@ class OrdersArchive extends Component {
             <Item.Group divided>
               {books.map(book => {
                 const {
-                  orderedBookInfo: { bookId },
-                  orderedBookInfo
+                  bookedBookInfo: { bookId },
+                  bookedBookInfo
                 } = book;
                 return (
                   <BookItem
@@ -201,15 +201,15 @@ class OrdersArchive extends Component {
                             color: "black"
                           }}
                         >
-                          Информация о возврате:
+                          Информация о брони:
                         </strong>
                         <Segment>
                           <List divided relaxed>
                             <List.Item>
                               <List.Content>
-                                <List.Header>Дата аренды:</List.Header>
+                                <List.Header>Дата брони:</List.Header>
                                 <List.Description>
-                                  {DateTime.fromISO(orderedBookInfo.orderedAt)
+                                  {DateTime.fromISO(bookedBookInfo.createdAt)
                                     .setLocale("ru")
                                     .toFormat("dd MMMM yyyy")}
                                 </List.Description>
@@ -217,46 +217,22 @@ class OrdersArchive extends Component {
                             </List.Item>
                             <List.Item>
                               <List.Content>
-                                <List.Header>
-                                  Планируемая дата возврата:
-                                </List.Header>
-                                <List.Description>
-                                  {DateTime.fromISO(
-                                    orderedBookInfo.orderedUntil
-                                  )
-                                    .setLocale("ru")
-                                    .toFormat("dd MMMM yyyy")}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Дата возврата:</List.Header>
-                                <List.Description>
-                                  {DateTime.fromISO(book.createdAt)
-                                    .setLocale("ru")
-                                    .toFormat("dd MMMM yyyy")}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>
-                                  Была выдана на руки пользователю:
-                                </List.Header>
+                                <List.Header>Бронировал:</List.Header>
                                 <List.Description>
                                   <Link
-                                    to={`/profile/${orderedBookInfo.userId._id}`}
+                                    to={`/profile/${bookedBookInfo.userId._id}`}
                                     target="blanc"
                                   >
-                                    {orderedBookInfo.userId.login}
+                                    {bookedBookInfo.userId.login}
                                   </Link>
                                 </List.Description>
                               </List.Content>
                             </List.Item>
                             <List.Item>
                               <List.Content>
-                                <List.Header>Возврат произвел:</List.Header>
+                                <List.Header>
+                                  В архив добавлена пользователем:
+                                </List.Header>
                                 <List.Description>
                                   <Link
                                     to={`/profile/${book.userId._id}`}

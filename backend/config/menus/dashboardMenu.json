@@ -42,14 +42,14 @@
       {
         "id": "menuItem_k3scyduh",
         "icon": "archive",
-        "text": "Архив бронирований ДОДЕЛАТЬ",
+        "text": "Архив бронирований",
         "to": "/dashboard/books/booking-archive",
         "type": "simple"
       },
       {
         "id": "menuItem_k3sd12nq",
         "icon": "archive",
-        "text": "Архив выданных книг ДОДЕЛАТЬ",
+        "text": "Архив выданных книг",
         "to": "/dashboard/books/orders-archive",
         "type": "simple"
       }

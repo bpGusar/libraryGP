@@ -27,24 +27,18 @@ class App extends React.Component {
     let isError = false;
 
     if (localStorage.getItem("token") !== null) {
-      await axs
-        .get("/users/service/auth-status")
-        .then(resp => {
-          if (!resp.data.error) {
-            if (!_.isEqual(user, resp.data.payload)) {
-              dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);
-            }
-            dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, true);
-          } else {
-            dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
+      await axs.get("/users/service/auth-status").then(resp => {
+        if (!resp.data.error) {
+          if (!_.isEqual(user, resp.data.payload)) {
+            dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);
           }
-
-          isError = resp.data.error;
-        })
-        .catch(() => {
-          isError = true;
+          dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, true);
+        } else {
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
-        });
+        }
+
+        isError = resp.data.error;
+      });
 
       dispatch(isAuthInProgress, false);
 

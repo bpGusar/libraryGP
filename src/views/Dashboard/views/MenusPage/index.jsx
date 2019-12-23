@@ -32,7 +32,7 @@ class Menus extends Component {
     });
 
     axs
-      .put(`/menus/dashboard`, {
+      .put(`/menus/dashboardMenu`, {
         newMenu: clonedMenu.dashboardMenu
       })
       .then(resp => {

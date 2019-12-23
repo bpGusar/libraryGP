@@ -34,6 +34,7 @@ import ManageBookedBooks from "@DUI/views/Books/ManageBookedBooks";
 import ManageOrderedBooks from "@DUI/views/Books/ManageOrderedBooks";
 import ManageBooks from "@DUI/views/Books/ManageBooks";
 import OrdersArchive from "@DUI/views/Books/OrdersArchive";
+import BookedBooksArchive from "@DUI/views/Books/BookedBooksArchive";
 import AddNewUser from "@DUI/views/Users/AddNew";
 import MenusPage from "@DUI/views/MenusPage";
 import UsersList from "@DUI/views/Users/UsersListPage";
@@ -131,6 +132,14 @@ function AppRotes(props) {
         checkAuth={checkAuth}
         path="/dashboard/books/orders-archive"
         component={OrdersArchive}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/books/booking-archive"
+        component={BookedBooksArchive}
       />
       <PrivateRoute
         exact

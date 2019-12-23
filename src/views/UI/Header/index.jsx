@@ -27,7 +27,7 @@ class Header extends React.Component {
       if (!res.data.error) {
         dispatch(storeData, PARAMS.MENU, {
           ...clonedMenu,
-          mainMenu: res.data.payload.menu
+          mainMenu: res.data.payload
         });
       }
     });

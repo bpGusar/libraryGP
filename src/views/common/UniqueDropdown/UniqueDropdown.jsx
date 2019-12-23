@@ -23,7 +23,7 @@ import s from "./index.module.scss";
  * @param {String} storeParam Ссылка на параметр в сторе
  * @param {Function} onChange Функция, которая будет принимать dropdown value
  * @param {Boolean} showAddNewField Показывать ли поле добавления новых данных
- * @param {String} dropdownValueName Используется для конвертации данных из базы и для добавления новых.
+ * @param {String} getFromProperty Используется для конвертации данных из базы и для добавления новых.
  * @param {Boolean} showClear Показывать ли кнопку очистить или нет.
  * @param {Array} currentValue Массив значений от родителя.
  */
@@ -42,7 +42,7 @@ class UniqueDropdown extends React.Component {
     this.handleGetAll();
   }
 
-  // Если в одном компоненте собирается много экземпляров данного компонента это вызвает дикие лаги.
+  // Если в одном компоненте собирается много экземпляров данного компонента это вызывает дикие лаги.
   // Поэтому смотрим что, обновление данного компонента будет происходить только при изменении всего двух параметров.
   shouldComponentUpdate(nextProps, nextState) {
     const { currentValue } = this.props;
@@ -80,14 +80,14 @@ class UniqueDropdown extends React.Component {
   }
 
   handleConvertDataFromDBToOptions(dataArray) {
-    const { dropdownValueName } = this.props;
+    const { getFromProperty } = this.props;
     const optionsArr = [];
 
     // eslint-disable-next-line array-callback-return
     dataArray.map((el, i) => {
       optionsArr.push({
         key: el._id,
-        text: _.get(el, dropdownValueName),
+        text: _.get(el, getFromProperty),
         value: el._id
       });
       if (dataArray.length - 1 === i) {
@@ -106,7 +106,7 @@ class UniqueDropdown extends React.Component {
       required,
       axiosPostLink,
       showAddNewField,
-      dropdownValueName,
+      getFromProperty,
       showClear,
       currentValue,
       onChange,
@@ -143,7 +143,7 @@ class UniqueDropdown extends React.Component {
             <AddNew
               axiosPostLink={axiosPostLink}
               functionOnSuccess={() => this.handleGetAll()}
-              dropdownValueName={dropdownValueName}
+              getFromProperty={getFromProperty}
             />
           )}
           {error !== "" && (

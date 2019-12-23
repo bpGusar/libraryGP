@@ -27,9 +27,18 @@ app.get(
 );
 
 app.post(
-  "/api/booked-books/cancel-reservation",
+  "/api/booked-books/:id/cancel-reservation",
   (req, res, next) => withAuth(req, res, next),
   (req, res) => BookedBooksArchiveContr.rejectOrdering(req, res)
+);
+
+app.get(
+  "/api/booked-books/archive",
+  (req, res, next) => withAuth(req, res, next),
+  (req, res) => {
+    const { searchQuery } = req.query;
+    BookedBooksArchiveContr.findBooks(req, res, searchQuery, true);
+  }
 );
 
 export default app;
