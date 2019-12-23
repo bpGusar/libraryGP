@@ -124,7 +124,8 @@ export default class ManageOrderedBooks extends Component {
       actionWithOrderedBookInProgress: {
         ...actionWithOrderedBookInProgress,
         [orderedBookId]: true
-      }
+      },
+      isDataLoading: true
     });
 
     axs
@@ -146,7 +147,8 @@ export default class ManageOrderedBooks extends Component {
                 ...bookReturn.successfullyReturned,
                 [orderedBookId]: true
               }
-            }
+            },
+            isDataLoading: false
           });
         } else {
           toast(MSG.toastClassicError(resp.data.message));

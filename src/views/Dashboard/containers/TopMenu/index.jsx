@@ -10,14 +10,6 @@ import s from "./index.module.scss";
 function TopMenu(props) {
   const { userInfo } = props;
   const options = [
-    { key: "user", as: Link, to: "/dashboard", text: "Аккаунт", icon: "user" },
-    {
-      key: "settings",
-      as: Link,
-      to: "/dashboard",
-      text: "Настройки",
-      icon: "settings"
-    },
     {
       key: "sign-out",
       as: Link,

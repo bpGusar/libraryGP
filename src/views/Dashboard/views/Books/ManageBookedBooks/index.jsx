@@ -105,7 +105,8 @@ export default class ManageBookedBooks extends Component {
       actionWithReservationInProgress: {
         ...actionWithReservationInProgress,
         [bookedBookId]: true
-      }
+      },
+      isDataLoading: true
     });
 
     axs
@@ -126,7 +127,8 @@ export default class ManageBookedBooks extends Component {
             actionWithReservationInProgress: {
               ...actionWithReservationInProgress,
               [bookedBookId]: false
-            }
+            },
+            isDataLoading: false
           });
         } else {
           toast(MSG.toastClassicError(resp.data.message));
@@ -141,7 +143,8 @@ export default class ManageBookedBooks extends Component {
       actionWithReservationInProgress: {
         ...actionWithReservationInProgress,
         [bookedBookId]: true
-      }
+      },
+      isDataLoading: true
     });
 
     axs
@@ -164,7 +167,8 @@ export default class ManageBookedBooks extends Component {
                 ...rejecting.successfullyRejected,
                 [bookedBookId]: true
               }
-            }
+            },
+            isDataLoading: false
           });
         } else {
           toast(MSG.toastClassicError(resp.data.message));
@@ -318,8 +322,6 @@ export default class ManageBookedBooks extends Component {
       </Dimmer>
     );
   }
-
-  // TODO: сделать ссылку на профиль пользователя
 
   render() {
     const {
