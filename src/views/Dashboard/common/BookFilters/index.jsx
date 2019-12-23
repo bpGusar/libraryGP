@@ -36,7 +36,7 @@ export default function Filters(props) {
             required
             onChange={value => onChangeSearchQuery(value, "bookInfo.authors")}
             label="Автор"
-            getFromObjectProperty="authorName"
+            getValueFromProperty="authorName"
             showClear
             currentValue={
               _.has(searchQuery["bookInfo.authors"], "$in")
@@ -52,7 +52,7 @@ export default function Filters(props) {
             required
             onChange={value => onChangeSearchQuery(value, "bookInfo.publisher")}
             label="Издательство"
-            getFromObjectProperty="publisherName"
+            getValueFromProperty="publisherName"
             showClear
             currentValue={
               _.has(searchQuery["bookInfo.publisher"], "$in")
@@ -70,7 +70,7 @@ export default function Filters(props) {
               onChangeSearchQuery(value, "bookInfo.categories")
             }
             label="Категория"
-            getFromObjectProperty="categoryName"
+            getValueFromProperty="categoryName"
             showClear
             currentValue={
               _.has(searchQuery["bookInfo.categories"], "$in")
@@ -86,7 +86,7 @@ export default function Filters(props) {
             required
             onChange={value => onChangeSearchQuery(value, "bookInfo.language")}
             label="Язык"
-            getFromObjectProperty="languageName"
+            getValueFromProperty="languageName"
             showClear
             currentValue={
               _.has(searchQuery["bookInfo.language"], "$in")

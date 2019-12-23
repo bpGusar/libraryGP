@@ -23,7 +23,7 @@ import s from "./index.module.scss";
  * @param {String} storeParam Ссылка на параметр в сторе
  * @param {Function} onChange Функция, которая будет принимать dropdown value
  * @param {Boolean} showAddNewField Показывать ли поле добавления новых данных
- * @param {String} getFromProperty Используется для конвертации данных из базы и для добавления новых.
+ * @param {String} getValueFromProperty Используется для конвертации данных из базы и для добавления новых.
  * @param {Boolean} showClear Показывать ли кнопку очистить или нет.
  * @param {Array} currentValue Массив значений от родителя.
  */
@@ -80,14 +80,14 @@ class UniqueDropdown extends React.Component {
   }
 
   handleConvertDataFromDBToOptions(dataArray) {
-    const { getFromProperty } = this.props;
+    const { getValueFromProperty } = this.props;
     const optionsArr = [];
 
     // eslint-disable-next-line array-callback-return
     dataArray.map((el, i) => {
       optionsArr.push({
         key: el._id,
-        text: _.get(el, getFromProperty),
+        text: _.get(el, getValueFromProperty),
         value: el._id
       });
       if (dataArray.length - 1 === i) {
@@ -106,7 +106,7 @@ class UniqueDropdown extends React.Component {
       required,
       axiosPostLink,
       showAddNewField,
-      getFromProperty,
+      getValueFromProperty,
       showClear,
       currentValue,
       onChange,
@@ -143,7 +143,7 @@ class UniqueDropdown extends React.Component {
             <AddNew
               axiosPostLink={axiosPostLink}
               functionOnSuccess={() => this.handleGetAll()}
-              getFromProperty={getFromProperty}
+              getValueFromProperty={getValueFromProperty}
             />
           )}
           {error !== "" && (

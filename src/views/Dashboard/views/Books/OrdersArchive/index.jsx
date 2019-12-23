@@ -156,7 +156,7 @@ class OrdersArchive extends Component {
                 )
               }
               label="Фильтр по книге"
-              getFromProperty="bookInfo.title"
+              getValueFromProperty="bookInfo.title"
               currentValue={
                 _.has(searchQuery["orderedBookInfo.bookId"], "$in")
                   ? searchQuery["orderedBookInfo.bookId"].$in

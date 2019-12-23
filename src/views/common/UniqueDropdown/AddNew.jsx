@@ -29,7 +29,7 @@ class AddNew extends React.Component {
     const {
       functionOnSuccess,
       axiosPostLink,
-      getFromObjectProperty
+      getValueFromProperty
     } = this.props;
     const { inputValue } = this.state;
 
@@ -47,7 +47,7 @@ class AddNew extends React.Component {
       });
     } else {
       axs
-        .post(axiosPostLink, { [getFromObjectProperty]: inputValue })
+        .post(axiosPostLink, { [getValueFromProperty]: inputValue })
         .then(resp => {
           if (!resp.data.error) {
             this.setState({

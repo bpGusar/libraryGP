@@ -47,7 +47,6 @@ class DashboardMain extends React.Component {
           statLabel="Книг забронировано"
           reactRedirectTo="/dashboard/books/booking-management"
           buttonText="Перейти"
-          cardHeader="Статистика бронирований"
         />
         <InfoCard
           active={!orderedBooks.loaded}
@@ -56,7 +55,6 @@ class DashboardMain extends React.Component {
           statLabel="Книг выдано"
           reactRedirectTo="/dashboard/books/orders-management"
           buttonText="Перейти"
-          cardHeader="Статистика выдачи книг"
         />
       </Card.Group>
     );
