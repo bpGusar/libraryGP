@@ -15,7 +15,6 @@ import axs from "@axios";
 class AddNew extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       isLoaded: true,
       accordionActive: false,
@@ -27,7 +26,11 @@ class AddNew extends React.Component {
 
   handleSetNewInDB(e) {
     e.preventDefault();
-    const { functionOnSuccess, axiosPostLink, dropdownValueName } = this.props;
+    const {
+      functionOnSuccess,
+      axiosPostLink,
+      getValueFromProperty
+    } = this.props;
     const { inputValue } = this.state;
 
     this.setState({
@@ -44,7 +47,7 @@ class AddNew extends React.Component {
       });
     } else {
       axs
-        .post(axiosPostLink, { [dropdownValueName]: inputValue })
+        .post(axiosPostLink, { [getValueFromProperty]: inputValue })
         .then(resp => {
           if (!resp.data.error) {
             this.setState({

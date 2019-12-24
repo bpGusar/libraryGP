@@ -1,6 +1,8 @@
 import React from "react";
-import { Menu, Segment, Dropdown, Container, Image } from "semantic-ui-react";
+import { Menu, Dropdown, Container, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+
+import SearchBox from "@views/common/SearchBox";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
@@ -25,7 +27,7 @@ class Header extends React.Component {
       if (!res.data.error) {
         dispatch(storeData, PARAMS.MENU, {
           ...clonedMenu,
-          mainMenu: res.data.payload.menu
+          mainMenu: res.data.payload
         });
       }
     });
@@ -35,6 +37,9 @@ class Header extends React.Component {
     const { activeItem } = this.state;
     return (
       <Menu.Item
+        style={{
+          marginBottom: 13
+        }}
         onClick={this.handleItemClick}
         active={activeItem === name}
         name={name}
@@ -70,34 +75,32 @@ class Header extends React.Component {
     });
     return menuArr;
   }
-  // TODO: сделать профиль
 
   render() {
     const {
       isUserAuthorized,
-      isAuthInProgress,
       userInfo,
-      headerSegmentStyle,
       headerMenuStyle,
       userRoles
     } = this.props;
 
     return (
-      <Segment
-        inverted
-        loading={isAuthInProgress}
-        className={headerSegmentStyle}
-      >
-        <Menu inverted pointing secondary className={headerMenuStyle}>
-          <Container>
-            <>
+      <Menu inverted pointing secondary className={headerMenuStyle}>
+        <Container>
+          <>
+            <Menu.Menu position="left">
               {this.generateMenu().map(el => el)}
+            </Menu.Menu>
+            <Menu.Menu position="right" className={s.rightMenu}>
+              <Menu.Item>
+                <SearchBox />
+              </Menu.Item>
               {isUserAuthorized ? (
-                <Menu.Menu position="right" className={s.rightMenu}>
+                <Menu.Item>
                   <Image src={userInfo.avatar} avatar />
                   <Dropdown item text={userInfo.login}>
                     <Dropdown.Menu>
-                      {userInfo.userGroup === userRoles.admin && (
+                      {userInfo.userGroup === userRoles.admin.value && (
                         <Dropdown.Item as={Link} to="/dashboard">
                           Dashboard
                         </Dropdown.Item>
@@ -110,14 +113,14 @@ class Header extends React.Component {
                       </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
-                </Menu.Menu>
+                </Menu.Item>
               ) : (
                 ""
               )}
-            </>
-          </Container>
-        </Menu>
-      </Segment>
+            </Menu.Menu>
+          </>
+        </Container>
+      </Menu>
     );
   }
 }

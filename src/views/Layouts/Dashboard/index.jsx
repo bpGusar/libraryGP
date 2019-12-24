@@ -1,12 +1,13 @@
 import React from "react";
 import { Container, Sidebar, Menu } from "semantic-ui-react";
+import { withRouter } from "react-router-dom";
 
-import DashboardMenu from "@DUI/components/Menu/";
-import TopMenu from "@DUI/components/TopMenu/";
+import DashboardMenu from "@DUI/containers/Menu/";
+import TopMenu from "@DUI/containers/TopMenu/";
 
 import s from "./index.module.scss";
 
-export default class MainLayout extends React.Component {
+class MainLayout extends React.Component {
   componentDidMount() {
     const { accessGranted, history } = this.props;
     if (!accessGranted) {
@@ -15,8 +16,7 @@ export default class MainLayout extends React.Component {
   }
 
   render() {
-    const { children } = this.props;
-
+    const { children, location } = this.props;
     return (
       <div className={s.dashboardWrapper}>
         <div className={s.sideBarWrapper}>
@@ -36,7 +36,14 @@ export default class MainLayout extends React.Component {
 
         <div className={s.mainContainerBlock}>
           <TopMenu />
-          <Container fluid className={s.mainContainer}>
+          <Container
+            fluid
+            className={
+              location.pathname !== "/dashboard"
+                ? s.mainContainer
+                : s.mainDashboardPageContainer
+            }
+          >
             {children}
           </Container>
         </div>
@@ -44,3 +51,5 @@ export default class MainLayout extends React.Component {
     );
   }
 }
+
+export default withRouter(MainLayout);

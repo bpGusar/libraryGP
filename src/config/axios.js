@@ -1,7 +1,4 @@
 import * as axios from "axios";
-import { toast } from "react-semantic-toasts";
-
-import MSG from "@msg";
 
 const axs = axios.create({
   baseURL: "/api"
@@ -16,7 +13,6 @@ axs.interceptors.request.use(
     return clonedConfig;
   },
   error => {
-    toast(MSG.serverError);
     return Promise.reject(error);
   }
 );
@@ -24,7 +20,6 @@ axs.interceptors.request.use(
 axs.interceptors.response.use(
   response => response,
   error => {
-    toast(MSG.serverError);
     return Promise.reject(error);
   }
 );

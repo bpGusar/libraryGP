@@ -5,6 +5,11 @@ const { Schema } = Mongoose;
 const BookLanguagesSchema = new Schema({
   languageName: {
     type: String,
+    unique: true,
+    uniqueCaseInsensitive: true
+  },
+  langCode: {
+    type: String,
     unique: true
   },
   createdAt: {

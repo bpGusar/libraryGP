@@ -1,15 +1,15 @@
 import parallel from "async/parallel";
 import _ from "lodash";
 
-import MSG from "../../server/config/msgCodes";
+import MSG from "../../config/msgCodes";
 import * as config from "../config";
 
 import OrderedBooks from "../models/OrderedBooks";
 import BookedBooks from "../models/BookedBooks";
 import BookedBooksArchive from "../models/BookedBooksArchive";
 
-function findOrderedBooks(res, getQery = {}) {
-  OrderedBooks.find(_.isEmpty(getQery) ? {} : JSON.parse(getQery))
+function findOrderedBooks(res, getQuery = {}) {
+  OrderedBooks.find(_.isEmpty(getQuery) ? {} : JSON.parse(getQuery))
     .populate(
       "userId",
       "-password -emailVerified -userGroup -createdAt -readerId"
@@ -37,43 +37,70 @@ function findOrderedBooks(res, getQery = {}) {
 }
 
 function addOrderedBook(req, res) {
-  const orderBookData = req.body;
-  orderBookData.userId = req.middlewareUserInfo._id;
+  const bookedBookId = req.params.id;
 
-  const newOrderedBook = new OrderedBooks({ ...orderBookData.bookedBookInfo });
-
-  newOrderedBook.save(saveErr => {
-    if (saveErr) {
-      res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
+  BookedBooks.find({ _id: bookedBookId }, (findBBerr, bookedBook) => {
+    if (findBBerr) {
+      res.json(config.getRespData(true, MSG.internalServerErr, findBBerr));
     } else {
-      parallel(
-        [
-          callback =>
-            BookedBooks.deleteOne(
-              {
-                bookId: orderBookData.bookedBookInfo.bookId,
-                readerId: orderBookData.bookedBookInfo.readerId
-              },
-              callback
-            ),
-          callback => {
-            const newArchivedBookedBook = new BookedBooksArchive({
-              ...orderBookData
-            });
+      const newOrderedBook = new OrderedBooks({
+        bookId: bookedBook[0].bookId,
+        userId: req.middlewareUserInfo._id,
+        readerId: bookedBook[0].readerId
+      });
 
-            newArchivedBookedBook.save(callback);
-          }
-        ],
-        parErr => {
-          if (parErr) {
-            res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
-          } else {
-            res.send(config.getRespData(false));
-          }
+      newOrderedBook.save(saveErr => {
+        if (saveErr) {
+          res.json(config.getRespData(true, MSG.internalServerErr, saveErr));
+        } else {
+          parallel(
+            [
+              callback =>
+                BookedBooks.deleteOne(
+                  {
+                    _id: bookedBook[0]._id
+                  },
+                  callback
+                ),
+              callback => {
+                const newArchivedBookedBook = new BookedBooksArchive({
+                  bookedBookInfo: {
+                    bookId: bookedBook[0].bookId,
+                    userId: bookedBook[0].userId,
+                    createdAt: bookedBook[0].createdAt
+                  },
+                  status: req.body.status,
+                  comment: req.body.comment,
+                  userId: req.middlewareUserInfo._id
+                });
+
+                newArchivedBookedBook.save(callback);
+              }
+            ],
+            parErr => {
+              if (parErr) {
+                res.json(
+                  config.getRespData(true, MSG.internalServerErr, saveErr)
+                );
+              } else {
+                res.send(config.getRespData(false));
+              }
+            }
+          );
         }
-      );
+      });
     }
   });
 }
 
-export default { addOrderedBook, findOrderedBooks };
+function getOrderedBooksCount(res) {
+  OrderedBooks.countDocuments({}, (err, number) => {
+    if (err) {
+      res.json(config.getRespData(true, null, err));
+    } else {
+      res.json(config.getRespData(false, null, number));
+    }
+  });
+}
+
+export default { addOrderedBook, findOrderedBooks, getOrderedBooksCount };

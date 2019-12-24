@@ -16,9 +16,6 @@ const OrderedBooksArchiveSchema = new Schema({
       type: String,
       ref: "User"
     },
-    readerId: {
-      type: Number
-    },
     orderedAt: Date,
     orderedUntil: Date
   },
@@ -28,7 +25,7 @@ const OrderedBooksArchiveSchema = new Schema({
   },
   userId: {
     type: String,
-    required: true
+    ref: "User"
   }
 });
 

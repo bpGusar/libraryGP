@@ -1,0 +1,176 @@
+[
+  {
+    "id": "zzivh3sck3fmwqlt",
+    "text": "Главная",
+    "type": "simple",
+    "to": "/dashboard",
+    "icon": "home"
+  },
+  {
+    "id": "zzivh3sck3fmwqlu",
+    "type": "dropdown",
+    "text": "Книги",
+    "items": [
+      {
+        "id": "zzivh3sck3fmwqlv",
+        "type": "simple",
+        "text": "Добавить новую",
+        "to": "/dashboard/books/find",
+        "icon": "add"
+      },
+      {
+        "id": "zzivh3sck3fmwqlw",
+        "type": "simple",
+        "text": "Управление бронированием",
+        "to": "/dashboard/books/booking-management",
+        "icon": "book"
+      },
+      {
+        "id": "zzivh3sck3fmwqlx",
+        "type": "simple",
+        "text": " Управление выданными книгами",
+        "to": "/dashboard/books/orders-management",
+        "icon": "book"
+      },
+      {
+        "id": "zzivh3sck3fmwqly",
+        "type": "simple",
+        "text": "Все книги",
+        "to": "/dashboard/books/book-list",
+        "icon": "list"
+      },
+      {
+        "id": "menuItem_k3scyduh",
+        "icon": "archive",
+        "text": "Архив бронирований",
+        "to": "/dashboard/books/booking-archive",
+        "type": "simple"
+      },
+      {
+        "id": "menuItem_k3sd12nq",
+        "icon": "archive",
+        "text": "Архив выданных книг",
+        "to": "/dashboard/books/orders-archive",
+        "type": "simple"
+      }
+    ],
+    "icon": "book"
+  },
+  {
+    "id": "zzivh3sck3fmwqlz",
+    "type": "dropdown",
+    "text": "Пользователи",
+    "items": [
+      {
+        "id": "zzivh3sck3fmwqm0",
+        "type": "simple",
+        "text": "Добавить нового",
+        "to": "/dashboard/users/new",
+        "icon": "add"
+      },
+      {
+        "id": "zzivh3sck3fmwqm1",
+        "type": "simple",
+        "text": "Список пользователей",
+        "to": "/dashboard/users/list",
+        "icon": "list"
+      }
+    ],
+    "icon": "users"
+  },
+  {
+    "id": "menuItem_k3h0nclb",
+    "icon": "user circle",
+    "text": "Авторы",
+    "type": "dropdown",
+    "items": [
+      {
+        "id": "menuItem_k3h0ngaw",
+        "icon": "plus",
+        "text": "Добавить нового",
+        "to": "/dashboard/authors/new",
+        "type": "simple"
+      },
+      {
+        "id": "menuItem_k3h6z07b",
+        "icon": "list",
+        "text": "Список авторов",
+        "to": "/dashboard/authors/list",
+        "type": "simple"
+      }
+    ]
+  },
+  {
+    "id": "menuItem_k3jvptec",
+    "icon": "ordered list",
+    "text": "Категории",
+    "type": "dropdown",
+    "items": [
+      {
+        "id": "menuItem_k3jvq46v",
+        "icon": "plus",
+        "text": "Добавить новую",
+        "to": "/dashboard/categories/new",
+        "type": "simple"
+      },
+      {
+        "id": "menuItem_k3jvqmv2",
+        "icon": "list",
+        "text": "Список категорий",
+        "to": "/dashboard/categories/list",
+        "type": "simple"
+      }
+    ]
+  },
+  {
+    "id": "menuItem_k3jxydye",
+    "icon": "chess rook",
+    "text": "Издатели",
+    "type": "dropdown",
+    "items": [
+      {
+        "id": "menuItem_k3jxz49z",
+        "icon": "plus",
+        "text": "Добавить нового",
+        "to": "/dashboard/publishers/new",
+        "type": "simple"
+      },
+      {
+        "id": "menuItem_k3jxzq3y",
+        "icon": "list",
+        "text": "Список издателей",
+        "to": "/dashboard/publishers/list",
+        "type": "simple"
+      }
+    ]
+  },
+  {
+    "id": "menuItem_k3k5zm6p",
+    "icon": "language",
+    "text": "Языки",
+    "type": "dropdown",
+    "items": [
+      {
+        "id": "menuItem_k3k5zqix",
+        "icon": "plus",
+        "text": "Добавить новый",
+        "to": "/dashboard/languages/new",
+        "type": "simple"
+      },
+      {
+        "id": "menuItem_k3k60cak",
+        "icon": "list",
+        "text": "Список языков",
+        "to": "/dashboard/languages/list",
+        "type": "simple"
+      }
+    ]
+  },
+  {
+    "id": "k3fn0d1m",
+    "icon": "pencil",
+    "text": "Редактировать меню",
+    "to": "/dashboard/menus",
+    "type": "simple"
+  }
+]

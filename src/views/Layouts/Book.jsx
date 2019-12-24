@@ -46,6 +46,6 @@ function BookLayout(props) {
 }
 
 export default branch(
-  { book: PARAMS.BOOK, globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER },
+  { book: PARAMS.BOOK, globalPageLoader: PARAMS.IS_SOME_DATA_LOADING },
   BookLayout
 );

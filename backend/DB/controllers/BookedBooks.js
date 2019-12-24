@@ -6,11 +6,11 @@ import OrderedBooks from "../models/OrderedBooks";
 import Book from "../models/Book";
 
 import * as config from "../config";
-import MSG from "../../server/config/msgCodes";
-import servConf from "../../server/config/server.json";
+import MSG from "../../config/msgCodes";
+import servConf from "../../config/server.json";
 
 /**
- * Функиция добавить книгу в список забронированных.
+ * Функция добавить книгу в список забронированных.
  *
  * Сначала найдет книгу по req.body.id, при ошибке поиска выдаст ошибку, иначе проверит есть ли еще свободные книги. Если нет то выдаст ошибку.
  *
@@ -145,7 +145,7 @@ function bookABook(req, res) {
 /**
  * Функция вернет забронированные книги.
  *
- * Когда функция возвращает данные по забронированным книгам она так же вернет и выборку данных по юзеру и забронированной книге.
+ * Когда функция возвращает данные по забронированным книгам она так же вернет и выборку данных по пользователю и забронированной книге.
  * @param {Object} res Response
  * @param {Object} data Параметры для запроса БД.
  */
@@ -179,4 +179,14 @@ function findBookedBooks(res, data = {}) {
     });
 }
 
-export default { bookABook, findBookedBooks };
+function getBookedBooksCount(res) {
+  BookedBooks.countDocuments({}, (err, number) => {
+    if (err) {
+      res.json(config.getRespData(true, null, err));
+    } else {
+      res.json(config.getRespData(false, null, number));
+    }
+  });
+}
+
+export default { bookABook, findBookedBooks, getBookedBooksCount };

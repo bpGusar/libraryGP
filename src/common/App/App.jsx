@@ -8,7 +8,7 @@ import { createBrowserHistory } from "history";
 import "dotenv/config";
 import _ from "lodash";
 
-import AppRoutes from "../Routes";
+import AppRoutes from "../Router/Routes";
 
 import axs from "@axios";
 
@@ -22,7 +22,6 @@ class App extends React.Component {
     this.checkAuth();
   }
 
-  // eslint-disable-next-line consistent-return
   async checkAuth() {
     const { dispatch, user } = this.props;
     let isError = false;
@@ -81,8 +80,7 @@ export default root(
   store,
   branch(
     {
-      isAuthInProgressStored: PARAMS.IS_AUTH_IN_PROGRESS,
-      globalPageLoader: PARAMS.GLOBAL_PAGE_LOADER,
+      globalPageLoader: PARAMS.IS_SOME_DATA_LOADING,
       pageLoaded: PARAMS.LOADED,
       user: PARAMS.USER_INFO
     },

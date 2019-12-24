@@ -16,21 +16,21 @@ const BookedBooksArchiveSchema = new Schema({
       type: String,
       ref: "User"
     },
-    readerId: {
-      type: Number
-    },
     createdAt: Date
   },
   status: {
     type: String,
     required: true,
-    enum: ["rejected", "ordered"]
+    enum: ["rejected", "ordered", "canceled"]
   },
   comment: {
     type: String,
     default: ""
   },
-  userId: String
+  userId: {
+    type: String,
+    ref: "User"
+  }
 });
 
 export default Mongoose.model(

@@ -1,0 +1,99 @@
+.menuList {
+  .dragItem {
+    margin: 0 0 -5px 0;
+    &.childItem {
+      position: relative;
+      flex-wrap: wrap;
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      background: #fff;
+      box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
+      margin: 0 0 10px 0;
+      padding: 7px 12px;
+      border-radius: 0.28571429rem;
+      border: 1px solid rgba(34, 36, 38, 0.15);
+    }
+    &.parentItem {
+      box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
+      margin: 0;
+      padding: 0 !important;
+      border-radius: 0.28571429rem;
+    }
+  }
+  .dragged {
+    opacity: 0.5;
+    box-shadow: 0 1px 7px 0 rgba(34, 36, 38, 0.5) !important;
+    padding: 7px 12px !important;
+  }
+  .dropBlock {
+    position: relative;
+    .content {
+      display: block !important;
+    }
+    .dropItem {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      .content {
+        width: 100%;
+      }
+    }
+  }
+  .item {
+    position: relative;
+    flex-wrap: wrap;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+    box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
+    margin: 5px 0;
+    padding: 10px 13px;
+    border-radius: 0.28571429rem;
+    border: 1px solid rgba(34, 36, 38, 0.15);
+    .header {
+      display: inline-block;
+      font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    .content {
+      width: 100%;
+      .simpleBlock {
+        margin: 0 0 0 10px;
+        padding: 6px !important;
+      }
+    }
+    .list {
+      padding: 0 0 4px 25px;
+      width: 100%;
+      margin: 10px 0 0 0;
+      .addButton {
+        margin: 5px 0 0 0;
+      }
+    }
+  }
+}
+.buttonGroupBlock {
+  float: right;
+  .buttonGroup {
+    .button {
+      padding: 5px !important;
+      font-size: 12px !important;
+    }
+  }
+}
+
+.newItem {
+  background-color: #69e99696 !important;
+}
+.editedItem {
+  background-color: #e7e96996 !important;
+}
+
+.addNewItemButton {
+  display: inline;
+}

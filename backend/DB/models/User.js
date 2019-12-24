@@ -70,7 +70,7 @@ UserSchema.pre("save", function(next) {
   }
 });
 
-UserSchema.pre("update", function(next) {
+UserSchema.pre("updateOne", function(next) {
   if (_.has(this.getUpdate(), "password")) {
     const document = this.getUpdate();
     bcrypt.hash(

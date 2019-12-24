@@ -39,8 +39,6 @@ class AddBookForm extends React.Component {
     const { bookToDB, user, dispatch } = this.props;
     const bookClone = _.cloneDeep(bookToDB);
     const today = DateTime.local().toISODate();
-
-    _.set(bookClone.book, "userIdWhoAddedBookInDb", user._id);
     _.set(bookClone.book, "dateAdded", today);
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
@@ -60,12 +58,9 @@ class AddBookForm extends React.Component {
     const bookClone = _.cloneDeep(bookToDB);
     const { industryIdentifiers } = bookClone.book.bookInfo;
 
-    // eslint-disable-next-line consistent-return
     Object.keys(industryIdentifiers).find(key => {
       if (industryIdentifiers[key].type === e.name) {
         industryIdentifiers[key].identifier = e.value;
-      } else {
-        return false;
       }
     });
 
@@ -196,7 +191,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "authors")
                 }
                 label="Автор"
-                dropdownValueName="authorName"
+                getValueFromProperty="authorName"
                 showAddNewField
                 currentValue={bookInfo.authors}
               />
@@ -210,7 +205,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "publisher")
                 }
                 label="Издательство"
-                dropdownValueName="publisherName"
+                getValueFromProperty="publisherName"
                 showAddNewField
                 currentValue={bookInfo.publisher}
               />
@@ -226,7 +221,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "categories")
                 }
                 label="Категория"
-                dropdownValueName="categoryName"
+                getValueFromProperty="categoryName"
                 showAddNewField
                 currentValue={bookInfo.categories}
               />
@@ -273,8 +268,7 @@ class AddBookForm extends React.Component {
                   this.handleOnChangeDropdown(value, "language")
                 }
                 label="Язык"
-                dropdownValueName="languageName"
-                showAddNewField
+                getValueFromProperty="languageName"
                 currentValue={bookInfo.language}
               />
             </Form.Group>

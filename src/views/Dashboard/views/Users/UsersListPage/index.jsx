@@ -8,13 +8,14 @@ import {
   Item,
   Dropdown,
   Modal,
-  Divider
+  Divider,
+  Label
 } from "semantic-ui-react";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 
+import PaginationBlock from "@commonViews/Pagination";
 import EditUser from "../EditUser";
-import PaginationBlock from "./components/Pagination";
 import ResultFilters from "./components/ResultFilters";
 
 import axs from "@axios";
@@ -88,9 +89,40 @@ class UsersList extends Component {
             isLoading: false,
             maxElements: resp.headers["max-elements"]
           });
+        } else {
+          this.setState({
+            isLoading: false
+          });
         }
       });
   };
+
+  handlePageChange = data =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          page: data.activePage
+        }
+      }),
+      () => this.handleSubmitForm()
+    );
+
+  handleSortChange = value =>
+    this.setState(ps => ({
+      options: {
+        ...ps.options,
+        sort: value
+      }
+    }));
+
+  handleLimitChange = value =>
+    this.setState(ps => ({
+      options: {
+        ...ps.options,
+        limit: Number(value)
+      }
+    }));
 
   render() {
     const { users, isLoading, options, maxElements } = this.state;
@@ -134,7 +166,11 @@ class UsersList extends Component {
               Поиск
             </Button>
             <Divider />
-            <ResultFilters options={options} _this={this} />
+            <ResultFilters
+              options={options}
+              onSortChange={this.handleSortChange}
+              onLimitChange={this.handleLimitChange}
+            />
           </Form>
         </Segment>
         <Segment loading={isLoading}>
@@ -143,7 +179,7 @@ class UsersList extends Component {
               <Item key={user._id}>
                 <Item.Image
                   as={Link}
-                  to={`/profile/${user.login}`}
+                  to={`/profile/${user._id}`}
                   target="blanc"
                   size="tiny"
                   src={user.avatar}
@@ -172,27 +208,28 @@ class UsersList extends Component {
                             </Modal.Description>
                           </Modal.Content>
                         </Modal>
-                        <Dropdown.Divider />
-                        <Dropdown.Item text="Удалить" icon="close" />
                       </Dropdown.Menu>
                     </Dropdown>
                   </Item.Header>
-                  <Item.Meta>Description</Item.Meta>
-                  <Item.Description>
-                    {/* <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" /> */}
-                  </Item.Description>
-                  <Item.Extra>Additional Details</Item.Extra>
+                  <Item.Meta>{user.readerId}</Item.Meta>
+                  <Item.Extra>
+                    <Label color="blue">
+                      <Icon name="calendar" />
+                      Email: {user.email}
+                    </Label>
+                  </Item.Extra>
                 </Item.Content>
               </Item>
             ))}
           </Item.Group>
         </Segment>
-        {!_.isEmpty(users) && (
+        {Number(maxElements) > options.limit && (
           <Segment>
             <PaginationBlock
-              options={options}
+              page={options.page}
+              limit={options.limit}
               maxElements={maxElements}
-              _this={this}
+              onPageChange={this.handlePageChange}
             />
           </Segment>
         )}

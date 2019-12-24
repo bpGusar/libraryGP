@@ -12,12 +12,12 @@ import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
 import { toast } from "react-semantic-toasts";
 
-import Filters from "./components/Filters";
+import PaginationBlock from "@commonViews/Pagination";
+import BookItem from "@DUI/common/BookItem";
+import BookFilters from "@DUI/common/BookFilters";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
-import BookItem from "./components/BookItem";
-import PaginationBlock from "./components/Pagination";
 import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";
@@ -32,7 +32,6 @@ class ManageBooks extends Component {
       isLoading: false,
       books: [],
       searchQuery: {},
-      activeAccordionIndex: -1,
       maxElements: 0,
       options: {
         fetch_type: 1,
@@ -83,17 +82,13 @@ class ManageBooks extends Component {
             isLoading: false,
             maxElements: resp.headers["max-elements"]
           });
+        } else {
+          this.setState({
+            isLoading: false
+          });
         }
       });
   };
-
-  handleClick = (e, titleProps) =>
-    this.setState(prevState => {
-      const { index } = titleProps;
-      const { activeAccordionIndex } = prevState;
-      const newIndex = activeAccordionIndex === index ? -1 : index;
-      return { activeAccordionIndex: newIndex };
-    });
 
   handleChangeSearchQuery = (value, name, regex = false) =>
     this.setState(prevState => {
@@ -119,55 +114,37 @@ class ManageBooks extends Component {
       };
     });
 
-  putBookDataInToStore(currentBook) {
-    const { dispatch, history, bookToDB } = this.props;
-
-    this.setState({
-      isLoading: true
-    });
-
-    axs
-      .get(`/books/${currentBook._id}`, {
-        params: {
-          options: { fetch_type: 0 }
+  handleChangeSortType = value =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          sort: value
         }
-      })
-      .then(resp => {
-        if (!resp.data.error) {
-          const clonedResp = resp;
-          delete clonedResp.data.payload[0].__v;
+      }),
+      () => this.handleSearchBooks()
+    );
 
-          this.setState(
-            {
-              isLoading: false
-            },
-            () => {
-              dispatch(storeData, PARAMS.BOOK_TO_DB, {
-                ...bookToDB,
-                flag: "edit",
-                book: {
-                  ...clonedResp.data.payload[0]
-                }
-              });
-              history.push("/dashboard/books/new");
-            }
-          );
+  handleChangeLimit = value =>
+    this.setState(prevState => ({
+      options: {
+        ...prevState.options,
+        limit: Number(value)
+      }
+    }));
+
+  handlePageChange = data =>
+    this.setState(
+      prevState => ({
+        options: {
+          ...prevState.options,
+          page: data.activePage
         }
-      });
-  }
+      }),
+      () => this.handleSearchBooks()
+    );
 
-  manageConfirmWindow(book) {
-    const { deleteBookModal } = this.state;
-    this.setState({
-      deleteBookModal: {
-        ...deleteBookModal,
-        open: true
-      },
-      bookToDeleteId: book._id
-    });
-  }
-
-  deleteBook(deleteBook) {
+  deleteBook = deleteBook => {
     const { bookToDeleteId, deleteBookModal } = this.state;
 
     if (deleteBook) {
@@ -225,14 +202,58 @@ class ManageBooks extends Component {
         }
       });
     }
+  };
+
+  putBookDataInToStore(currentBook) {
+    const { dispatch, history, bookToDB } = this.props;
+
+    this.setState({
+      isLoading: true
+    });
+
+    axs
+      .get(`/books/${currentBook._id}`, {
+        params: {
+          options: { fetch_type: 0 }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          const clonedResp = resp;
+          delete clonedResp.data.payload[0].__v;
+
+          this.setState(
+            {
+              isLoading: false
+            },
+            () => {
+              dispatch(storeData, PARAMS.BOOK_TO_DB, {
+                ...bookToDB,
+                flag: "edit",
+                book: {
+                  ...clonedResp.data.payload[0]
+                }
+              });
+              history.push("/dashboard/books/new");
+            }
+          );
+        } else {
+          this.setState({
+            isLoading: false
+          });
+        }
+      });
   }
 
-  renderBookList() {
-    const { books } = this.state;
-
-    return books.map(book => (
-      <BookItem key={book._id} book={book} _this={this} />
-    ));
+  manageConfirmWindow(book) {
+    const { deleteBookModal } = this.state;
+    this.setState({
+      deleteBookModal: {
+        ...deleteBookModal,
+        open: true
+      },
+      bookToDeleteId: book._id
+    });
   }
 
   render() {
@@ -240,13 +261,15 @@ class ManageBooks extends Component {
       books,
       isLoading,
       searchQuery,
-      activeAccordionIndex,
       options,
       maxElements,
       deleteBookModal
     } = this.state;
     return (
       <Segment.Group>
+        <Segment>
+          <Header as="h3">Список книг</Header>
+        </Segment>
         <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
             <Form.Input
@@ -262,10 +285,11 @@ class ManageBooks extends Component {
                 this.handleChangeSearchQuery(value, name, true)
               }
             />
-            <Filters
-              activeAccordionIndex={activeAccordionIndex}
+            <BookFilters
               searchQuery={searchQuery}
-              _this={this}
+              onChangeSearchQuery={(value, name) =>
+                this.handleChangeSearchQuery(value, name)
+              }
             />
             <Divider />
             <Button icon type="submit" primary labelPosition="left">
@@ -273,7 +297,11 @@ class ManageBooks extends Component {
               Поиск
             </Button>
             <Divider />
-            <ResultFilters options={options} _this={this} />
+            <ResultFilters
+              options={options}
+              onChangeSort={this.handleChangeSortType}
+              onChangeLimit={this.handleChangeLimit}
+            />
           </Form>
         </Segment>
         <Segment placeholder={_.isEmpty(books)} loading={isLoading}>
@@ -284,19 +312,32 @@ class ManageBooks extends Component {
             </Header>
           )}
           {!_.isEmpty(books) && (
-            <Item.Group divided>{this.renderBookList()}</Item.Group>
+            <Item.Group divided>
+              {books.map(book => (
+                <BookItem
+                  key={book._id}
+                  book={book}
+                  onEditClick={bookData => this.putBookDataInToStore(bookData)}
+                  onDeleteClick={bookData => this.manageConfirmWindow(bookData)}
+                />
+              ))}
+            </Item.Group>
           )}
         </Segment>
-        {!_.isEmpty(books) && (
+        {Number(maxElements) > options.limit && (
           <Segment>
             <PaginationBlock
-              options={options}
+              onPageChange={this.handlePageChange}
+              page={options.page}
+              limit={options.limit}
               maxElements={maxElements}
-              _this={this}
             />
           </Segment>
         )}
-        <ModalWindow deleteBookModal={deleteBookModal} _this={this} />
+        <ModalWindow
+          deleteBookModal={deleteBookModal}
+          onBookDeleteClick={this.deleteBook}
+        />
       </Segment.Group>
     );
   }

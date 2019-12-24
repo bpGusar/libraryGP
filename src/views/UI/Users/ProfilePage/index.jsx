@@ -1,29 +1,26 @@
+/* eslint-disable react/sort-comp */
 /* eslint-disable react/no-unused-state */
 import React, { Component } from "react";
-import {
-  Grid,
-  Image,
-  Card,
-  Segment,
-  Header,
-  Divider,
-  Label
-} from "semantic-ui-react";
+import { Grid, Segment, Header, Label, Tab, Button } from "semantic-ui-react";
 import { branch } from "baobab-react/higher-order";
-import { DateTime } from "luxon";
+
 import Loader from "@views/common/Loader";
-import Stats from "./components/Stats";
+import OrdersInfo from "./components/OrdersInfo";
+import ArchivedInfo from "./components/ArchivedInfo";
+import EditUser from "./components/EditUser";
+import Avatar from "./components/Avatar";
 
 import { PARAMS } from "@store";
 
 import axs from "@axios";
+
+import s from "./index.module.scss";
 
 const userGroup = {
   0: "Пользователь",
   1: "Администратор"
 };
 
-// TODO: доделать профиль
 class ProfilePage extends Component {
   constructor(props) {
     super(props);
@@ -31,17 +28,19 @@ class ProfilePage extends Component {
     this.state = {
       isLoading: true,
       user: {},
-      currentUser: ""
+      currentUser: "",
+      oldAvatar: ""
     };
   }
 
   componentDidMount() {
-    const { match, userInfo } = this.props;
-    if (match.params.userId === userInfo._id) {
+    const { match, userInfoFromStore } = this.props;
+    if (match.params.userId === userInfoFromStore._id) {
       this.setState({
-        user: userInfo,
+        user: userInfoFromStore,
+        oldAvatar: userInfoFromStore.avatar,
         isLoading: false,
-        currentUser: userInfo._id
+        currentUser: userInfoFromStore._id
       });
     } else {
       this.handleGetUserInfo();
@@ -67,7 +66,7 @@ class ProfilePage extends Component {
     return false;
   }
 
-  handleGetUserInfo = () => {
+  handleGetUserInfo() {
     const { match } = this.props;
 
     this.setState({
@@ -78,15 +77,110 @@ class ProfilePage extends Component {
       if (!resp.data.error) {
         this.setState({
           user: resp.data.payload[0],
+          oldAvatar: resp.data.payload[0].avatar,
           isLoading: false,
           currentUser: resp.data.payload[0].userId
         });
+      } else {
+        this.setState({
+          isLoading: false
+        });
+      }
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  renderTabContent(user) {
+    return [
+      {
+        menuItem: "Выданные и забронированные книги",
+        pane: (
+          <Tab.Pane attached={false} className={s.tabPane}>
+            <OrdersInfo
+              type="booked"
+              url={`/users/${user._id}/booked-books`}
+              label="Забронированные книги"
+            />
+            <OrdersInfo
+              type="ordered"
+              url={`/users/${user._id}/ordered-books`}
+              label="Книги на руках"
+            />
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: "История выданных",
+        pane: (
+          <Tab.Pane attached={false} className={s.tabPane}>
+            <ArchivedInfo
+              componentType="ordered"
+              dataObjPropName="orderedBookInfo"
+              url={`/users/${user._id}/ordered-books/archive`}
+            />
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: "История арендованных",
+        pane: (
+          <Tab.Pane attached={false} className={s.tabPane}>
+            <ArchivedInfo
+              componentType="booked"
+              dataObjPropName="bookedBookInfo"
+              url={`/users/${user._id}/booked-books/archive`}
+            />
+          </Tab.Pane>
+        )
+      }
+    ];
+  }
+
+  handleAvatarChange = data =>
+    this.setState(prevState => ({
+      user: {
+        ...prevState.user,
+        avatar: data
+      }
+    }));
+
+  handleCancelAvatarChange = () => {
+    const { oldAvatar, user } = this.state;
+    this.setState({
+      user: {
+        ...user,
+        avatar: oldAvatar
+      }
+    });
+  };
+
+  handleSaveAvatar = () => {
+    const { user: updateData } = this.state;
+
+    axs.put("/users", { send_email: false, updateData }).then(resp => {
+      if (!resp.data.error) {
+        this.handleGetUserInfo();
+      }
+    });
+  };
+
+  deleteAvatar = () => {
+    const { user } = this.state;
+    this.setState({
+      user: {
+        ...user,
+        avatar: ""
       }
     });
   };
 
   render() {
-    const { user, isLoading } = this.state;
+    const { user, isLoading, oldAvatar } = this.state;
+    const { userInfoFromStore, userRoles } = this.props;
+    const isMyProfileOrAdmin =
+      userInfoFromStore._id === user._id ||
+      userInfoFromStore.userGroup === userRoles.admin.value;
+
     return (
       <>
         {isLoading ? (
@@ -95,22 +189,17 @@ class ProfilePage extends Component {
           <Grid>
             <Grid.Row>
               <Grid.Column width={4}>
-                <Card>
-                  <Image src={user.avatar} wrapped ui={false} />
-                  <Card.Content>
-                    <Card.Header>{user.login}</Card.Header>
-                    <Card.Meta>
-                      <span className="date">
-                        Дата регистрации:{" "}
-                        <b>
-                          {DateTime.fromISO(user.createdAt)
-                            .setLocale("ru")
-                            .toFormat("dd LLL yyyy")}
-                        </b>
-                      </span>
-                    </Card.Meta>
-                  </Card.Content>
-                </Card>
+                <Avatar
+                  user={user}
+                  onDelete={this.deleteAvatar}
+                  onChange={this.handleAvatarChange}
+                  onCancelChange={this.handleCancelAvatarChange}
+                  onSave={this.handleSaveAvatar}
+                  oldAvatar={oldAvatar}
+                />
+                <EditUser
+                  trigger={<Button fluid>Редактировать профиль</Button>}
+                />
               </Grid.Column>
               <Grid.Column width={12}>
                 <Segment>
@@ -118,9 +207,14 @@ class ProfilePage extends Component {
                     {user.lastName} {user.firstName} {user.patronymic}{" "}
                     <Label>{userGroup[user.userGroup]}</Label>
                   </Header>
-                  <Divider />
-                  <Stats userId={user._id} />
                 </Segment>
+                {isMyProfileOrAdmin && (
+                  <Tab
+                    renderActiveOnly={false}
+                    menu={{ secondary: true, pointing: true }}
+                    panes={this.renderTabContent(user)}
+                  />
+                )}
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -132,7 +226,8 @@ class ProfilePage extends Component {
 
 export default branch(
   {
-    userInfo: PARAMS.USER_INFO
+    userInfoFromStore: PARAMS.USER_INFO,
+    userRoles: PARAMS.USER_ROLES
   },
   ProfilePage
 );

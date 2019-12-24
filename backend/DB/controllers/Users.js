@@ -3,15 +3,17 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import fs from "fs-extra";
 import _ from "lodash";
+import uniqid from "uniqid";
 
 import User from "../models/User";
 
 import * as config from "../config";
-import MSG from "../../server/config/msgCodes";
+import MSG from "../../config/msgCodes";
 
-import servConf from "../../server/config/server.json";
+import servConf from "../../config/server.json";
 
 import { EmailVerifyTemplate } from "../../server/emailTemplates/EmailVerify";
+import { ResetPasswordEmail } from "../../server/emailTemplates/ResetPassword";
 
 const transporter = nodemailer.createTransport(servConf.emailConfig);
 
@@ -99,7 +101,23 @@ function findUsers(res, req, query = {}, selectParams = "") {
 }
 
 function updateUser(req, res) {
+  const { middlewareUserInfo } = req;
   const { updateData, send_email } = req.body;
+
+  if (
+    middlewareUserInfo.userGroup !== 1 &&
+    middlewareUserInfo._id !== updateData._id
+  ) {
+    res.json(
+      config.getRespData(true, MSG.userUpdateError, "Это ваще законно?")
+    );
+    return;
+  }
+
+  if ((!_.isUndefined(send_email) && send_email) || _.isUndefined(send_email)) {
+    updateData.emailVerified = false;
+  }
+
   let clonedUserData = _.cloneDeep(updateData);
   const detectNewAvatar = clonedUserData.avatar.search("base64");
 
@@ -136,7 +154,11 @@ function updateUser(req, res) {
     };
   }
 
-  if (detectNewAvatar !== -1) {
+  if (clonedUserData.avatar === "") {
+    clonedUserData.avatar = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
+
+    saveUser(clonedUserData);
+  } else if (detectNewAvatar !== -1) {
     const base64Poster = clonedUserData.avatar.replace(
       /^data:image\/png;base64,/,
       ""
@@ -163,7 +185,7 @@ function updateUser(req, res) {
 }
 
 function addNewUser(req, res) {
-  const { send_email, regInfo } = req.body;
+  const { send_email, regData } = req.body;
 
   const avatarName = `avatar_${Date.now()}.png`;
 
@@ -207,7 +229,7 @@ function addNewUser(req, res) {
     });
   };
 
-  let clonedUserObj = { ...regInfo };
+  let clonedUserObj = { ...regData };
 
   if (!send_email) {
     clonedUserObj = {
@@ -259,10 +281,42 @@ function emailVerification(req, res) {
   });
 }
 
+function resetPassword(req, res) {
+  const { email } = req.body;
+
+  const newPassword = uniqid();
+  User.findOne({ email }, (findOneError, user) => {
+    if (findOneError) {
+      res.json(config.getRespData(true, MSG.internalServerErr, findOneError));
+    } else if (!user) {
+      res.json(config.getRespData(true));
+    } else {
+      User.updateOne({ email }, { password: newPassword }, err => {
+        if (err) {
+          res.json(config.getRespData(true, MSG.userUpdateError, err));
+        } else {
+          transporter.sendMail(ResetPasswordEmail(email, newPassword), function(
+            emailSentError
+          ) {
+            if (emailSentError) {
+              res.json(
+                config.getRespData(true, MSG.internalServerErr, emailSentError)
+              );
+            } else {
+              res.send(config.getRespData(false));
+            }
+          });
+        }
+      });
+    }
+  });
+}
+
 export default {
   findUsers,
   addNewUser,
   emailVerification,
   logInUser,
-  updateUser
+  updateUser,
+  resetPassword
 };

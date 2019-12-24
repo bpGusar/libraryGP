@@ -8,10 +8,10 @@ import BookedBooks from "../models/BookedBooks";
 import OrderedBooks from "../models/OrderedBooks";
 import BooksArchive from "../models/BooksArchive";
 
-import MSG from "../../server/config/msgCodes";
+import MSG from "../../config/msgCodes";
 import * as config from "../config";
 
-import servConf from "../../server/config/server.json";
+import servConf from "../../config/server.json";
 
 /**
  * Функция поиска книг.
@@ -27,23 +27,25 @@ import servConf from "../../server/config/server.json";
  * Кейсы по составлению запросов к MongoDB можно загуглить.
  * Запросы делаются напрямую в базу, поэтому необходимо валидно составлять объект запроса.
  *
- * @param {Number} options Объект в опциями поиска. Не обязательно! Будет задан данными по умолчанию при полном отсутствии.
- * @param {Boolean} options.fetch_type Вид возвращаемых данных. По умолчанию `0`. Не обязательно!
+ * @param {Object=} options Объект с опциями поиска. Будет задан данными по умолчанию при полном отсутствии.
+ * @param {Number} options.fetch_type Вид возвращаемых данных. По умолчанию `0`.
+ *
  * `0` - вернуть данные по книге как есть (прим.: авторы будут возвращены в виде массива id и т.д. смотри модель `Book`).
+ *
  * `1` - вернуть данные по книге и заполнить данными объекты, в которых изначально есть только id (смотри модель `Book`)).
- * @param {Number} options.page Номер страницы выборки. По умолчанию `1`. Не обязательно!
- * @param {Number} options.sort Сортировка. По умолчанию `desc`. Не обязательно!
- * @param {Number} options.limit Количество элементов в одной выборке. За 1 раз не более 99 элементов. По умолчанию `99`. Не обязательно!
+ *
+ * @param {Number} options.page Номер страницы выборки. По умолчанию `1`.
+ * @param {String} options.sort Сортировка. По умолчанию `desc`.
+ * @param {Number} options.limit Количество элементов в одной выборке. За 1 раз не более 99 элементов. По умолчанию `99`.
  *
  * ВНИМАНИЕ!
  * `options.limit` по умолчанию `99`. Если не указать `options.limit` но при этом указать `options.page`, то, если в базе элементов будет меньше `99`-ти то поиск не даст результатов!
  *
  * Возвращаемые хедеры:
  *
- * `max-elements` Количество элементов в базе.
+ * `max-elements` Количество элементов в базе, подходящих под запрос.
  */
 function findBooks(res, req, data = {}) {
-  // eslint-disable-next-line prefer-const
   let { options } = req.query;
 
   if (_.isUndefined(options)) {
@@ -51,13 +53,17 @@ function findBooks(res, req, data = {}) {
       page: 1,
       limit: 99,
       fetch_type: 0,
-      sort: "desc"
+      sort: "desc",
+      notShowDeleted: true
     };
   } else {
     options = JSON.parse(options);
   }
 
   options.page = _.isUndefined(options.page) ? 1 : options.page;
+  options.notShowDeleted = _.isUndefined(options.notShowDeleted)
+    ? true
+    : options.notShowDeleted;
   options.sort = _.isUndefined(options.sort) ? 1 : options.sort;
   options.limit = _.isUndefined(options.limit) ? 99 : options.limit;
   options.fetch_type = _.isUndefined(options.fetch_type)
@@ -120,8 +126,8 @@ function findBooks(res, req, data = {}) {
  */
 function addBook(req, res) {
   const { book: bodyBook } = req.body;
+  const base64StringToReplace = /^data:image\/png;base64,/;
   const posterName = `book_poster_${Date.now()}.png`;
-
   const pathToNewPoster = path.join(
     __dirname,
     `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
@@ -141,13 +147,19 @@ function addBook(req, res) {
   };
 
   const clonedBookObj = { ...bodyBook };
+
+  clonedBookObj.addedByUser = req.middlewareUserInfo._id;
+
   if (bodyBook.bookInfo.imageLinks.poster === "") {
     clonedBookObj.bookInfo.imageLinks.poster = `${servConf.filesPaths.placeholders.urlToPlaceholder}/imagePlaceholder.png`;
 
     saveBook(clonedBookObj);
-  } else {
+  } else if (
+    clonedBookObj.bookInfo.imageLinks.poster.search(base64StringToReplace) !==
+    -1
+  ) {
     const base64Poster = clonedBookObj.bookInfo.imageLinks.poster.replace(
-      /^data:image\/png;base64,/,
+      base64StringToReplace,
       ""
     );
 
@@ -160,6 +172,8 @@ function addBook(req, res) {
         saveBook(clonedBookObj);
       }
     });
+  } else {
+    saveBook(clonedBookObj);
   }
 }
 

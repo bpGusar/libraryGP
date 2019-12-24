@@ -1,0 +1,28 @@
+{
+  "maxBooksPerOneUserBookedAndOrderedAtTheSameTime": 5,
+  "theRaderCanTakeTheBookForDays": 30,
+  "sendEmailNDaysBeforeBookExpires": 3,
+  "deleteBookedBookIfNDaysHavePassed": 3,
+  "cronUserId": "5db2bc321c9d440000f3a01c",
+  "emailConfig": {
+    "service": "gmail",
+    "auth": {
+      "user": "bpgusar@gmail.com",
+      "pass": "6V311w5f"
+    }
+  },
+  "filesPaths": {
+    "bookPoster": {
+      "mainFolder": "server/files/posters/",
+      "urlToPoster": "/posters"
+    },
+    "placeholders": {
+      "mainFolder": "server/files/placeholders/",
+      "urlToPlaceholder": "/placeholder"
+    },
+    "avatars": {
+      "mainFolder": "server/files/avatars/",
+      "urlToAvatar": "/avatar"
+    }
+  }
+}

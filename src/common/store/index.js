@@ -9,23 +9,31 @@ export const PARAMS = {
   MENU: "menu",
   BOOK_TO_DB: "book to db",
   BOOK: "book",
-  GLOBAL_PAGE_LOADER: "is some data is loading?",
+  IS_SOME_DATA_LOADING: "is some data is loading?",
   AUTHORS: "authors from db",
   CATEGORIES: "categories from db",
   LANGUAGES: "languages from db",
   PUBLISHERS: "publishers from db",
   INFO_PAGE: "info page text",
   USER_ROLES: "user roles",
-  PAGE_TITLE: "page title"
+  PAGE_TITLE: "page title",
+  BOOKS_LIST: "books list"
+};
+
+const bookFlag = {
+  new: "new",
+  edit: "edit",
+  google: "google"
 };
 
 export const getInitialState = () => ({
   [PARAMS.IS_AUTH_IN_PROGRESS]: true,
-  [PARAMS.GLOBAL_PAGE_LOADER]: true, // true значит какие то данные загружаются
+  [PARAMS.IS_SOME_DATA_LOADING]: true, // true значит какие то данные загружаются
   [PARAMS.IS_USER_AUTHORIZED]: false,
   [PARAMS.LOADED]: false,
   [PARAMS.PAGE_TITLE]: "",
   [PARAMS.USER_INFO]: {},
+  [PARAMS.BOOKS_LIST]: [],
   [PARAMS.INFO_PAGE]: {
     text: "",
     type: ""
@@ -40,14 +48,23 @@ export const getInitialState = () => ({
   [PARAMS.PUBLISHERS]: [],
   [PARAMS.BOOK]: {},
   [PARAMS.USER_ROLES]: {
-    notLogged: "notLogged",
-    user: 0,
-    admin: 1
+    notLogged: {
+      value: "notLogged",
+      name: "Не залогинен"
+    },
+    user: {
+      value: 0,
+      name: "Пользователь"
+    },
+    admin: {
+      value: 1,
+      name: "Администратор"
+    }
   },
   [PARAMS.BOOK_TO_DB]: {
-    flag: "new",
+    flag: bookFlag.new,
     book: {
-      userIdWhoAddedBookInDb: "",
+      addedByUser: "",
       dateAdded: "",
       bookInfo: {
         title: "",

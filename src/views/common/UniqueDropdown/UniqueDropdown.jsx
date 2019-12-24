@@ -23,7 +23,7 @@ import s from "./index.module.scss";
  * @param {String} storeParam Ссылка на параметр в сторе
  * @param {Function} onChange Функция, которая будет принимать dropdown value
  * @param {Boolean} showAddNewField Показывать ли поле добавления новых данных
- * @param {String} dropdownValueName Используется для конвертации данных из базы и для добавления новых.
+ * @param {String} getValueFromProperty Используется для конвертации данных из базы и для добавления новых.
  * @param {Boolean} showClear Показывать ли кнопку очистить или нет.
  * @param {Array} currentValue Массив значений от родителя.
  */
@@ -40,6 +40,20 @@ class UniqueDropdown extends React.Component {
 
   componentDidMount() {
     this.handleGetAll();
+  }
+
+  // Если в одном компоненте собирается много экземпляров данного компонента это вызывает дикие лаги.
+  // Поэтому смотрим что, обновление данного компонента будет происходить только при изменении всего двух параметров.
+  shouldComponentUpdate(nextProps, nextState) {
+    const { currentValue } = this.props;
+    const { options } = this.state;
+    if (
+      JSON.stringify(currentValue) !== JSON.stringify(nextProps.currentValue) ||
+      JSON.stringify(options) !== JSON.stringify(nextState.options)
+    ) {
+      return true;
+    }
+    return false;
   }
 
   handleGetAll() {
@@ -66,14 +80,14 @@ class UniqueDropdown extends React.Component {
   }
 
   handleConvertDataFromDBToOptions(dataArray) {
-    const { dropdownValueName } = this.props;
+    const { getValueFromProperty } = this.props;
     const optionsArr = [];
 
     // eslint-disable-next-line array-callback-return
     dataArray.map((el, i) => {
       optionsArr.push({
         key: el._id,
-        text: el[dropdownValueName],
+        text: _.get(el, getValueFromProperty),
         value: el._id
       });
       if (dataArray.length - 1 === i) {
@@ -92,10 +106,11 @@ class UniqueDropdown extends React.Component {
       required,
       axiosPostLink,
       showAddNewField,
-      dropdownValueName,
+      getValueFromProperty,
       showClear,
       currentValue,
-      onChange
+      onChange,
+      error: propsError
     } = this.props;
     const { options, isLoaded, error } = this.state;
 
@@ -107,6 +122,7 @@ class UniqueDropdown extends React.Component {
             required={required}
             multiple={multiple}
             search
+            error={propsError}
             selection
             loading={!isLoaded}
             options={_.sortBy(options, ["text"])}
@@ -127,7 +143,7 @@ class UniqueDropdown extends React.Component {
             <AddNew
               axiosPostLink={axiosPostLink}
               functionOnSuccess={() => this.handleGetAll()}
-              dropdownValueName={dropdownValueName}
+              getValueFromProperty={getValueFromProperty}
             />
           )}
           {error !== "" && (

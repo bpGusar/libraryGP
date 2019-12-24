@@ -33,7 +33,7 @@ export default class ManageBookedBooks extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.initState = {
       readerId: "",
       books: [],
       isDataLoading: false,
@@ -52,6 +52,8 @@ export default class ManageBookedBooks extends Component {
         rejectingInProgress: {}
       }
     };
+
+    this.state = this.initState;
   }
 
   handleSubmitForm(e, getQuery) {
@@ -66,7 +68,7 @@ export default class ManageBookedBooks extends Component {
     }
 
     this.setState({
-      books: [],
+      ...this.initState,
       isDataLoading: true,
       resultsFor: _.isEmpty(getQuery) ? resultsForEnum.all : readerId
     });
@@ -96,21 +98,19 @@ export default class ManageBookedBooks extends Component {
       });
   }
 
-  handleOrderBook(bookedBook) {
+  handleOrderBook(bookedBookId) {
     const { ordering, actionWithReservationInProgress } = this.state;
 
     this.setState({
       actionWithReservationInProgress: {
         ...actionWithReservationInProgress,
-        [bookedBook._id]: true
-      }
+        [bookedBookId]: true
+      },
+      isDataLoading: true
     });
 
     axs
-      .post("/ordered-books", {
-        bookedBookInfo: {
-          ...bookedBook
-        },
+      .post(`/ordered-books/${bookedBookId}`, {
         status: "ordered",
         comment: ""
       })
@@ -121,13 +121,14 @@ export default class ManageBookedBooks extends Component {
               ...ordering,
               successfullyOrderedBooks: {
                 ...ordering.successfullyOrderedBooks,
-                [bookedBook._id]: true
+                [bookedBookId]: true
               }
             },
             actionWithReservationInProgress: {
               ...actionWithReservationInProgress,
-              [bookedBook._id]: false
-            }
+              [bookedBookId]: false
+            },
+            isDataLoading: false
           });
         } else {
           toast(MSG.toastClassicError(resp.data.message));
@@ -135,40 +136,39 @@ export default class ManageBookedBooks extends Component {
       });
   }
 
-  handleRejectOrdering(bookedBook) {
+  handleRejectOrdering(bookedBookId) {
     const { rejecting, actionWithReservationInProgress } = this.state;
 
     this.setState({
       actionWithReservationInProgress: {
         ...actionWithReservationInProgress,
-        [bookedBook._id]: true
-      }
+        [bookedBookId]: true
+      },
+      isDataLoading: true
     });
 
     axs
-      .post(`/booked-books/reject-ordering`, {
-        bookedBookInfo: {
-          ...bookedBook
-        },
+      .post(`/booked-books/${bookedBookId}/cancel-reservation`, {
         status: "rejected",
-        comment: _.isUndefined(rejecting.rejectMsgs[`${bookedBook._id}-msg`])
+        comment: _.isUndefined(rejecting.rejectMsgs[`${bookedBookId}-msg`])
           ? ""
-          : rejecting.rejectMsgs[`${bookedBook._id}-msg`]
+          : rejecting.rejectMsgs[`${bookedBookId}-msg`]
       })
       .then(resp => {
         if (!resp.data.error) {
           this.setState({
             actionWithReservationInProgress: {
               ...actionWithReservationInProgress,
-              [bookedBook._id]: false
+              [bookedBookId]: false
             },
             rejecting: {
               ...rejecting,
               successfullyRejected: {
                 ...rejecting.successfullyRejected,
-                [bookedBook._id]: true
+                [bookedBookId]: true
               }
-            }
+            },
+            isDataLoading: false
           });
         } else {
           toast(MSG.toastClassicError(resp.data.message));
@@ -202,7 +202,7 @@ export default class ManageBookedBooks extends Component {
             <Button
               basic
               color="red"
-              onClick={() => this.handleRejectOrdering(bookedBook)}
+              onClick={() => this.handleRejectOrdering(bookedBook._id)}
               disabled={rejecting.successfullyRejected[bookedBook._id]}
             >
               Отказать
@@ -241,7 +241,7 @@ export default class ManageBookedBooks extends Component {
           <Button
             basic
             color="green"
-            onClick={() => this.handleOrderBook(bookedBook)}
+            onClick={() => this.handleOrderBook(bookedBook._id)}
             disabled={ordering.successfullyOrderedBooks[bookedBook._id]}
           >
             Выдать
@@ -322,8 +322,6 @@ export default class ManageBookedBooks extends Component {
       </Dimmer>
     );
   }
-
-  // TODO: сделать ссылку на профиль пользователя
 
   render() {
     const {

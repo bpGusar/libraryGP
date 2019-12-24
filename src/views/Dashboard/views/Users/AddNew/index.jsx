@@ -91,6 +91,11 @@ export default class AddNewUser extends Component {
                 value: ""
               }
             });
+          } else {
+            this.setState({
+              regStatus: false,
+              regInProgress: false
+            });
           }
         });
     }
