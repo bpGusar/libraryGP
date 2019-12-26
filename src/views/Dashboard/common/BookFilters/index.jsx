@@ -15,18 +15,22 @@ export default function Filters(props) {
     setActiveAccordionIndex(newIndex);
   };
 
-  const { onChangeSearchQuery, searchQuery } = props;
+  const { onChangeSearchQuery, searchQuery, permanentOpen } = props;
   return (
     <Accordion className="mb-3">
-      <Accordion.Title
-        active={activeAccordionIndex === 0}
-        index={0}
-        onClick={(e, titleProp) => handleShowOpenAccordion(titleProp)}
+      {!permanentOpen && (
+        <Accordion.Title
+          active={activeAccordionIndex === 0}
+          index={0}
+          onClick={(e, titleProp) => handleShowOpenAccordion(titleProp)}
+        >
+          <Icon name="dropdown" />
+          Дополнительные фильтры
+        </Accordion.Title>
+      )}
+      <Accordion.Content
+        active={permanentOpen ? true : activeAccordionIndex === 0}
       >
-        <Icon name="dropdown" />
-        Дополнительные фильтры
-      </Accordion.Title>
-      <Accordion.Content active={activeAccordionIndex === 0}>
         <Form.Group widths="equal">
           <UniqueDropdown
             axiosGetLink="/book-authors"

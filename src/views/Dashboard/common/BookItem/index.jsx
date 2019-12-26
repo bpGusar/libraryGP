@@ -10,7 +10,8 @@ export default function BookItem(props) {
     onDeleteClick,
     onEditClick,
     renderCustomInfo,
-    dividedInfo
+    dividedInfo,
+    showOptions
   } = props;
   return (
     <Item>
@@ -25,7 +26,7 @@ export default function BookItem(props) {
         <Item.Header as="a" href={`/book/${book._id}`} target="blanc">
           {book.bookInfo.title}
         </Item.Header>
-        {(onEditClick || onDeleteClick) && (
+        {(onEditClick || onDeleteClick) && showOptions && (
           <Dropdown
             icon="ellipsis horizontal"
             floating

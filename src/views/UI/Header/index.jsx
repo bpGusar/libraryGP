@@ -92,7 +92,11 @@ class Header extends React.Component {
               {this.generateMenu().map(el => el)}
             </Menu.Menu>
             <Menu.Menu position="right" className={s.rightMenu}>
-              <Menu.Item>
+              <Menu.Item
+                style={{
+                  padding: 0
+                }}
+              >
                 <SearchBox />
               </Menu.Item>
               {isUserAuthorized ? (

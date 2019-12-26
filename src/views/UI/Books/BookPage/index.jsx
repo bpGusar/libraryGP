@@ -5,6 +5,8 @@ import { branch } from "baobab-react/higher-order";
 
 import { Segment, List } from "semantic-ui-react";
 
+import SearchQueryLink from "@commonViews/SearchQueryLink";
+
 import axs from "@axios";
 
 import { PARAMS } from "@store";
@@ -64,7 +66,19 @@ class BookPage extends React.Component {
                     <List.Icon name="copyright" />
                     Издатель
                   </List.Header>
-                  {book.bookInfo.publisher.map(el => el.publisherName)}
+                  {book.bookInfo.publisher.map((el, i) => (
+                    <>
+                      <SearchQueryLink
+                        key={el._id}
+                        className={s.queryLink}
+                        text={el.publisherName}
+                        url="/search"
+                        param="bookInfo.publisher"
+                        value={el._id}
+                      />
+                      {book.bookInfo.publisher.length - 1 !== i && " • "}
+                    </>
+                  ))}
                 </List.Content>
               </List.Item>
 
@@ -74,7 +88,19 @@ class BookPage extends React.Component {
                     <List.Icon name="language" />
                     Язык
                   </List.Header>
-                  {book.bookInfo.language.map(el => el.languageName)}
+                  {book.bookInfo.language.map((el, i) => (
+                    <>
+                      <SearchQueryLink
+                        key={el._id}
+                        className={s.queryLink}
+                        text={el.languageName}
+                        url="/search"
+                        param="bookInfo.language"
+                        value={el._id}
+                      />
+                      {book.bookInfo.language.length - 1 !== i && " • "}
+                    </>
+                  ))}
                 </List.Content>
               </List.Item>
 

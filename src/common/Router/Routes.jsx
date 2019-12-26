@@ -123,7 +123,9 @@ function AppRotes(props) {
         accessRole={[userRoles.admin.value]}
         checkAuth={checkAuth}
         path="/dashboard/books/book-list"
-        component={ManageBooks}
+        component={() => (
+          <ManageBooks allAccess formHeader="Список книг" showBooksWhenOpen />
+        )}
       />
       <PrivateRoute
         exact
@@ -230,6 +232,12 @@ function AppRotes(props) {
         component={ProfilePage}
       />
       <AppRoute exact path="/" layout={MainLayout} component={MainPage} />
+      <AppRoute
+        exact
+        path="/search"
+        layout={MainLayout}
+        component={() => <ManageBooks formHeader="Поиск" />}
+      />
       <AppRoute
         exact
         path="/email-verify"

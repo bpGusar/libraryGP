@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import _ from "lodash";
 import { Search } from "semantic-ui-react";
 
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 
 import axs from "@axios";
+
+import s from "./index.module.scss";
 
 class SearchBox extends Component {
   constructor(props) {
@@ -102,6 +104,9 @@ class SearchBox extends Component {
               : ""
           }
         />
+        <Link to="/search" className={s.link}>
+          Расширенный поиск
+        </Link>
       </div>
     );
   }

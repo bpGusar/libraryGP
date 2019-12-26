@@ -16,7 +16,7 @@ import {
 import { toast } from "react-semantic-toasts";
 import { DateTime } from "luxon";
 
-import s from "../../index.module.scss";
+import SearchQueryLink from "@commonViews/SearchQueryLink";
 
 import { PARAMS } from "@store";
 import { storeData } from "@act";
@@ -25,13 +25,21 @@ import MSG from "@msg";
 
 import axs from "@axios";
 
+import s from "../../index.module.scss";
+
 class TopInfoBlock extends React.Component {
-  static generateBookInfo(arr, dataName) {
+  static generateBookInfo(arr, path, dataName) {
     return arr.map((el, i) => (
-      <span key={el._id}>
-        {el[dataName]}
+      <>
+        <SearchQueryLink
+          key={el._id}
+          text={<>{el[dataName]}</>}
+          url="/search"
+          param={path}
+          value={el._id}
+        />
         {arr.length - 1 !== i && " • "}
-      </span>
+      </>
     ));
   }
 
@@ -182,6 +190,7 @@ class TopInfoBlock extends React.Component {
                 <Grid.Row className={s.authorsLine}>
                   {TopInfoBlock.generateBookInfo(
                     book.bookInfo.authors,
+                    "bookInfo.authors",
                     "authorName"
                   )}
                 </Grid.Row>
@@ -191,6 +200,7 @@ class TopInfoBlock extends React.Component {
                 <Grid.Row className={s.categoriesLine}>
                   {TopInfoBlock.generateBookInfo(
                     book.bookInfo.categories,
+                    "bookInfo.categories",
                     "categoryName"
                   )}
                   {" • "}

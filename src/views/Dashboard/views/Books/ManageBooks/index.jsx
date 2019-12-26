@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React, { Component } from "react";
 import {
   Segment,
@@ -11,6 +12,8 @@ import {
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
 import { toast } from "react-semantic-toasts";
+import { withRouter } from "react-router-dom";
+import qStr from "query-string";
 
 import PaginationBlock from "@commonViews/Pagination";
 import BookItem from "@DUI/common/BookItem";
@@ -52,7 +55,17 @@ class ManageBooks extends Component {
   }
 
   componentDidMount() {
-    this.handleSearchBooks(true);
+    const { showBooksWhenOpen, location } = this.props;
+    const query = qStr.parse(location.search);
+    if (!_.isEmpty(query)) {
+      Object.keys(query).map(key =>
+        this.handleChangeSearchQuery([query[key]], key, false, () =>
+          this.handleSearchBooks(true)
+        )
+      );
+    } else if (showBooksWhenOpen) {
+      this.handleSearchBooks(true);
+    }
   }
 
   handleSearchBooks = (dropPageCount = false) => {
@@ -90,7 +103,7 @@ class ManageBooks extends Component {
       });
   };
 
-  handleChangeSearchQuery = (value, name, regex = false) =>
+  handleChangeSearchQuery = (value, name, regex = false, cb = () => {}) =>
     this.setState(prevState => {
       const { searchQuery } = prevState;
       let searchQueryCloned = _.cloneDeep(searchQuery);
@@ -112,7 +125,7 @@ class ManageBooks extends Component {
       return {
         searchQuery: { ...searchQueryCloned }
       };
-    });
+    }, cb);
 
   handleChangeSortType = value =>
     this.setState(
@@ -265,10 +278,11 @@ class ManageBooks extends Component {
       maxElements,
       deleteBookModal
     } = this.state;
+    const { allAccess, formHeader } = this.props;
     return (
       <Segment.Group>
         <Segment>
-          <Header as="h3">Список книг</Header>
+          <Header as="h3">{formHeader}</Header>
         </Segment>
         <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
@@ -290,6 +304,7 @@ class ManageBooks extends Component {
               onChangeSearchQuery={(value, name) =>
                 this.handleChangeSearchQuery(value, name)
               }
+              permanentOpen={!allAccess}
             />
             <Divider />
             <Button icon type="submit" primary labelPosition="left">
@@ -319,6 +334,7 @@ class ManageBooks extends Component {
                   book={book}
                   onEditClick={bookData => this.putBookDataInToStore(bookData)}
                   onDeleteClick={bookData => this.manageConfirmWindow(bookData)}
+                  showOptions={allAccess}
                 />
               ))}
             </Item.Group>
@@ -343,9 +359,11 @@ class ManageBooks extends Component {
   }
 }
 
-export default branch(
-  {
-    bookToDB: PARAMS.BOOK_TO_DB
-  },
-  ManageBooks
+export default withRouter(
+  branch(
+    {
+      bookToDB: PARAMS.BOOK_TO_DB
+    },
+    ManageBooks
+  )
 );
