@@ -182,6 +182,7 @@ class AddBookForm extends React.Component {
             </Form.Group>
             <Form.Group widths="equal">
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-authors"
                 axiosPostLink="/book-authors"
                 storeParam={PARAMS.AUTHORS}
@@ -196,6 +197,7 @@ class AddBookForm extends React.Component {
                 currentValue={bookInfo.authors}
               />
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-publishers"
                 axiosPostLink="/book-publishers"
                 storeParam={PARAMS.PUBLISHERS}
@@ -212,6 +214,7 @@ class AddBookForm extends React.Component {
             </Form.Group>
             <Form.Group widths="equal">
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-categories"
                 axiosPostLink="/book-categories"
                 storeParam={PARAMS.CATEGORIES}
@@ -259,6 +262,7 @@ class AddBookForm extends React.Component {
                 defaultValue={bookInfo.pageCount}
               />
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-languages"
                 storeParam={PARAMS.LANGUAGES}
                 axiosPostLink="/book-languages"

@@ -26,6 +26,7 @@ import s from "./index.module.scss";
  * @param {String} getValueFromProperty Используется для конвертации данных из базы и для добавления новых.
  * @param {Boolean} showClear Показывать ли кнопку очистить или нет.
  * @param {Array} currentValue Массив значений от родителя.
+ * @param {Object} axsQuery Параметры запроса
  */
 class UniqueDropdown extends React.Component {
   constructor(props) {

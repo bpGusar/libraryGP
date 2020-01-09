@@ -144,6 +144,7 @@ class OrdersArchive extends Component {
         <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
             <UniqueDropdown
+              axsQuery={{ params: { options: { limit: 999 } } }}
               axiosGetLink="/books"
               storeParam={PARAMS.BOOKS_LIST}
               required

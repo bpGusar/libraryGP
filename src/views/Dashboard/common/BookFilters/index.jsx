@@ -33,6 +33,7 @@ export default function Filters(props) {
       >
         <Form.Group widths="equal">
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-authors"
             axiosPostLink="/book-authors"
             storeParam={PARAMS.AUTHORS}
@@ -49,6 +50,7 @@ export default function Filters(props) {
             }
           />
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-publishers"
             axiosPostLink="/book-publishers"
             storeParam={PARAMS.PUBLISHERS}
@@ -65,6 +67,7 @@ export default function Filters(props) {
             }
           />
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-categories"
             axiosPostLink="/book-categories"
             storeParam={PARAMS.CATEGORIES}
@@ -83,6 +86,7 @@ export default function Filters(props) {
             }
           />
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-languages"
             axiosPostLink="/book-languages"
             storeParam={PARAMS.LANGUAGES}
