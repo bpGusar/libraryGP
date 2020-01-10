@@ -61,11 +61,11 @@ const cronFunctions = {
     cron: {
       time: "0 0 */1 * *",
       function: () => {
-        BookedBooks.find({}, (err, bookedBooks) => {
-          if (!_.isUndefined(bookedBooks.length)) {
-            if (bookedBooks.length !== 0) {
+        BookedBooks.find({}, (err, bookedBooksDocs) => {
+          if (!_.isUndefined(bookedBooksDocs.length)) {
+            if (bookedBooksDocs.length !== 0) {
               const todayDate = DateTime.local();
-              bookedBooks.forEach(bookedBook => {
+              bookedBooksDocs.forEach(bookedBook => {
                 const bookedAtDatePlusNDays = DateTime.fromMillis(
                   new Date(bookedBook.createdAt).getTime()
                 ).plus({ days: serverJson.deleteBookedBookIfNDaysHavePassed });
@@ -77,7 +77,9 @@ const cronFunctions = {
                   const archivedData = {
                     comment: "Бронь не была активирована.",
                     bookedBookInfo: {
-                      ...bookedBook._doc
+                      bookId: bookedBook._doc.bookId,
+                      userId: bookedBook._doc.userId,
+                      createdAt: bookedBook._doc.createdAt
                     },
                     status: "rejected",
                     userId: serverJson.cronUserId

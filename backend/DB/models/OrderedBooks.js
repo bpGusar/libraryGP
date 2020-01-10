@@ -28,7 +28,7 @@ OrderedBooksSchema.pre("save", function(next) {
 
   const orderedUntilDate = new Date();
   orderedUntilDate.setDate(
-    orderedUntilDate.getDate() + servConf.theRaderCanTakeTheBookForDays
+    orderedUntilDate.getDate() + servConf.theReaderCanTakeTheBookForDays
   );
 
   document.orderedUntil = orderedUntilDate;
