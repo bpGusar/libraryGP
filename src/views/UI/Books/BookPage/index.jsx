@@ -14,6 +14,11 @@ import { storeData } from "@act";
 
 import s from "./index.module.scss";
 
+const ageRating = {
+  NOT_MATURE: "Без ограничений",
+  MATURE: "18+"
+};
+
 class BookPage extends React.Component {
   componentDidMount() {
     const { match, history, dispatch, book } = this.props;
@@ -140,7 +145,7 @@ class BookPage extends React.Component {
                     <List.Icon name="square full" />
                     Возрастной рейтинг
                   </List.Header>
-                  {book.bookInfo.maturityRating}
+                  {ageRating[book.bookInfo.maturityRating]}
                 </List.Content>
               </List.Item>
             </List>

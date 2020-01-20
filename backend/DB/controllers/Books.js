@@ -252,54 +252,59 @@ function updateBook(req, res) {
 
 function deleteBook(res, req) {
   const { id } = req.params;
-
-  parallel(
-    {
-      BookedBooks: cb => BookedBooks.countDocuments({ bookId: id }, cb),
-      OrderedBooks: cb => OrderedBooks.countDocuments({ bookId: id }, cb)
-    },
-    (parErr, result) => {
-      if (parErr) {
-        res.json(config.getRespData(true, MSG.internalServerErr, parErr));
-      } else if (result.BookedBooks !== 0 || result.OrderedBooks !== 0) {
-        res.json(
-          config.getRespData(true, MSG.cantDeleteBook, {
-            bookOnHand: true,
-            result
-          })
-        );
-      } else {
-        Book.findOne({ _id: id }, (err, book) => {
-          if (err) {
-            res.json(config.getRespData(true, MSG.internalServerErr, err));
+  Book.countDocuments({ _id: id }, (countErr, count) => {
+    if (count > 0) {
+      parallel(
+        {
+          BookedBooks: cb => BookedBooks.countDocuments({ bookId: id }, cb),
+          OrderedBooks: cb => OrderedBooks.countDocuments({ bookId: id }, cb)
+        },
+        (parErr, result) => {
+          if (parErr) {
+            res.json(config.getRespData(true, MSG.internalServerErr, parErr));
+          } else if (result.BookedBooks !== 0 || result.OrderedBooks !== 0) {
+            res.json(
+              config.getRespData(true, MSG.cantDeleteBook, {
+                bookOnHand: true,
+                result
+              })
+            );
           } else {
-            const newArchivedBook = new BooksArchive({
-              book,
-              userId: req.middlewareUserInfo._id
-            });
+            Book.findOne({ _id: id }, (err, book) => {
+              if (err) {
+                res.json(config.getRespData(true, MSG.internalServerErr, err));
+              } else {
+                const newArchivedBook = new BooksArchive({
+                  book,
+                  userId: req.middlewareUserInfo._id
+                });
 
-            newArchivedBook.save(bookSaveErr => {
-              if (bookSaveErr) {
-                res.json(
-                  config.getRespData(
-                    true,
-                    MSG.cantAddNewBookToArchive,
-                    bookSaveErr
-                  )
-                );
+                newArchivedBook.save(bookSaveErr => {
+                  if (bookSaveErr) {
+                    res.json(
+                      config.getRespData(
+                        true,
+                        MSG.cantAddNewBookToArchive,
+                        bookSaveErr
+                      )
+                    );
+                  }
+                });
+              }
+            }).remove(err => {
+              if (err) {
+                res.json(config.getRespData(true, MSG.cantDeleteBook, err));
+              } else {
+                res.json(config.getRespData(false, MSG.bookWasDeleted));
               }
             });
           }
-        }).remove(err => {
-          if (err) {
-            res.json(config.getRespData(true, MSG.cantDeleteBook, err));
-          } else {
-            res.json(config.getRespData(false, MSG.bookWasDeleted));
-          }
-        });
-      }
+        }
+      );
+    } else {
+      res.json(config.getRespData(true, MSG.bookNotFound, null));
     }
-  );
+  });
 }
 
 export default {

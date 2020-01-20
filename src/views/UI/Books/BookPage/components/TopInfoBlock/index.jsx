@@ -1,6 +1,7 @@
 import React from "react";
 import { branch } from "baobab-react/higher-order";
 import cn from "classnames";
+import { withRouter } from "react-router-dom";
 
 import {
   Container,
@@ -11,7 +12,8 @@ import {
   Header,
   Icon,
   Message,
-  Label
+  Label,
+  Dropdown
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import { DateTime } from "luxon";
@@ -24,6 +26,8 @@ import { storeData } from "@act";
 import MSG from "@msg";
 
 import axs from "@axios";
+
+import { isAdmin } from "@utils";
 
 import s from "../../index.module.scss";
 
@@ -156,6 +160,18 @@ class TopInfoBlock extends React.Component {
     });
   }
 
+  goToBookEdit(currentBook) {
+    const { history } = this.props;
+
+    history.push(`/dashboard/books/new?mode=edit&bookId=${currentBook._id}`);
+  }
+
+  deleteBook(bookId) {
+    const { history } = this.props;
+
+    history.push(`/dashboard/books/book-list?mode=delete&bookId=${bookId}`);
+  }
+
   render() {
     const { book, isUserAuthorized } = this.props;
     const {
@@ -166,6 +182,7 @@ class TopInfoBlock extends React.Component {
       isThisBookOrdered
     } = this.state;
     const bookAvailability = book.stockInfo.freeForBooking === 0;
+
     return (
       <div className={s.topInfoBlock}>
         <div className={s.bookPosterBlock}>
@@ -230,6 +247,32 @@ class TopInfoBlock extends React.Component {
                         >
                           Взять в аренду
                         </Button>
+                        {isAdmin() && (
+                          <Dropdown
+                            icon="ellipsis horizontal"
+                            floating
+                            button
+                            className={cn(s.headerDrop, "icon")}
+                            pointing="bottom left"
+                            additionPosition="top"
+                          >
+                            <Dropdown.Menu>
+                              <Dropdown.Menu scrolling>
+                                <Dropdown.Item
+                                  text="Редактировать"
+                                  icon="pencil alternate"
+                                  onClick={() => this.goToBookEdit(book)}
+                                />
+                                <Dropdown.Divider />
+                                <Dropdown.Item
+                                  text="Удалить"
+                                  icon="close"
+                                  onClick={() => this.deleteBook(book._id)}
+                                />
+                              </Dropdown.Menu>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        )}
                         {(isThisBookBooked || isThisBookOrdered.ordered) && (
                           <Label color="green">
                             <Icon name="check" />{" "}
@@ -278,12 +321,14 @@ class TopInfoBlock extends React.Component {
   }
 }
 
-export default branch(
-  {
-    book: PARAMS.BOOK,
-    globalPageLoader: PARAMS.IS_SOME_DATA_LOADING,
-    userInfo: PARAMS.USER_INFO,
-    isUserAuthorized: PARAMS.IS_USER_AUTHORIZED
-  },
-  TopInfoBlock
+export default withRouter(
+  branch(
+    {
+      book: PARAMS.BOOK,
+      globalPageLoader: PARAMS.IS_SOME_DATA_LOADING,
+      userInfo: PARAMS.USER_INFO,
+      isUserAuthorized: PARAMS.IS_USER_AUTHORIZED
+    },
+    TopInfoBlock
+  )
 );

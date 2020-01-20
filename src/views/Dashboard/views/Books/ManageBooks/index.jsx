@@ -24,7 +24,6 @@ import ResultFilters from "./components/ResultFilters";
 import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";
-import { storeData } from "@act";
 import MSG from "@msg";
 
 class ManageBooks extends Component {
@@ -57,13 +56,16 @@ class ManageBooks extends Component {
   componentDidMount() {
     const { showBooksWhenOpen, location } = this.props;
     const query = qStr.parse(location.search);
-    if (!_.isEmpty(query)) {
-      Object.keys(query).map(key =>
-        this.handleChangeSearchQuery([query[key]], key, false, () =>
-          this.handleSearchBooks(true)
-        )
-      );
-    } else if (showBooksWhenOpen) {
+
+    if (
+      _.has(query, "mode") &&
+      query.mode === "delete" &&
+      _.has(query, "bookId") &&
+      !_.isEmpty(query.bookId)
+    ) {
+      this.manageConfirmWindow(query.bookId);
+    }
+    if (showBooksWhenOpen) {
       this.handleSearchBooks(true);
     }
   }
@@ -198,7 +200,11 @@ class ManageBooks extends Component {
           });
         } else {
           this.setState({
-            isLoading: false
+            isLoading: false,
+            deleteBookModal: {
+              ...deleteBookModal,
+              isLoading: false
+            }
           });
           toast(MSG.toastClassicError(resp.data.message));
         }
@@ -217,55 +223,20 @@ class ManageBooks extends Component {
     }
   };
 
-  putBookDataInToStore(currentBook) {
-    const { dispatch, history, bookToDB } = this.props;
+  goToBookEdit(currentBook) {
+    const { history } = this.props;
 
-    this.setState({
-      isLoading: true
-    });
-
-    axs
-      .get(`/books/${currentBook._id}`, {
-        params: {
-          options: { fetch_type: 0 }
-        }
-      })
-      .then(resp => {
-        if (!resp.data.error) {
-          const clonedResp = resp;
-          delete clonedResp.data.payload[0].__v;
-
-          this.setState(
-            {
-              isLoading: false
-            },
-            () => {
-              dispatch(storeData, PARAMS.BOOK_TO_DB, {
-                ...bookToDB,
-                flag: "edit",
-                book: {
-                  ...clonedResp.data.payload[0]
-                }
-              });
-              history.push("/dashboard/books/new");
-            }
-          );
-        } else {
-          this.setState({
-            isLoading: false
-          });
-        }
-      });
+    history.push(`/dashboard/books/new?mode=edit&bookId=${currentBook._id}`);
   }
 
-  manageConfirmWindow(book) {
+  manageConfirmWindow(bookId) {
     const { deleteBookModal } = this.state;
     this.setState({
       deleteBookModal: {
         ...deleteBookModal,
         open: true
       },
-      bookToDeleteId: book._id
+      bookToDeleteId: bookId
     });
   }
 
@@ -332,8 +303,10 @@ class ManageBooks extends Component {
                 <BookItem
                   key={book._id}
                   book={book}
-                  onEditClick={bookData => this.putBookDataInToStore(bookData)}
-                  onDeleteClick={bookData => this.manageConfirmWindow(bookData)}
+                  onEditClick={bookData => this.goToBookEdit(bookData)}
+                  onDeleteClick={bookData =>
+                    this.manageConfirmWindow(bookData._id)
+                  }
                   showOptions={allAccess}
                 />
               ))}

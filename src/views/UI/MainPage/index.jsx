@@ -50,7 +50,7 @@ export default class MainPage extends React.Component {
         {!isLoaded ? (
           <CustomLoader />
         ) : (
-          <Card.Group itemsPerRow={4}>
+          <Card.Group itemsPerRow={5}>
             {books.map(book => (
               <Card key={book._id}>
                 <Image
