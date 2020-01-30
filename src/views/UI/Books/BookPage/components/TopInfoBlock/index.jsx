@@ -239,13 +239,16 @@ class TopInfoBlock extends React.Component {
                             !isUserAuthorized ||
                             isThisBookBooked ||
                             isThisBookOrdered.ordered ||
-                            isBookButtonDisabled
+                            isBookButtonDisabled ||
+                            book.pseudoDeleted === "true"
                           }
                           loading={isButtonLoading}
                           primary
                           onClick={this.bookABook}
                         >
-                          Взять в аренду
+                          {book.pseudoDeleted === "true"
+                            ? "Книга временно не доступна"
+                            : "Взять в аренду"}
                         </Button>
                         {isAdmin() && (
                           <Dropdown

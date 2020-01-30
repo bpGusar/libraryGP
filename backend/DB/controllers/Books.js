@@ -6,7 +6,6 @@ import parallel from "async/parallel";
 import Book from "../models/Book";
 import BookedBooks from "../models/BookedBooks";
 import OrderedBooks from "../models/OrderedBooks";
-import BooksArchive from "../models/BooksArchive";
 
 import MSG from "../../config/msgCodes";
 import * as config from "../config";

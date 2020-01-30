@@ -60,6 +60,13 @@ class ManageBooks extends Component {
   componentDidMount() {
     const { showBooksWhenOpen, location } = this.props;
     const query = qStr.parse(location.search);
+    if (!_.isEmpty(query)) {
+      Object.keys(query).map(key =>
+        this.handleChangeSearchQuery([query[key]], key, false, () =>
+          this.handleSearchBooks(true)
+        )
+      );
+    }
 
     if (
       _.has(query, "mode") &&
@@ -174,61 +181,34 @@ class ManageBooks extends Component {
           isLoading: true
         }
       });
-      axs
-        .get(`/books/${deleteOrRestoreBookId}/availability`)
-        .then(availResp => {
-          if (!availResp.data.error) {
-            if (
-              availResp.data.payload.BookedBooks.length !== 0 ||
-              availResp.data.payload.OrderedBooks.length !== 0
-            ) {
-              this.setState({
-                isLoading: false,
-                deleteBookModal: {
-                  ...deleteBookModal,
-                  isLoading: false,
-                  result: {
-                    BookedBooks: availResp.data.payload.BookedBooks.length,
-                    OrderedBooks: availResp.data.payload.OrderedBooks.length
-                  }
-                }
-              });
-            } else {
-              axs.delete(`/books/${deleteOrRestoreBookId}`).then(deleteResp => {
-                if (!deleteResp.data.error) {
-                  this.setState(
-                    {
-                      isLoading: false,
-                      deleteOrRestoreBookId: "",
-                      deleteBookModalOpen: true
-                    },
-                    () => {
-                      this.handleSearchBooks(true);
-                      toast(MSG.toastClassicSuccess(deleteResp.data.message));
-                    }
-                  );
-                } else {
-                  this.setState({
-                    isLoading: false,
-                    deleteBookModal: {
-                      ...deleteBookModal,
-                      isLoading: false
-                    }
-                  });
-                  toast(MSG.toastClassicError(deleteResp.data.message));
-                }
-              });
-            }
-          } else {
-            this.setState({
+      axs.delete(`/books/${deleteOrRestoreBookId}`).then(deleteResp => {
+        if (!deleteResp.data.error) {
+          this.setState(
+            {
               isLoading: false,
+              deleteOrRestoreBookId: "",
+              deleteBookModalOpen: false,
               deleteBookModal: {
                 ...deleteBookModal,
                 isLoading: false
               }
-            });
-          }
-        });
+            },
+            () => {
+              this.handleSearchBooks(true);
+              toast(MSG.toastClassicSuccess(deleteResp.data.message));
+            }
+          );
+        } else {
+          this.setState({
+            isLoading: false,
+            deleteBookModal: {
+              ...deleteBookModal,
+              isLoading: false
+            }
+          });
+          toast(MSG.toastClassicError(deleteResp.data.message));
+        }
+      });
     } else {
       this.setState({
         deleteBookModalOpen: false,
@@ -255,7 +235,8 @@ class ManageBooks extends Component {
             {
               isLoading: false,
               deleteOrRestoreBookId: "",
-              restoreBookModalOpen: false
+              restoreBookModalOpen: false,
+              restoreBookModalLoading: false
             },
             () => {
               this.handleSearchBooks(true);
