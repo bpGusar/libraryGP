@@ -1,67 +1,50 @@
 import React from "react";
-import { Modal, Header, Button, Icon, Message, Label } from "semantic-ui-react";
+import { Modal, Header, Button, Icon, Message } from "semantic-ui-react";
 
 export default function ModalWindow(props) {
-  const { deleteBookModal, onBookDeleteClick } = props;
+  const {
+    header,
+    open,
+    firstPageText,
+    showFirstPageContent,
+    isLoading,
+    secondPageContent,
+    disableRunButton
+  } = props;
 
   return (
-    <Modal open={deleteBookModal.open} size="small">
-      <Header icon="remove" content="Удаление книги" />
+    <Modal open={open} size="small">
+      <Header icon="remove" content={header} />
       <Modal.Content>
-        {!deleteBookModal.isLoading &&
-          deleteBookModal.result.BookedBooks === 0 &&
-          deleteBookModal.result.OrderedBooks === 0 && (
-            <p>Вы действительно хотите удалить эту книгу?</p>
-          )}
-        {deleteBookModal.isLoading && (
+        {showFirstPageContent && <p>{firstPageText}</p>}
+        {isLoading && (
           <Message icon>
             <Icon name="circle notched" loading />
             <Message.Content>
               <Message.Header>Подождите</Message.Header>
-              Удаляем книгу...
+              Выполнение...
             </Message.Content>
           </Message>
         )}
-        {!deleteBookModal.isLoading &&
-          (deleteBookModal.result.BookedBooks !== 0 ||
-            deleteBookModal.result.OrderedBooks !== 0) && (
-            <>
-              <Header as="h3" color="red">
-                Произошла ошибка.
-              </Header>
-              <p>Книги есть у пользователей на руках либо они забронированы</p>
-              <p>
-                Забронированных книг:{" "}
-                <Label>{deleteBookModal.result.BookedBooks}</Label>
-              </p>
-              <p>
-                Книг на руках:{" "}
-                <Label>{deleteBookModal.result.OrderedBooks}</Label>
-              </p>
-            </>
-          )}
+        {secondPageContent}
       </Modal.Content>
       <Modal.Actions>
         <Button
-          loading={deleteBookModal.isLoading}
-          disabled={deleteBookModal.isLoading}
+          loading={isLoading}
+          disabled={isLoading}
           basic
           color="grey"
           onClick={() => onBookDeleteClick(false)}
         >
-          <Icon name="remove" /> Нет
+          <Icon name="remove" /> Отмена
         </Button>
         <Button
-          disabled={
-            deleteBookModal.isLoading ||
-            deleteBookModal.result.BookedBooks !== 0 ||
-            deleteBookModal.result.OrderedBooks !== 0
-          }
-          loading={deleteBookModal.isLoading}
-          color="red"
+          disabled={disableRunButton}
+          loading={isLoading}
+          color="green"
           onClick={() => onBookDeleteClick(true)}
         >
-          <Icon name="checkmark" /> Удалить
+          <Icon name="checkmark" /> Выполнить
         </Button>
       </Modal.Actions>
     </Modal>

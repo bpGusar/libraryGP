@@ -27,7 +27,7 @@ import servConf from "../../config/server.json";
  * Кейсы по составлению запросов к MongoDB можно загуглить.
  * Запросы делаются напрямую в базу, поэтому необходимо валидно составлять объект запроса.
  *
- * @param {Object=} options Объект с опциями поиска. Будет задан данными по умолчанию при полном отсутствии.
+ * @param {Object} options Объект с опциями поиска. Будет задан данными по умолчанию при полном отсутствии.
  * @param {Number} options.fetch_type Вид возвращаемых данных. По умолчанию `0`.
  *
  * `0` - вернуть данные по книге как есть (прим.: авторы будут возвращены в виде массива id и т.д. смотри модель `Book`).
@@ -35,6 +35,7 @@ import servConf from "../../config/server.json";
  * `1` - вернуть данные по книге и заполнить данными объекты, в которых изначально есть только id (смотри модель `Book`)).
  *
  * @param {Number} options.page Номер страницы выборки. По умолчанию `1`.
+ * @param {String} options.whatWeSee Тип выборки книг. `"all"` - выбрать все книги, `"true"` - выбрать только скрытые (удаленные) книги, `"false"` - показать только не скрытые. По умолчанию "all"`.
  * @param {String} options.sort Сортировка. По умолчанию `desc`.
  * @param {Number} options.limit Количество элементов в одной выборке. За 1 раз не более 99 элементов. По умолчанию `99`.
  *
@@ -47,6 +48,8 @@ import servConf from "../../config/server.json";
  */
 function findBooks(res, req, data = {}) {
   let { options } = req.query;
+  const clonedData = _.isEmpty(data) ? {} : JSON.parse(data);
+  const findByData = _.cloneDeep(clonedData);
 
   if (_.isUndefined(options)) {
     options = {
@@ -54,21 +57,22 @@ function findBooks(res, req, data = {}) {
       limit: 99,
       fetch_type: 0,
       sort: "desc",
-      notShowDeleted: true
+      notShowDeleted: true,
+      whatWeSee: "all"
     };
   } else {
     options = JSON.parse(options);
   }
 
   options.page = _.isUndefined(options.page) ? 1 : options.page;
-  options.notShowDeleted = _.isUndefined(options.notShowDeleted)
-    ? true
-    : options.notShowDeleted;
-  options.sort = _.isUndefined(options.sort) ? 1 : options.sort;
+  options.sort = _.isUndefined(options.sort) ? "desc" : options.sort;
   options.limit = _.isUndefined(options.limit) ? 99 : options.limit;
   options.fetch_type = _.isUndefined(options.fetch_type)
     ? 0
     : options.fetch_type;
+  options.whatWeSee = _.isUndefined(options.whatWeSee)
+    ? "all"
+    : options.whatWeSee;
 
   const getSkip = () => {
     if (options.page === 1) {
@@ -77,15 +81,33 @@ function findBooks(res, req, data = {}) {
     return options.limit * (options.page - 1);
   };
 
+  // _.isEmpty(data) ? {} : JSON.parse(data)
+
+  // TODO: переделать удаление книги и сделать запрет на использование вывода скрытых если ты не админ
+
   Book.countDocuments(
-    _.isEmpty(data) ? {} : JSON.parse(data),
+    options.whatWeSee === "all"
+      ? findByData
+      : {
+          ...findByData,
+          pseudoDeleted: { $eq: `${options.whatWeSee === "true"}` }
+        },
     (countError, count) => {
       res.set({
         "max-elements": count,
         ...options
       });
-      Book.find(_.isEmpty(data) ? {} : JSON.parse(data))
-        .sort({ dateAdded: options.sort })
+      Book.find(
+        options.whatWeSee === "all"
+          ? findByData
+          : {
+              ...findByData,
+              pseudoDeleted: { $eq: `${options.whatWeSee === "true"}` }
+            }
+      )
+        .sort({
+          dateAdded: options.sort
+        })
         .skip(getSkip())
         .limit(options.limit)
         .populate(
@@ -252,62 +274,42 @@ function updateBook(req, res) {
 
 function deleteBook(res, req) {
   const { id } = req.params;
-  Book.countDocuments({ _id: id }, (countErr, count) => {
-    if (count > 0) {
-      parallel(
-        {
-          BookedBooks: cb => BookedBooks.countDocuments({ bookId: id }, cb),
-          OrderedBooks: cb => OrderedBooks.countDocuments({ bookId: id }, cb)
-        },
-        (parErr, result) => {
-          if (parErr) {
-            res.json(config.getRespData(true, MSG.internalServerErr, parErr));
-          } else if (result.BookedBooks !== 0 || result.OrderedBooks !== 0) {
-            res.json(
-              config.getRespData(true, MSG.cantDeleteBook, {
-                bookOnHand: true,
-                result
-              })
-            );
-          } else {
-            Book.findOne({ _id: id }, (err, book) => {
-              if (err) {
-                res.json(config.getRespData(true, MSG.internalServerErr, err));
-              } else {
-                const newArchivedBook = new BooksArchive({
-                  book,
-                  userId: req.middlewareUserInfo._id
-                });
-
-                newArchivedBook.save(bookSaveErr => {
-                  if (bookSaveErr) {
-                    res.json(
-                      config.getRespData(
-                        true,
-                        MSG.cantAddNewBookToArchive,
-                        bookSaveErr
-                      )
-                    );
-                  }
-                });
-              }
-            }).remove(err => {
-              if (err) {
-                res.json(config.getRespData(true, MSG.cantDeleteBook, err));
-              } else {
-                res.json(config.getRespData(false, MSG.bookWasDeleted));
-              }
-            });
-          }
-        }
-      );
-    } else {
-      res.json(config.getRespData(true, MSG.bookNotFound, null));
+  Book.findOneAndUpdate(
+    { _id: id },
+    {
+      pseudoDeleted: "true"
+    },
+    { new: true },
+    err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantHideBook, err));
+      } else {
+        res.json(config.getRespData(false, MSG.bookWasHidden));
+      }
     }
-  });
+  );
+}
+
+function restoreBook(res, req) {
+  const { id } = req.params;
+  Book.findOneAndUpdate(
+    { _id: id },
+    {
+      pseudoDeleted: "false"
+    },
+    { new: true },
+    err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantRestoreBook, err));
+      } else {
+        res.json(config.getRespData(false, MSG.bookWasRestored));
+      }
+    }
+  );
 }
 
 export default {
+  restoreBook,
   findBooks,
   addBook,
   thisBookOrderedOrBooked,

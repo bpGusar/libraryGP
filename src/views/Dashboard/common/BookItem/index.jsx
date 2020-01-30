@@ -9,12 +9,18 @@ export default function BookItem(props) {
     book,
     onDeleteClick,
     onEditClick,
+    onRestoreClick,
     renderCustomInfo,
     dividedInfo,
     showOptions
   } = props;
   return (
-    <Item>
+    <Item
+      style={{
+        backgroundColor:
+          book.pseudoDeleted === "true" ? "rgba(255, 0, 0, 0.08)" : undefined
+      }}
+    >
       <Item.Image
         as="a"
         href={`/book/${book._id}`}
@@ -43,11 +49,18 @@ export default function BookItem(props) {
                   />
                 )}
                 {onEditClick && onDeleteClick && <Dropdown.Divider />}
-                {onDeleteClick && (
+                {book.pseudoDeleted === "false" && onDeleteClick && (
                   <Dropdown.Item
-                    text="Удалить"
+                    text="Скрыть"
                     icon="close"
                     onClick={() => onDeleteClick(book)}
+                  />
+                )}
+                {book.pseudoDeleted === "true" && onRestoreClick && (
+                  <Dropdown.Item
+                    text="Восстановить видимость"
+                    icon="reply"
+                    onClick={() => onRestoreClick(book)}
                   />
                 )}
               </Dropdown.Menu>
