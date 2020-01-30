@@ -5,18 +5,21 @@ export default function ModalWindow(props) {
   const {
     header,
     open,
-    firstPageText,
-    showFirstPageContent,
+    firstPageContent,
+    showFirstPageContentIf,
     isLoading,
+    showSecondPageContentIf,
     secondPageContent,
-    disableRunButton
+    disableRunButton,
+    onCancelClick,
+    onRunClick
   } = props;
 
   return (
     <Modal open={open} size="small">
-      <Header icon="remove" content={header} />
+      <Header icon="exclamation circle" content={header} />
       <Modal.Content>
-        {showFirstPageContent && <p>{firstPageText}</p>}
+        {showFirstPageContentIf && <p>{firstPageContent}</p>}
         {isLoading && (
           <Message icon>
             <Icon name="circle notched" loading />
@@ -26,7 +29,7 @@ export default function ModalWindow(props) {
             </Message.Content>
           </Message>
         )}
-        {secondPageContent}
+        {showSecondPageContentIf && secondPageContent}
       </Modal.Content>
       <Modal.Actions>
         <Button
@@ -34,7 +37,7 @@ export default function ModalWindow(props) {
           disabled={isLoading}
           basic
           color="grey"
-          onClick={() => onBookDeleteClick(false)}
+          onClick={() => onCancelClick()}
         >
           <Icon name="remove" /> Отмена
         </Button>
@@ -42,7 +45,7 @@ export default function ModalWindow(props) {
           disabled={disableRunButton}
           loading={isLoading}
           color="green"
-          onClick={() => onBookDeleteClick(true)}
+          onClick={() => onRunClick()}
         >
           <Icon name="checkmark" /> Выполнить
         </Button>
