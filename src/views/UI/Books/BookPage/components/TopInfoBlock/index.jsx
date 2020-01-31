@@ -12,13 +12,13 @@ import {
   Header,
   Icon,
   Message,
-  Label,
-  Dropdown
+  Label
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import { DateTime } from "luxon";
 
 import SearchQueryLink from "@commonViews/SearchQueryLink";
+import BookOptions from "@commonViews/BookOptions";
 
 import { PARAMS } from "@store";
 import { storeData } from "@act";
@@ -39,7 +39,7 @@ class TopInfoBlock extends React.Component {
           key={el._id}
           text={<>{el[dataName]}</>}
           url="/search"
-          param={path}
+          param={`mode=find&data=${path}`}
           value={el._id}
         />
         {arr.length - 1 !== i && " • "}
@@ -160,16 +160,22 @@ class TopInfoBlock extends React.Component {
     });
   }
 
-  goToBookEdit(currentBook) {
+  goToBookEdit(bookId) {
     const { history } = this.props;
 
-    history.push(`/dashboard/books/new?mode=edit&bookId=${currentBook._id}`);
+    history.push(`/dashboard/books/new?mode=edit&bookId=${bookId}`);
   }
 
   deleteBook(bookId) {
     const { history } = this.props;
 
     history.push(`/dashboard/books/book-list?mode=delete&bookId=${bookId}`);
+  }
+
+  restoreBook(bookId) {
+    const { history } = this.props;
+
+    history.push(`/dashboard/books/book-list?mode=restore&bookId=${bookId}`);
   }
 
   render() {
@@ -250,32 +256,15 @@ class TopInfoBlock extends React.Component {
                             ? "Книга временно не доступна"
                             : "Взять в аренду"}
                         </Button>
-                        {isAdmin() && (
-                          <Dropdown
-                            icon="ellipsis horizontal"
-                            floating
-                            button
-                            className={cn(s.headerDrop, "icon")}
-                            pointing="bottom left"
-                            additionPosition="top"
-                          >
-                            <Dropdown.Menu>
-                              <Dropdown.Menu scrolling>
-                                <Dropdown.Item
-                                  text="Редактировать"
-                                  icon="pencil alternate"
-                                  onClick={() => this.goToBookEdit(book)}
-                                />
-                                <Dropdown.Divider />
-                                <Dropdown.Item
-                                  text="Удалить"
-                                  icon="close"
-                                  onClick={() => this.deleteBook(book._id)}
-                                />
-                              </Dropdown.Menu>
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        )}
+                        <BookOptions
+                          onEditClick={() => this.goToBookEdit(book._id)}
+                          onDeleteClick={() => this.deleteBook(book._id)}
+                          onRestoreClick={() => this.restoreBook(book._id)}
+                          isBookHidden={book.pseudoDeleted === "true"}
+                          isAdmin={isAdmin()}
+                          pointing="bottom left"
+                          additionPosition="top"
+                        />
                         {(isThisBookBooked || isThisBookOrdered.ordered) && (
                           <Label color="green">
                             <Icon name="check" />{" "}

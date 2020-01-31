@@ -1,8 +1,9 @@
 import React from "react";
-import { Item, Label, Icon, Dropdown, Divider } from "semantic-ui-react";
-import cn from "classnames";
+import { Item, Label, Icon, Divider } from "semantic-ui-react";
 
-import s from "./index.module.scss";
+import BookOptions from "@commonViews/BookOptions";
+
+import { isAdmin } from "@utils";
 
 export default function BookItem(props) {
   const {
@@ -33,39 +34,13 @@ export default function BookItem(props) {
           {book.bookInfo.title}
         </Item.Header>
         {(onEditClick || onDeleteClick) && showOptions && (
-          <Dropdown
-            icon="ellipsis horizontal"
-            floating
-            button
-            className={cn(s.headerDrop, "icon")}
-          >
-            <Dropdown.Menu>
-              <Dropdown.Menu scrolling>
-                {onEditClick && (
-                  <Dropdown.Item
-                    text="Редактировать"
-                    icon="pencil alternate"
-                    onClick={() => onEditClick(book)}
-                  />
-                )}
-                {onEditClick && onDeleteClick && <Dropdown.Divider />}
-                {book.pseudoDeleted === "false" && onDeleteClick && (
-                  <Dropdown.Item
-                    text="Скрыть"
-                    icon="close"
-                    onClick={() => onDeleteClick(book)}
-                  />
-                )}
-                {book.pseudoDeleted === "true" && onRestoreClick && (
-                  <Dropdown.Item
-                    text="Восстановить видимость"
-                    icon="reply"
-                    onClick={() => onRestoreClick(book)}
-                  />
-                )}
-              </Dropdown.Menu>
-            </Dropdown.Menu>
-          </Dropdown>
+          <BookOptions
+            onEditClick={() => onEditClick(book)}
+            onDeleteClick={() => onDeleteClick(book)}
+            onRestoreClick={() => onRestoreClick(book)}
+            isBookHidden={book.pseudoDeleted === "true"}
+            isAdmin={isAdmin()}
+          />
         )}
         <Item.Meta>
           <span className="cinema">

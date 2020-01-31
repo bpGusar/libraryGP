@@ -78,7 +78,7 @@ class BookPage extends React.Component {
                         className={s.queryLink}
                         text={el.publisherName}
                         url="/search"
-                        param="bookInfo.publisher"
+                        param="mode=find&data=bookInfo.publisher"
                         value={el._id}
                       />
                       {book.bookInfo.publisher.length - 1 !== i && " • "}
@@ -100,7 +100,7 @@ class BookPage extends React.Component {
                         className={s.queryLink}
                         text={el.languageName}
                         url="/search"
-                        param="bookInfo.language"
+                        param="mode=find&data=bookInfo.language"
                         value={el._id}
                       />
                       {book.bookInfo.language.length - 1 !== i && " • "}

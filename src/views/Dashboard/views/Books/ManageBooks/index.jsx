@@ -60,22 +60,29 @@ class ManageBooks extends Component {
   componentDidMount() {
     const { showBooksWhenOpen, location } = this.props;
     const query = qStr.parse(location.search);
-    if (!_.isEmpty(query)) {
-      Object.keys(query).map(key =>
-        this.handleChangeSearchQuery([query[key]], key, false, () =>
-          this.handleSearchBooks(true)
-        )
-      );
+    if (!_.isEmpty(query) && _.has(query, "mode")) {
+      if (
+        query.mode === "delete" &&
+        _.has(query, "bookId") &&
+        !_.isEmpty(query.bookId)
+      ) {
+        this.manageConfirmWindow(query.bookId, "deleteBookModalOpen");
+      } else if (
+        query.mode === "restore" &&
+        _.has(query, "bookId") &&
+        !_.isEmpty(query.bookId)
+      ) {
+        this.manageConfirmWindow(query.bookId, "restoreBookModalOpen");
+      } else if (query.mode === "find") {
+        const dataQuery = qStr.parse(query.data);
+        Object.keys(dataQuery).map(key =>
+          this.handleChangeSearchQuery([dataQuery[key]], key, false, () =>
+            this.handleSearchBooks(true)
+          )
+        );
+      }
     }
 
-    if (
-      _.has(query, "mode") &&
-      query.mode === "delete" &&
-      _.has(query, "bookId") &&
-      !_.isEmpty(query.bookId)
-    ) {
-      this.manageConfirmWindow(query.bookId);
-    }
     if (showBooksWhenOpen) {
       this.handleSearchBooks(true);
     }
