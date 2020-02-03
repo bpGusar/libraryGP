@@ -52,13 +52,6 @@
         "text": "Архив выданных книг",
         "to": "/dashboard/books/orders-archive",
         "type": "simple"
-      },
-      {
-        "id": "menuItem_k5pdzlsv",
-        "icon": "list",
-        "text": "Архив книг",
-        "to": "/dashboard/books/books-archive",
-        "type": "simple"
       }
     ],
     "icon": "book"
