@@ -28,6 +28,30 @@ import { PARAMS } from "@store";
 import MSG from "@msg";
 
 class ManageBooks extends Component {
+  static checkBookHiddenOrNot(bookId, status, func) {
+    axs
+      .get(`/books`, {
+        params: {
+          searchQuery: { _id: bookId }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          if (resp.data.payload[0].pseudoDeleted !== status) {
+            func();
+          } else {
+            toast(
+              MSG.toastClassicError(
+                "Нельзя выполнить данную операцию. Проверьте запрос!"
+              )
+            );
+          }
+        } else {
+          toast(MSG.toastClassicSuccess(resp.data.message));
+        }
+      });
+  }
+
   constructor(props) {
     super(props);
 
@@ -66,13 +90,17 @@ class ManageBooks extends Component {
         _.has(query, "bookId") &&
         !_.isEmpty(query.bookId)
       ) {
-        this.manageConfirmWindow(query.bookId, "deleteBookModalOpen");
+        ManageBooks.checkBookHiddenOrNot(query.bookId, "true", () =>
+          this.manageConfirmWindow(query.bookId, "deleteBookModalOpen")
+        );
       } else if (
         query.mode === "restore" &&
         _.has(query, "bookId") &&
         !_.isEmpty(query.bookId)
       ) {
-        this.manageConfirmWindow(query.bookId, "restoreBookModalOpen");
+        ManageBooks.checkBookHiddenOrNot(query.bookId, "false", () =>
+          this.manageConfirmWindow(query.bookId, "restoreBookModalOpen")
+        );
       } else if (query.mode === "find") {
         const dataQuery = qStr.parse(query.data);
         Object.keys(dataQuery).map(key =>

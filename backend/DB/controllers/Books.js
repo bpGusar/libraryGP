@@ -80,10 +80,6 @@ function findBooks(res, req, data = {}) {
     return options.limit * (options.page - 1);
   };
 
-  // _.isEmpty(data) ? {} : JSON.parse(data)
-
-  // TODO: переделать удаление книги и сделать запрет на использование вывода скрытых если ты не админ
-
   Book.countDocuments(
     options.whatWeSee === "all"
       ? findByData
