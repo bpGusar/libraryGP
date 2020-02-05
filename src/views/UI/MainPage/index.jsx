@@ -25,7 +25,7 @@ export default class MainPage extends React.Component {
     axs
       .get("/books", {
         params: {
-          options: { fetch_type: 1 }
+          options: { fetch_type: 1, displayMode: "false" }
         }
       })
       .then(resp => {

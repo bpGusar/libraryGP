@@ -34,7 +34,7 @@ import servConf from "../../config/server.json";
  * `1` - вернуть данные по книге и заполнить данными объекты, в которых изначально есть только id (смотри модель `Book`)).
  *
  * @param {Number} options.page Номер страницы выборки. По умолчанию `1`.
- * @param {String} options.whatWeSee Тип выборки книг. `"all"` - выбрать все книги, `"true"` - выбрать только скрытые (удаленные) книги, `"false"` - показать только не скрытые. По умолчанию "all"`.
+ * @param {String} options.displayMode Тип выборки книг. `"all"` - выбрать все книги, `"true"` - выбрать только скрытые (удаленные) книги, `"false"` - показать только не скрытые. По умолчанию "all"`.
  * @param {String} options.sort Сортировка. По умолчанию `desc`.
  * @param {Number} options.limit Количество элементов в одной выборке. За 1 раз не более 99 элементов. По умолчанию `99`.
  *
@@ -57,7 +57,7 @@ function findBooks(res, req, data = {}) {
       fetch_type: 0,
       sort: "desc",
       notShowDeleted: true,
-      whatWeSee: "all"
+      displayMode: "all"
     };
   } else {
     options = JSON.parse(options);
@@ -69,9 +69,9 @@ function findBooks(res, req, data = {}) {
   options.fetch_type = _.isUndefined(options.fetch_type)
     ? 0
     : options.fetch_type;
-  options.whatWeSee = _.isUndefined(options.whatWeSee)
+  options.displayMode = _.isUndefined(options.displayMode)
     ? "all"
-    : options.whatWeSee;
+    : options.displayMode;
 
   const getSkip = () => {
     if (options.page === 1) {
@@ -81,11 +81,11 @@ function findBooks(res, req, data = {}) {
   };
 
   Book.countDocuments(
-    options.whatWeSee === "all"
+    options.displayMode === "all"
       ? findByData
       : {
           ...findByData,
-          pseudoDeleted: { $eq: `${options.whatWeSee === "true"}` }
+          pseudoDeleted: { $eq: `${options.displayMode === "true"}` }
         },
     (countError, count) => {
       res.set({
@@ -93,11 +93,11 @@ function findBooks(res, req, data = {}) {
         ...options
       });
       Book.find(
-        options.whatWeSee === "all"
+        options.displayMode === "all"
           ? findByData
           : {
               ...findByData,
-              pseudoDeleted: { $eq: `${options.whatWeSee === "true"}` }
+              pseudoDeleted: { $eq: `${options.displayMode === "true"}` }
             }
       )
         .sort({

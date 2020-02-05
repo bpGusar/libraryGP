@@ -65,7 +65,7 @@ class ManageBooks extends Component {
         sort: "desc",
         limit: 10,
         page: 1,
-        whatWeSee: "all"
+        displayMode: "all"
       },
       deleteOrRestoreBookId: "",
       deleteBookModalOpen: false,

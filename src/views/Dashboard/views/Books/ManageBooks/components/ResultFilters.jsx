@@ -26,9 +26,9 @@ export default function ResultFilters(props) {
       <Form.Dropdown
         label="Что показывать"
         selection
-        defaultValue={options.whatWeSee}
+        defaultValue={options.displayMode}
         onChange={(e, { value }) =>
-          onChangeResultFilterValue(value, "whatWeSee")
+          onChangeResultFilterValue(value, "displayMode")
         }
         options={[
           {
