@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   "@src": path.resolve("src/"),
-  "@commonViews": path.resolve("src/views/common"),
+  "@commonViews": path.resolve("src/views/Common"),
   "@axios": path.resolve("src/config/axios"),
   "@UI": path.resolve("src/views/UI"),
   "@views": path.resolve("src/views/"),

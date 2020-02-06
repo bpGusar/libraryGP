@@ -14,7 +14,7 @@ import LoginPage from "@UI/Users/LoginPage";
 import RegistrationPage from "@UI/Users/RegistrationPage/index";
 import ResetPasswordPage from "@UI/Users/ResetPasswordPage";
 import MainPage from "@UI/MainPage";
-import InfoPage from "@views/common/InfoPage";
+import InfoPage from "@views/Common/InfoPage";
 import BookPage from "@UI/Books/BookPage";
 import EmailVerify from "@UI/Users/EmailVerify";
 import ProfilePage from "@UI/Users/ProfilePage";

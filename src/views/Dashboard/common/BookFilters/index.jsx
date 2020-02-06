@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Icon, Accordion } from "semantic-ui-react";
 import _ from "lodash";
 
-import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
+import UniqueDropdown from "@views/Common/UniqueDropdown/";
 
 import { PARAMS } from "@store";
 

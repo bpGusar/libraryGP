@@ -10,7 +10,7 @@ import qStr from "query-string";
 
 import { Form, Button, Message, Segment } from "semantic-ui-react";
 
-import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
+import UniqueDropdown from "@views/Common/UniqueDropdown/";
 import Poster from "./components/Poster/Poster";
 
 import { PARAMS, getInitialState } from "@store";

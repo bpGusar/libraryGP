@@ -14,7 +14,7 @@ import {
 } from "semantic-ui-react";
 import _ from "lodash";
 
-import CustomSelect from "@views/common/CustomSelect";
+import CustomSelect from "@views/Common/CustomSelect";
 
 import MSG from "@msg";
 import axs from "@axios";

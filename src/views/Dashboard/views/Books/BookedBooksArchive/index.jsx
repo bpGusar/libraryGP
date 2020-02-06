@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 
 import PaginationBlock from "@commonViews/Pagination";
 import BookItem from "@DUI/common/BookItem";
-import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
+import UniqueDropdown from "@views/Common/UniqueDropdown/";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";

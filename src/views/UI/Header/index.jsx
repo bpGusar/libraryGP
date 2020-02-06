@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, Dropdown, Container, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
-import SearchBox from "@views/common/SearchBox";
+import SearchBox from "@views/Common/SearchBox";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";

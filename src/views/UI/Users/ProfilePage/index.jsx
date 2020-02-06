@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { Grid, Segment, Header, Label, Tab, Button } from "semantic-ui-react";
 import { branch } from "baobab-react/higher-order";
 
-import Loader from "@views/common/Loader";
+import Loader from "@views/Common/Loader";
 import OrdersInfo from "./components/OrdersInfo";
 import ArchivedInfo from "./components/ArchivedInfo";
 import EditUser from "./components/EditUser";
