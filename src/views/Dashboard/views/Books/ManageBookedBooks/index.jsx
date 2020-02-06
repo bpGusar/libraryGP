@@ -98,21 +98,22 @@ export default class ManageBookedBooks extends Component {
       });
   }
 
-  handleOrderBook(bookedBookId) {
+  handleOrderBook(bookedBook) {
     const { ordering, actionWithReservationInProgress } = this.state;
 
     this.setState({
       actionWithReservationInProgress: {
         ...actionWithReservationInProgress,
-        [bookedBookId]: true
+        [bookedBook._id]: true
       },
       isDataLoading: true
     });
 
     axs
-      .post(`/ordered-books/${bookedBookId}`, {
+      .post(`/ordered-books/${bookedBook._id}`, {
         status: "ordered",
-        comment: ""
+        comment: "",
+        userId: bookedBook.userId._id
       })
       .then(resp => {
         if (!resp.data.error) {
@@ -121,12 +122,12 @@ export default class ManageBookedBooks extends Component {
               ...ordering,
               successfullyOrderedBooks: {
                 ...ordering.successfullyOrderedBooks,
-                [bookedBookId]: true
+                [bookedBook._id]: true
               }
             },
             actionWithReservationInProgress: {
               ...actionWithReservationInProgress,
-              [bookedBookId]: false
+              [bookedBook._id]: false
             },
             isDataLoading: false
           });
@@ -241,7 +242,7 @@ export default class ManageBookedBooks extends Component {
           <Button
             basic
             color="green"
-            onClick={() => this.handleOrderBook(bookedBook._id)}
+            onClick={() => this.handleOrderBook(bookedBook)}
             disabled={ordering.successfullyOrderedBooks[bookedBook._id]}
           >
             Выдать

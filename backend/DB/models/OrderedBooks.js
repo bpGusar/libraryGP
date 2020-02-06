@@ -20,6 +20,10 @@ const OrderedBooksSchema = new Schema({
     type: Date,
     default: Date.now()
   },
+  addedByUser: {
+    type: String,
+    ref: "User"
+  },
   orderedUntil: Date
 });
 

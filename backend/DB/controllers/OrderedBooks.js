@@ -39,13 +39,14 @@ function findOrderedBooks(res, getQuery = {}) {
 function addOrderedBook(req, res) {
   const bookedBookId = req.params.id;
 
-  BookedBooks.find({ _id: bookedBookId }, (findBBerr, bookedBook) => {
-    if (findBBerr) {
-      res.json(config.getRespData(true, MSG.internalServerErr, findBBerr));
+  BookedBooks.find({ _id: bookedBookId }, (findBBErr, bookedBook) => {
+    if (findBBErr) {
+      res.json(config.getRespData(true, MSG.internalServerErr, findBBErr));
     } else {
       const newOrderedBook = new OrderedBooks({
         bookId: bookedBook[0].bookId,
-        userId: req.middlewareUserInfo._id,
+        userId: req.body.userId,
+        addedByUser: req.middlewareUserInfo._id,
         readerId: bookedBook[0].readerId
       });
 
