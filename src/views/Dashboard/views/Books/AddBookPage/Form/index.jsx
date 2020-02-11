@@ -19,7 +19,7 @@ import { storeData } from "@act";
 import axs from "@axios";
 
 import s from "./index.module.scss";
-// TODO: сделать страницу архива книг
+
 class AddBookForm extends React.Component {
   constructor(props) {
     super(props);

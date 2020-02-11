@@ -11,7 +11,7 @@ import { storeData } from "@act";
 import axs from "@axios";
 
 import s from "./Header.module.scss";
-// TODO: переосмыслить меню
+
 class Header extends React.Component {
   constructor(props) {
     super(props);
