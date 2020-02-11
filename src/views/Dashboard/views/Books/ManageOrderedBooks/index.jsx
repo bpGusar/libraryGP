@@ -211,7 +211,7 @@ export default class ManageOrderedBooks extends Component {
     return (
       <>
         <Header as="h3" attached="top">
-          Управление забронированными книгами
+          Управление выданными книгами
         </Header>
         <Segment attached loading={isDataLoading}>
           <Form onSubmit={e => this.handleSubmitForm(e, { readerId })}>
@@ -248,10 +248,9 @@ export default class ManageOrderedBooks extends Component {
               {Object.keys(books).map(key => {
                 const user = books[key];
                 return (
-                  <Accordion>
+                  <Accordion key={key}>
                     <Accordion.Title
                       active={activeOpenedSpoiler === key}
-                      key={key}
                       index={0}
                       onClick={() => this.handleClickAccordion(key)}
                       as={Segment}
@@ -268,7 +267,7 @@ export default class ManageOrderedBooks extends Component {
                         {user.books.map(orderedBook => {
                           const book = orderedBook.bookId;
                           return (
-                            <Card>
+                            <Card key={orderedBook._id}>
                               <CustomDimmer
                                 loaderText="Выполняется"
                                 successIcon="check"

@@ -12,7 +12,8 @@ import {
   Dimmer,
   Loader,
   Icon,
-  Label
+  Label,
+  Accordion
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import _ from "lodash";
@@ -23,11 +24,9 @@ import MSG from "@msg";
 
 import s from "./index.module.scss";
 
-const resultsForEnum = {
+const ENUMresultsFor = {
   all: "все"
 };
-
-// TODO: сделать группироваку по пользователям если поиск по всем
 
 export default class ManageBookedBooks extends Component {
   constructor(props) {
@@ -50,7 +49,8 @@ export default class ManageBookedBooks extends Component {
         rejectMsgs: {},
         successfullyRejected: {},
         rejectingInProgress: {}
-      }
+      },
+      activeOpenedSpoiler: -1
     };
 
     this.state = this.initState;
@@ -58,7 +58,6 @@ export default class ManageBookedBooks extends Component {
 
   handleSubmitForm(e, getQuery) {
     const { readerId } = this.state;
-
     if (_.isEmpty(getQuery)) {
       e.preventDefault();
 
@@ -69,8 +68,9 @@ export default class ManageBookedBooks extends Component {
 
     this.setState({
       ...this.initState,
+      ...getQuery,
       isDataLoading: true,
-      resultsFor: _.isEmpty(getQuery) ? resultsForEnum.all : readerId
+      resultsFor: _.isEmpty(getQuery) ? ENUMresultsFor.all : readerId
     });
 
     axs
@@ -81,8 +81,20 @@ export default class ManageBookedBooks extends Component {
       })
       .then(resp => {
         if (!resp.data.error) {
+          let books = {};
+          resp.data.payload.forEach(el => {
+            books = {
+              ...books,
+              [el.userId._id]: {
+                userName: `${el.userId.lastName} ${el.userId.firstName} ${el.userId.patronymic}`,
+                books: resp.data.payload.filter(
+                  els => els.userId._id === el.userId._id
+                )
+              }
+            };
+          });
           this.setState({
-            books: resp.data.payload,
+            books,
             isDataLoading: false,
             emptyResults: {
               empty: resp.data.payload.length === 0,
@@ -175,6 +187,12 @@ export default class ManageBookedBooks extends Component {
           toast(MSG.toastClassicError(resp.data.message));
         }
       });
+  }
+
+  handleClickAccordion(key) {
+    this.setState(ps => ({
+      activeOpenedSpoiler: key === ps.activeOpenedSpoiler ? -1 : key
+    }));
   }
 
   renderRejectBlock(bookedBook) {
@@ -278,7 +296,7 @@ export default class ManageBookedBooks extends Component {
       return (
         <Message info>
           <Message.Header>
-            {resultsFor === resultsForEnum.all
+            {resultsFor === ENUMresultsFor.all
               ? "Забронированные книги отсутствуют"
               : `Забронированные книги для билета № ${
                   emptyResults.readerId
@@ -331,7 +349,8 @@ export default class ManageBookedBooks extends Component {
       isDataLoading,
       emptyResults,
       rejecting,
-      resultsFor
+      resultsFor,
+      activeOpenedSpoiler
     } = this.state;
 
     return (
@@ -365,61 +384,82 @@ export default class ManageBookedBooks extends Component {
             </Button>
             <Divider />
           </Form>
-          {books.length !== 0 && (
+          {!_.isEmpty(books) && (
             <>
               <Header as="h5">
                 <span className={s.resultsForText}>Результаты для:</span>{" "}
                 <Label color="blue">{resultsFor}</Label>
               </Header>
-              <Card.Group>
-                {books.map(bookedBook => {
-                  const { bookId: bookedBookInfo, userId: user } = bookedBook;
-
-                  return (
-                    <Card key={bookedBook._id}>
-                      {this.renderDimmer(bookedBook)}
-                      <Card.Content>
-                        <Image
-                          floated="right"
-                          size="mini"
-                          src={bookedBookInfo.bookInfo.imageLinks.poster}
-                          as={Link}
-                          to={`/book/${bookedBookInfo._id}`}
-                          target="blanc"
-                        />
-                        <Card.Header
-                          as={Link}
-                          to={`/book/${bookedBookInfo._id}`}
-                          target="blanc"
-                        >
-                          {bookedBookInfo.bookInfo.title}
-                        </Card.Header>
-                        <Card.Meta>
-                          Дата брони: {util.convertDate(bookedBook.createdAt)}
-                        </Card.Meta>
-                        <Card.Description>
-                          Бронь на имя: {user.lastName} {user.firstName}{" "}
-                          {user.patronymic} <br />
-                        </Card.Description>
-                        <Card.Description>
-                          Чит. билет №: {bookedBook.readerId} <br />
-                        </Card.Description>
-                      </Card.Content>
-                      <Card.Content
-                        extra
-                        className={
-                          rejecting.rejectingInProgress[bookedBook._id]
-                            ? s.rejectBlock
-                            : ""
-                        }
+              {Object.keys(books).map(key => {
+                const user = books[key];
+                return (
+                  <Accordion key={key}>
+                    <Accordion.Title
+                      active={activeOpenedSpoiler === key}
+                      index={0}
+                      onClick={() => this.handleClickAccordion(key)}
+                      as={Segment}
+                    >
+                      <Icon name="dropdown" />
+                      {user.userName}
+                    </Accordion.Title>
+                    <Accordion.Content active={activeOpenedSpoiler === key}>
+                      <Card.Group
+                        style={{
+                          margin: "-20px -6px 0px"
+                        }}
                       >
-                        {this.renderRejectBlock(bookedBook)}
-                        {this.renderOrderBlock(bookedBook)}
-                      </Card.Content>
-                    </Card>
-                  );
-                })}
-              </Card.Group>
+                        {user.books.map(orderedBook => {
+                          const book = orderedBook.bookId;
+                          return (
+                            <Card key={orderedBook._id}>
+                              {this.renderDimmer(orderedBook)}
+                              <Card.Content>
+                                <Image
+                                  floated="right"
+                                  size="mini"
+                                  src={book.bookInfo.imageLinks.poster}
+                                  as={Link}
+                                  to={`/book/${book._id}`}
+                                  target="blanc"
+                                />
+                                <Card.Header
+                                  as={Link}
+                                  to={`/book/${book._id}`}
+                                  target="blanc"
+                                >
+                                  {book.bookInfo.title}
+                                </Card.Header>
+                                <Card.Meta>
+                                  Дата брони:{" "}
+                                  {util.convertDate(orderedBook.createdAt)}
+                                </Card.Meta>
+                                <Card.Description>
+                                  Бронь на имя: {user.userName} <br />
+                                </Card.Description>
+                                <Card.Description>
+                                  Чит. билет №: {orderedBook.readerId} <br />
+                                </Card.Description>
+                              </Card.Content>
+                              <Card.Content
+                                extra
+                                className={
+                                  rejecting.rejectingInProgress[orderedBook._id]
+                                    ? s.rejectBlock
+                                    : ""
+                                }
+                              >
+                                {this.renderRejectBlock(orderedBook)}
+                                {this.renderOrderBlock(orderedBook)}
+                              </Card.Content>
+                            </Card>
+                          );
+                        })}
+                      </Card.Group>
+                    </Accordion.Content>
+                  </Accordion>
+                );
+              })}
             </>
           )}
           {this.renderEmptyResultsBlock(emptyResults)}
