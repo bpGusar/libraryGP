@@ -6,6 +6,7 @@ import bookedBooks from "./bookedBooks";
 import books from "./books";
 import menu from "./menu";
 import orderedBooks from "./orderedBooks";
+import settings from "./settings";
 import uploadFiles from "./uploadFiles";
 import users from "./users";
 
@@ -19,6 +20,7 @@ export {
   books,
   menu,
   orderedBooks,
+  settings,
   uploadFiles,
   users
 };

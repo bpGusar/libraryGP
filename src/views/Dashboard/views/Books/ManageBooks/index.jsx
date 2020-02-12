@@ -27,6 +27,15 @@ import ModalWindow from "./components/Modal";
 import { PARAMS } from "@store";
 import MSG from "@msg";
 
+/**
+ * Виджет поиска книг
+ *
+ * Пропсы:
+ * @param {Array} allAccess предоставлять ли пользователям полный доступ к виджету
+ * @param {Component} formHeader заголовок виджета
+ * @param {Component} showBooksWhenOpen загружать ли список книг после загрузки виджета
+ */
+
 class ManageBooks extends Component {
   static checkBookHiddenOrNot(bookId, status, func) {
     axs

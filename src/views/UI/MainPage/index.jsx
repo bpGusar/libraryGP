@@ -1,12 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, Image } from "semantic-ui-react";
+import { branch } from "baobab-react/higher-order";
 
 import CustomLoader from "@views/Common/Loader";
 
+import { PARAMS } from "@store";
+
 import axs from "@axios";
 
-export default class MainPage extends React.Component {
+class MainPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -22,10 +25,15 @@ export default class MainPage extends React.Component {
 
   // TODO: переделать главную
   getBooks() {
+    const { settings } = this.props;
+
     axs
       .get("/books", {
         params: {
-          options: { fetch_type: 1, displayMode: "false" }
+          options: {
+            fetch_type: 1,
+            displayMode: settings.showHiddenBooksOnMainPage.toString()
+          }
         }
       })
       .then(resp => {
@@ -80,3 +88,5 @@ export default class MainPage extends React.Component {
     );
   }
 }
+
+export default branch({ settings: PARAMS.SETTINGS }, MainPage);

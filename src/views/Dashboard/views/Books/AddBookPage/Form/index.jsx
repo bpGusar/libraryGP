@@ -118,7 +118,7 @@ class AddBookForm extends React.Component {
   handleChangeBookInfo(e) {
     const { bookToDB, dispatch } = this.props;
     const bookClone = _.cloneDeep(bookToDB);
-    console.log(e.max);
+
     _.set(bookClone.book, e.name, e.value);
 
     dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);

@@ -38,6 +38,7 @@ import BookedBooksArchive from "@DUI/views/Books/BookedBooksArchive";
 import AddNewUser from "@DUI/views/Users/AddNew";
 import MenusPage from "@DUI/views/MenusPage";
 import UsersList from "@DUI/views/Users/UsersListPage";
+import SettingsPage from "@DUI/views/Settings";
 import DashboardPage from "@DUI";
 
 import PrivateRoute from "./PrivateRoute";
@@ -92,6 +93,14 @@ function AppRotes(props) {
         checkAuth={checkAuth}
         path="/dashboard"
         component={DashboardPage}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/settings"
+        component={SettingsPage}
       />
       <PrivateRoute
         exact

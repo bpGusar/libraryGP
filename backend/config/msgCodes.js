@@ -93,6 +93,9 @@ const MSG = {
   cantUpdateBook: {
     ru: "Произошла ошибка при обновлении книги."
   },
+  cantUpdateSettings: {
+    ru: "Произошла ошибка при обновлении настроек."
+  },
   cantHideBook: {
     ru: "Произошла ошибка при добавлении книги в скрытые."
   },
@@ -113,6 +116,9 @@ const MSG = {
   },
   bookWasUpdated: {
     ru: "Книга успешно обновлена."
+  },
+  settingsWasUpdated: {
+    ru: "Настройки успешно обновлены."
   },
   bookWasHidden: {
     ru: "Книга успешно скрыта."

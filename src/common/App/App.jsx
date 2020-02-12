@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import React from "react";
 import { root, branch } from "baobab-react/higher-order";
 import { Router } from "react-router";
@@ -19,7 +20,19 @@ const history = createBrowserHistory();
 
 class App extends React.Component {
   componentDidMount() {
-    this.checkAuth();
+    this.getSiteSettings(() => this.checkAuth());
+  }
+
+  getSiteSettings(cb) {
+    const { dispatch } = this.props;
+    axs.get(`/settings`).then(resp => {
+      if (!resp.data.error) {
+        dispatch(storeData, PARAMS.SETTINGS, {
+          ...resp.data.payload.settings
+        });
+        cb();
+      }
+    });
   }
 
   async checkAuth() {
