@@ -75,6 +75,7 @@ export default class NewItem extends React.Component {
               <Form.Group widths="equal">
                 <Form.Input
                   fluid
+                  icon={itemData.icon}
                   label="Иконка"
                   placeholder="Стандартная иконка FontAwesome"
                   value={itemData.icon}

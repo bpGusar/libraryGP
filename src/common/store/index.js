@@ -17,7 +17,8 @@ export const PARAMS = {
   INFO_PAGE: "info page text",
   USER_ROLES: "user roles",
   PAGE_TITLE: "page title",
-  BOOKS_LIST: "books list"
+  BOOKS_LIST: "books list",
+  SETTINGS: "site settings"
 };
 
 const bookFlag = {
@@ -96,6 +97,9 @@ export const getInitialState = () => ({
       },
       editInfo: []
     }
+  },
+  [PARAMS.SETTINGS]: {
+    showHiddenBooksOnMainPage: false
   }
 });
 

@@ -43,7 +43,11 @@ const BookSchema = new Schema({
       comment: String,
       userId: String
     }
-  ]
+  ],
+  pseudoDeleted: {
+    type: String,
+    default: "false"
+  }
 });
 
 export default Mongoose.model("Book", BookSchema, "books");

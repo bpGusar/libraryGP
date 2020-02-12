@@ -1,6 +1,7 @@
 import React from "react";
 import { branch } from "baobab-react/higher-order";
 import cn from "classnames";
+import { withRouter } from "react-router-dom";
 
 import {
   Container,
@@ -16,7 +17,8 @@ import {
 import { toast } from "react-semantic-toasts";
 import { DateTime } from "luxon";
 
-import s from "../../index.module.scss";
+import SearchQueryLink from "@commonViews/SearchQueryLink";
+import BookOptions from "@commonViews/BookOptions";
 
 import { PARAMS } from "@store";
 import { storeData } from "@act";
@@ -25,13 +27,23 @@ import MSG from "@msg";
 
 import axs from "@axios";
 
+import { isAdmin } from "@utils";
+
+import s from "../../index.module.scss";
+
 class TopInfoBlock extends React.Component {
-  static generateBookInfo(arr, dataName) {
+  static generateBookInfo(arr, path, dataName) {
     return arr.map((el, i) => (
-      <span key={el._id}>
-        {el[dataName]}
+      <>
+        <SearchQueryLink
+          key={el._id}
+          text={<>{el[dataName]}</>}
+          url="/search"
+          param={`mode=find&data=${path}`}
+          value={el._id}
+        />
         {arr.length - 1 !== i && " • "}
-      </span>
+      </>
     ));
   }
 
@@ -148,6 +160,24 @@ class TopInfoBlock extends React.Component {
     });
   }
 
+  goToBookEdit(bookId) {
+    const { history } = this.props;
+
+    history.push(`/dashboard/books/new?mode=edit&bookId=${bookId}`);
+  }
+
+  deleteBook(bookId) {
+    const { history } = this.props;
+
+    history.push(`/dashboard/books/book-list?mode=delete&bookId=${bookId}`);
+  }
+
+  restoreBook(bookId) {
+    const { history } = this.props;
+
+    history.push(`/dashboard/books/book-list?mode=restore&bookId=${bookId}`);
+  }
+
   render() {
     const { book, isUserAuthorized } = this.props;
     const {
@@ -158,6 +188,7 @@ class TopInfoBlock extends React.Component {
       isThisBookOrdered
     } = this.state;
     const bookAvailability = book.stockInfo.freeForBooking === 0;
+
     return (
       <div className={s.topInfoBlock}>
         <div className={s.bookPosterBlock}>
@@ -182,6 +213,7 @@ class TopInfoBlock extends React.Component {
                 <Grid.Row className={s.authorsLine}>
                   {TopInfoBlock.generateBookInfo(
                     book.bookInfo.authors,
+                    "bookInfo.authors",
                     "authorName"
                   )}
                 </Grid.Row>
@@ -191,6 +223,7 @@ class TopInfoBlock extends React.Component {
                 <Grid.Row className={s.categoriesLine}>
                   {TopInfoBlock.generateBookInfo(
                     book.bookInfo.categories,
+                    "bookInfo.categories",
                     "categoryName"
                   )}
                   {" • "}
@@ -212,14 +245,26 @@ class TopInfoBlock extends React.Component {
                             !isUserAuthorized ||
                             isThisBookBooked ||
                             isThisBookOrdered.ordered ||
-                            isBookButtonDisabled
+                            isBookButtonDisabled ||
+                            book.pseudoDeleted === "true"
                           }
                           loading={isButtonLoading}
                           primary
                           onClick={this.bookABook}
                         >
-                          Взять в аренду
+                          {book.pseudoDeleted === "true"
+                            ? "Книга временно не доступна"
+                            : "Взять в аренду"}
                         </Button>
+                        <BookOptions
+                          onEditClick={() => this.goToBookEdit(book._id)}
+                          onDeleteClick={() => this.deleteBook(book._id)}
+                          onRestoreClick={() => this.restoreBook(book._id)}
+                          isBookHidden={book.pseudoDeleted === "true"}
+                          isAdmin={isAdmin()}
+                          pointing="bottom left"
+                          additionPosition="top"
+                        />
                         {(isThisBookBooked || isThisBookOrdered.ordered) && (
                           <Label color="green">
                             <Icon name="check" />{" "}
@@ -268,12 +313,14 @@ class TopInfoBlock extends React.Component {
   }
 }
 
-export default branch(
-  {
-    book: PARAMS.BOOK,
-    globalPageLoader: PARAMS.IS_SOME_DATA_LOADING,
-    userInfo: PARAMS.USER_INFO,
-    isUserAuthorized: PARAMS.IS_USER_AUTHORIZED
-  },
-  TopInfoBlock
+export default withRouter(
+  branch(
+    {
+      book: PARAMS.BOOK,
+      globalPageLoader: PARAMS.IS_SOME_DATA_LOADING,
+      userInfo: PARAMS.USER_INFO,
+      isUserAuthorized: PARAMS.IS_USER_AUTHORIZED
+    },
+    TopInfoBlock
+  )
 );

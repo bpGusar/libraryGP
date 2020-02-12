@@ -11,6 +11,13 @@ function TopMenu(props) {
   const { userInfo } = props;
   const options = [
     {
+      key: "settings",
+      as: Link,
+      to: "/dashboard/settings",
+      text: "Настройки сайта",
+      icon: "setting"
+    },
+    {
       key: "sign-out",
       as: Link,
       to: "/logout",

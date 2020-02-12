@@ -33,6 +33,12 @@ app.delete(
   (req, res) => BooksContr.deleteBook(res, req)
 );
 
+app.put(
+  "/api/books/:id/restore",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => BooksContr.restoreBook(res, req)
+);
+
 app.get("/api/books/:id/availability", withAuth, (req, res) =>
   BooksContr.thisBookOrderedOrBooked(res, req)
 );

@@ -6,10 +6,11 @@ import uniqid from "uniqid";
 import _ from "lodash";
 import { DateTime } from "luxon";
 import { DateInput } from "semantic-ui-calendar-react";
+import qStr from "query-string";
 
 import { Form, Button, Message, Segment } from "semantic-ui-react";
 
-import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
+import UniqueDropdown from "@views/Common/UniqueDropdown/";
 import Poster from "./components/Poster/Poster";
 
 import { PARAMS, getInitialState } from "@store";
@@ -22,7 +23,9 @@ import s from "./index.module.scss";
 class AddBookForm extends React.Component {
   constructor(props) {
     super(props);
-    const { bookToDB } = props;
+    const { location } = props;
+
+    const query = qStr.parse(location.search);
 
     this.state = {
       isFormLoaded: true,
@@ -30,18 +33,24 @@ class AddBookForm extends React.Component {
         error: false,
         msg: ""
       },
-      isEdit: bookToDB.flag === "edit",
+      isEdit: query.mode === "edit",
       editComment: ""
     };
   }
 
   componentDidMount() {
-    const { bookToDB, user, dispatch } = this.props;
-    const bookClone = _.cloneDeep(bookToDB);
-    const today = DateTime.local().toISODate();
-    _.set(bookClone.book, "dateAdded", today);
+    const { bookToDB, dispatch, location } = this.props;
+    const { isEdit } = this.state;
+    const query = qStr.parse(location.search);
+    if (!isEdit) {
+      const bookClone = _.cloneDeep(bookToDB);
+      const today = DateTime.local().toISODate();
+      _.set(bookClone.book, "dateAdded", today);
 
-    dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
+      dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
+    } else {
+      this.getBookForEdit(query);
+    }
   }
 
   componentWillUnmount() {
@@ -51,6 +60,45 @@ class AddBookForm extends React.Component {
       PARAMS.BOOK_TO_DB,
       getInitialState()[PARAMS.BOOK_TO_DB]
     );
+  }
+
+  getBookForEdit(query) {
+    const { dispatch, bookToDB } = this.props;
+    this.setState({
+      isFormLoaded: false
+    });
+
+    axs
+      .get(`/books/${query.bookId}`, {
+        params: {
+          options: { fetch_type: 0 }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          const clonedResp = resp;
+          delete clonedResp.data.payload[0].__v;
+
+          this.setState(
+            {
+              isFormLoaded: true
+            },
+            () => {
+              dispatch(storeData, PARAMS.BOOK_TO_DB, {
+                ...bookToDB,
+                flag: "edit",
+                book: {
+                  ...clonedResp.data.payload[0]
+                }
+              });
+            }
+          );
+        } else {
+          this.setState({
+            isFormLoaded: true
+          });
+        }
+      });
   }
 
   handleChangeISBN(e) {
@@ -148,7 +196,7 @@ class AddBookForm extends React.Component {
         {msg.error && (
           <Message negative>
             <Message.Header>{msg.msg}</Message.Header>
-            <p>Проверте введенные данные и попробуйте еще раз.</p>
+            <p>Проверьте введенные данные и попробуйте еще раз.</p>
           </Message>
         )}
         {isEdit && (
@@ -182,6 +230,7 @@ class AddBookForm extends React.Component {
             </Form.Group>
             <Form.Group widths="equal">
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-authors"
                 axiosPostLink="/book-authors"
                 storeParam={PARAMS.AUTHORS}
@@ -196,6 +245,7 @@ class AddBookForm extends React.Component {
                 currentValue={bookInfo.authors}
               />
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-publishers"
                 axiosPostLink="/book-publishers"
                 storeParam={PARAMS.PUBLISHERS}
@@ -212,6 +262,7 @@ class AddBookForm extends React.Component {
             </Form.Group>
             <Form.Group widths="equal">
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-categories"
                 axiosPostLink="/book-categories"
                 storeParam={PARAMS.CATEGORIES}
@@ -259,6 +310,7 @@ class AddBookForm extends React.Component {
                 defaultValue={bookInfo.pageCount}
               />
               <UniqueDropdown
+                axsQuery={{ params: { options: { limit: 999 } } }}
                 axiosGetLink="/book-languages"
                 storeParam={PARAMS.LANGUAGES}
                 axiosPostLink="/book-languages"
@@ -340,8 +392,7 @@ class AddBookForm extends React.Component {
 
 export default branch(
   {
-    bookToDB: PARAMS.BOOK_TO_DB,
-    user: PARAMS.USER_INFO
+    bookToDB: PARAMS.BOOK_TO_DB
   },
   AddBookForm
 );

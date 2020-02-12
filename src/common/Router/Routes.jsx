@@ -14,7 +14,7 @@ import LoginPage from "@UI/Users/LoginPage";
 import RegistrationPage from "@UI/Users/RegistrationPage/index";
 import ResetPasswordPage from "@UI/Users/ResetPasswordPage";
 import MainPage from "@UI/MainPage";
-import InfoPage from "@views/common/InfoPage";
+import InfoPage from "@views/Common/InfoPage";
 import BookPage from "@UI/Books/BookPage";
 import EmailVerify from "@UI/Users/EmailVerify";
 import ProfilePage from "@UI/Users/ProfilePage";
@@ -38,6 +38,7 @@ import BookedBooksArchive from "@DUI/views/Books/BookedBooksArchive";
 import AddNewUser from "@DUI/views/Users/AddNew";
 import MenusPage from "@DUI/views/MenusPage";
 import UsersList from "@DUI/views/Users/UsersListPage";
+import SettingsPage from "@DUI/views/Settings";
 import DashboardPage from "@DUI";
 
 import PrivateRoute from "./PrivateRoute";
@@ -98,6 +99,14 @@ function AppRotes(props) {
         layout={Dashboard}
         accessRole={[userRoles.admin.value]}
         checkAuth={checkAuth}
+        path="/dashboard/settings"
+        component={SettingsPage}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
         path="/dashboard/books/find"
         component={FindBookPage}
       />
@@ -123,7 +132,9 @@ function AppRotes(props) {
         accessRole={[userRoles.admin.value]}
         checkAuth={checkAuth}
         path="/dashboard/books/book-list"
-        component={ManageBooks}
+        component={() => (
+          <ManageBooks allAccess formHeader="Список книг" showBooksWhenOpen />
+        )}
       />
       <PrivateRoute
         exact
@@ -230,6 +241,12 @@ function AppRotes(props) {
         component={ProfilePage}
       />
       <AppRoute exact path="/" layout={MainLayout} component={MainPage} />
+      <AppRoute
+        exact
+        path="/search"
+        layout={MainLayout}
+        component={() => <ManageBooks formHeader="Поиск" />}
+      />
       <AppRoute
         exact
         path="/email-verify"

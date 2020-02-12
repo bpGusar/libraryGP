@@ -43,7 +43,7 @@ function bookABook(req, res) {
       }
     ])
     .exec((findError, books) => {
-      if (findError) {
+      if (findError || books[0].pseudoDeleted === "true") {
         res.json(config.getRespData(true, MSG.internalServerErr, findError));
       } else {
         const book = books[0];

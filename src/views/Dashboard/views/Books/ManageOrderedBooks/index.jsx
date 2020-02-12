@@ -9,7 +9,9 @@ import {
   Card,
   Image,
   Message,
-  Label
+  Label,
+  Accordion,
+  Icon
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import _ from "lodash";
@@ -27,15 +29,14 @@ const resultsForEnum = {
   all: "все"
 };
 
-// TODO: сделать группироваку по пользователям если поиск по всем
-
 export default class ManageOrderedBooks extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       readerId: "",
-      books: [],
+      books: {},
+      activeOpenedSpoiler: -1,
       isDataLoading: false,
       resultsFor: "",
       emptyResults: {
@@ -89,7 +90,8 @@ export default class ManageOrderedBooks extends Component {
     this.setState({
       books: [],
       isDataLoading: true,
-      resultsFor: _.isEmpty(getQuery) ? resultsForEnum.all : readerId
+      resultsFor: _.isEmpty(getQuery) ? resultsForEnum.all : readerId,
+      activeOpenedSpoiler: -1
     });
 
     axs
@@ -100,8 +102,22 @@ export default class ManageOrderedBooks extends Component {
       })
       .then(resp => {
         if (!resp.data.error) {
+          let books = {};
+
+          resp.data.payload.forEach(el => {
+            books = {
+              ...books,
+              [el.userId._id]: {
+                userName: `${el.userId.lastName} ${el.userId.firstName} ${el.userId.patronymic}`,
+                books: resp.data.payload.filter(
+                  els => els.userId._id === el.userId._id
+                )
+              }
+            };
+          });
+
           this.setState({
-            books: resp.data.payload,
+            books,
             isDataLoading: false,
             emptyResults: {
               empty: resp.data.payload.length === 0,
@@ -156,6 +172,12 @@ export default class ManageOrderedBooks extends Component {
       });
   }
 
+  handleClickAccordion(key) {
+    this.setState(ps => ({
+      activeOpenedSpoiler: key === ps.activeOpenedSpoiler ? -1 : key
+    }));
+  }
+
   renderEmptyResultsBlock(emptyResults) {
     const { resultsFor } = this.state;
 
@@ -182,13 +204,14 @@ export default class ManageOrderedBooks extends Component {
       emptyResults,
       bookReturn,
       resultsFor,
-      actionWithOrderedBookInProgress
+      actionWithOrderedBookInProgress,
+      activeOpenedSpoiler
     } = this.state;
 
     return (
       <>
         <Header as="h3" attached="top">
-          Управление забронированными книгами
+          Управление выданными книгами
         </Header>
         <Segment attached loading={isDataLoading}>
           <Form onSubmit={e => this.handleSubmitForm(e, { readerId })}>
@@ -216,124 +239,164 @@ export default class ManageOrderedBooks extends Component {
             </Button>
             <Divider />
           </Form>
-          {books.length !== 0 && (
+          {!_.isEmpty(books) && (
             <>
               <Header as="h5">
                 <span className={s.resultsForText}>Результаты для:</span>{" "}
                 <Label color="blue">{resultsFor}</Label>
               </Header>
-              <Card.Group>
-                {books.map(orderedBook => {
-                  const { bookId: orderedBookInfo, userId: user } = orderedBook;
-
-                  return (
-                    <Card key={orderedBook._id}>
-                      <CustomDimmer
-                        loaderText="Выполняется"
-                        successIcon="check"
-                        successText="Книга успешно возвращена"
-                        active={
-                          actionWithOrderedBookInProgress[orderedBook._id] ||
-                          bookReturn.successfullyReturnedBooks[
-                            orderedBook._id
-                          ] ||
-                          bookReturn.successfullyReturned[orderedBook._id]
-                        }
-                        showLoader={
-                          actionWithOrderedBookInProgress[orderedBook._id]
-                        }
-                        success={
-                          bookReturn.successfullyReturned[orderedBook._id]
-                        }
-                      />
-                      <Card.Content>
-                        <Image
-                          floated="right"
-                          size="mini"
-                          src={orderedBookInfo.bookInfo.imageLinks.poster}
-                          as={Link}
-                          to={`/book/${orderedBookInfo._id}`}
-                          target="blanc"
-                        />
-                        <Card.Header
-                          as={Link}
-                          to={`/book/${orderedBookInfo._id}`}
-                          target="blanc"
-                        >
-                          {orderedBookInfo.bookInfo.title}
-                        </Card.Header>
-                        <Card.Meta>
-                          Дата брони: {util.convertDate(orderedBook.orderedAt)}
-                        </Card.Meta>
-                        <Card.Description>
-                          На руках у:{" "}
-                          <Link target="blank" to={`/profile/${user._id}`}>
-                            {user.lastName} {user.firstName} {user.patronymic}
-                          </Link>{" "}
-                          <br />
-                        </Card.Description>
-                        <Card.Description>
-                          Чит. билет №: {orderedBook.readerId} <br />
-                        </Card.Description>
-                      </Card.Content>
-                      <Card.Content
-                        extra
-                        className={
-                          bookReturn.bookReturnInProgress[orderedBook._id]
-                            ? s.rejectBlock
-                            : ""
-                        }
+              {Object.keys(books).map(key => {
+                const user = books[key];
+                return (
+                  <Accordion key={key}>
+                    <Accordion.Title
+                      active={activeOpenedSpoiler === key}
+                      index={0}
+                      onClick={() => this.handleClickAccordion(key)}
+                      as={Segment}
+                    >
+                      <Icon name="dropdown" />
+                      {user.userName}
+                    </Accordion.Title>
+                    <Accordion.Content active={activeOpenedSpoiler === key}>
+                      <Card.Group
+                        style={{
+                          margin: "-20px -6px 0px"
+                        }}
                       >
-                        {bookReturn.bookReturnInProgress[orderedBook._id] && (
-                          <Reject
-                            onChangeComment={value =>
-                              this.handleSetComment(value, orderedBook)
-                            }
-                            onClickReject={() =>
-                              this.handleReturnBook(orderedBook._id)
-                            }
-                            onClickCancel={() =>
-                              this.handleClickCancel(orderedBook)
-                            }
-                            rejectButtonDisabled={
-                              bookReturn.successfullyReturned[orderedBook._id]
-                            }
-                            cancelButtonDisabled={
-                              bookReturn.successfullyReturned[orderedBook._id]
-                            }
-                          />
-                        )}
-                        {!bookReturn.bookReturnInProgress[orderedBook._id] && (
-                          <div className="ui two buttons">
-                            <Button
-                              basic
-                              color="green"
-                              onClick={() =>
-                                this.setState({
-                                  bookReturn: {
-                                    ...bookReturn,
-                                    bookReturnInProgress: {
-                                      ...bookReturn.bookReturnInProgress,
-                                      [orderedBook._id]: true
-                                    }
-                                  }
-                                })
-                              }
-                              disabled={
-                                bookReturn.successfullyReturnedBooks[
+                        {user.books.map(orderedBook => {
+                          const book = orderedBook.bookId;
+                          return (
+                            <Card key={orderedBook._id}>
+                              <CustomDimmer
+                                loaderText="Выполняется"
+                                successIcon="check"
+                                successText="Книга успешно возвращена"
+                                active={
+                                  actionWithOrderedBookInProgress[
+                                    orderedBook._id
+                                  ] ||
+                                  bookReturn.successfullyReturnedBooks[
+                                    orderedBook._id
+                                  ] ||
+                                  bookReturn.successfullyReturned[
+                                    orderedBook._id
+                                  ]
+                                }
+                                showLoader={
+                                  actionWithOrderedBookInProgress[
+                                    orderedBook._id
+                                  ]
+                                }
+                                success={
+                                  bookReturn.successfullyReturned[
+                                    orderedBook._id
+                                  ]
+                                }
+                              />
+                              <Card.Content>
+                                <Image
+                                  floated="right"
+                                  size="mini"
+                                  src={book.bookInfo.imageLinks.poster}
+                                  as={Link}
+                                  to={`/book/${book._id}`}
+                                  target="blanc"
+                                />
+                                <Card.Header
+                                  as={Link}
+                                  to={`/book/${book._id}`}
+                                  target="blanc"
+                                >
+                                  {book.bookInfo.title}
+                                </Card.Header>
+                                <Card.Meta>
+                                  Дата брони:{" "}
+                                  {util.convertDate(orderedBook.orderedAt)}
+                                </Card.Meta>
+                                <Card.Description>
+                                  На руках у:{" "}
+                                  <Link target="blank" to={`/profile/${key}`}>
+                                    {user.userName}
+                                  </Link>{" "}
+                                  <br />
+                                </Card.Description>
+                                <Card.Description>
+                                  Чит. билет №: {orderedBook.readerId} <br />
+                                </Card.Description>
+                              </Card.Content>
+                              <Card.Content
+                                extra
+                                className={
+                                  bookReturn.bookReturnInProgress[
+                                    orderedBook._id
+                                  ]
+                                    ? s.rejectBlock
+                                    : ""
+                                }
+                              >
+                                {bookReturn.bookReturnInProgress[
                                   orderedBook._id
-                                ]
-                              }
-                            >
-                              Оформить возврат
-                            </Button>
-                          </div>
-                        )}
-                      </Card.Content>
-                    </Card>
-                  );
-                })}
-              </Card.Group>
+                                ] && (
+                                  <Reject
+                                    onChangeComment={value =>
+                                      this.handleSetComment(value, orderedBook)
+                                    }
+                                    onClickReject={() =>
+                                      this.handleReturnBook(orderedBook._id)
+                                    }
+                                    onClickCancel={() =>
+                                      this.handleClickCancel(orderedBook)
+                                    }
+                                    rejectButtonDisabled={
+                                      bookReturn.successfullyReturned[
+                                        orderedBook._id
+                                      ]
+                                    }
+                                    cancelButtonDisabled={
+                                      bookReturn.successfullyReturned[
+                                        orderedBook._id
+                                      ]
+                                    }
+                                  />
+                                )}
+                                {!bookReturn.bookReturnInProgress[
+                                  orderedBook._id
+                                ] && (
+                                  <div className="ui two buttons">
+                                    <Button
+                                      basic
+                                      color="green"
+                                      onClick={() =>
+                                        this.setState({
+                                          bookReturn: {
+                                            ...bookReturn,
+                                            bookReturnInProgress: {
+                                              ...bookReturn.bookReturnInProgress,
+                                              [orderedBook._id]: true
+                                            }
+                                          }
+                                        })
+                                      }
+                                      disabled={
+                                        bookReturn.successfullyReturnedBooks[
+                                          orderedBook._id
+                                        ]
+                                      }
+                                    >
+                                      Оформить возврат
+                                    </Button>
+                                  </div>
+                                )}
+                              </Card.Content>
+                            </Card>
+                          );
+                        })}
+                      </Card.Group>
+                    </Accordion.Content>
+                  </Accordion>
+                );
+              })}
             </>
           )}
           {this.renderEmptyResultsBlock(emptyResults)}

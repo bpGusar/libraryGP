@@ -87,17 +87,20 @@ const MSG = {
   cantAddNewBook: {
     ru: "Произошла ошибка при добавлении книги."
   },
-  cantAddNewBookToArchive: {
-    ru: "Произошла ошибка при добавлении книги в архив."
-  },
   bookAddedInArchiveSuccessfully: {
     ru: "Книга успешно добавлена в архив."
   },
   cantUpdateBook: {
     ru: "Произошла ошибка при обновлении книги."
   },
-  cantDeleteBook: {
-    ru: "Произошла ошибка при удалении книги."
+  cantUpdateSettings: {
+    ru: "Произошла ошибка при обновлении настроек."
+  },
+  cantHideBook: {
+    ru: "Произошла ошибка при добавлении книги в скрытые."
+  },
+  cantRestoreBook: {
+    ru: "Произошла ошибка при восстановлении видимости книги."
   },
   cantDeleteAuthor: {
     ru: "Произошла ошибка при удалении автора."
@@ -114,8 +117,14 @@ const MSG = {
   bookWasUpdated: {
     ru: "Книга успешно обновлена."
   },
-  bookWasDeleted: {
-    ru: "Книга успешно удалена."
+  settingsWasUpdated: {
+    ru: "Настройки успешно обновлены."
+  },
+  bookWasHidden: {
+    ru: "Книга успешно скрыта."
+  },
+  bookWasRestored: {
+    ru: "Видимость книги успешно восстановлена."
   },
   authorWasDeleted: {
     ru: "Автор успешно удален."

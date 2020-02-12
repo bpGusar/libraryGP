@@ -4,7 +4,7 @@ import { Route } from "react-router";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
 
-import AccessDenied from "@views/common/AccessDenied";
+import AccessDenied from "@views/Common/AccessDenied/";
 
 import { PARAMS } from "@store";
 

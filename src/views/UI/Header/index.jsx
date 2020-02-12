@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, Dropdown, Container, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
-import SearchBox from "@views/common/SearchBox";
+import SearchBox from "@views/Common/SearchBox";
 
 import { branch } from "baobab-react/higher-order";
 import { PARAMS } from "@store";
@@ -11,7 +11,7 @@ import { storeData } from "@act";
 import axs from "@axios";
 
 import s from "./Header.module.scss";
-// TODO: переосмыслить меню
+
 class Header extends React.Component {
   constructor(props) {
     super(props);
@@ -92,7 +92,11 @@ class Header extends React.Component {
               {this.generateMenu().map(el => el)}
             </Menu.Menu>
             <Menu.Menu position="right" className={s.rightMenu}>
-              <Menu.Item>
+              <Menu.Item
+                style={{
+                  padding: 0
+                }}
+              >
                 <SearchBox />
               </Menu.Item>
               {isUserAuthorized ? (

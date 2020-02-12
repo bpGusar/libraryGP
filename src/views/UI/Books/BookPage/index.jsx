@@ -5,12 +5,19 @@ import { branch } from "baobab-react/higher-order";
 
 import { Segment, List } from "semantic-ui-react";
 
+import SearchQueryLink from "@commonViews/SearchQueryLink";
+
 import axs from "@axios";
 
 import { PARAMS } from "@store";
 import { storeData } from "@act";
 
 import s from "./index.module.scss";
+
+const ageRating = {
+  NOT_MATURE: "Без ограничений",
+  MATURE: "18+"
+};
 
 class BookPage extends React.Component {
   componentDidMount() {
@@ -64,7 +71,19 @@ class BookPage extends React.Component {
                     <List.Icon name="copyright" />
                     Издатель
                   </List.Header>
-                  {book.bookInfo.publisher.map(el => el.publisherName)}
+                  {book.bookInfo.publisher.map((el, i) => (
+                    <>
+                      <SearchQueryLink
+                        key={el._id}
+                        className={s.queryLink}
+                        text={el.publisherName}
+                        url="/search"
+                        param="mode=find&data=bookInfo.publisher"
+                        value={el._id}
+                      />
+                      {book.bookInfo.publisher.length - 1 !== i && " • "}
+                    </>
+                  ))}
                 </List.Content>
               </List.Item>
 
@@ -74,7 +93,19 @@ class BookPage extends React.Component {
                     <List.Icon name="language" />
                     Язык
                   </List.Header>
-                  {book.bookInfo.language.map(el => el.languageName)}
+                  {book.bookInfo.language.map((el, i) => (
+                    <>
+                      <SearchQueryLink
+                        key={el._id}
+                        className={s.queryLink}
+                        text={el.languageName}
+                        url="/search"
+                        param="mode=find&data=bookInfo.language"
+                        value={el._id}
+                      />
+                      {book.bookInfo.language.length - 1 !== i && " • "}
+                    </>
+                  ))}
                 </List.Content>
               </List.Item>
 
@@ -114,7 +145,7 @@ class BookPage extends React.Component {
                     <List.Icon name="square full" />
                     Возрастной рейтинг
                   </List.Header>
-                  {book.bookInfo.maturityRating}
+                  {ageRating[book.bookInfo.maturityRating]}
                 </List.Content>
               </List.Item>
             </List>

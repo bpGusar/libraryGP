@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Icon, Accordion } from "semantic-ui-react";
 import _ from "lodash";
 
-import UniqueDropdown from "@views/common/UniqueDropdown/UniqueDropdown";
+import UniqueDropdown from "@views/Common/UniqueDropdown/";
 
 import { PARAMS } from "@store";
 
@@ -15,20 +15,25 @@ export default function Filters(props) {
     setActiveAccordionIndex(newIndex);
   };
 
-  const { onChangeSearchQuery, searchQuery } = props;
+  const { onChangeSearchQuery, searchQuery, permanentOpen } = props;
   return (
     <Accordion className="mb-3">
-      <Accordion.Title
-        active={activeAccordionIndex === 0}
-        index={0}
-        onClick={(e, titleProp) => handleShowOpenAccordion(titleProp)}
+      {!permanentOpen && (
+        <Accordion.Title
+          active={activeAccordionIndex === 0}
+          index={0}
+          onClick={(e, titleProp) => handleShowOpenAccordion(titleProp)}
+        >
+          <Icon name="dropdown" />
+          Дополнительные фильтры
+        </Accordion.Title>
+      )}
+      <Accordion.Content
+        active={permanentOpen ? true : activeAccordionIndex === 0}
       >
-        <Icon name="dropdown" />
-        Дополнительные фильтры
-      </Accordion.Title>
-      <Accordion.Content active={activeAccordionIndex === 0}>
         <Form.Group widths="equal">
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-authors"
             axiosPostLink="/book-authors"
             storeParam={PARAMS.AUTHORS}
@@ -45,6 +50,7 @@ export default function Filters(props) {
             }
           />
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-publishers"
             axiosPostLink="/book-publishers"
             storeParam={PARAMS.PUBLISHERS}
@@ -61,6 +67,7 @@ export default function Filters(props) {
             }
           />
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-categories"
             axiosPostLink="/book-categories"
             storeParam={PARAMS.CATEGORIES}
@@ -79,6 +86,7 @@ export default function Filters(props) {
             }
           />
           <UniqueDropdown
+            axsQuery={{ params: { options: { limit: 999 } } }}
             axiosGetLink="/book-languages"
             axiosPostLink="/book-languages"
             storeParam={PARAMS.LANGUAGES}

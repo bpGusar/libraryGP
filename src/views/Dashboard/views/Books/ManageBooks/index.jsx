@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React, { Component } from "react";
 import {
   Segment,
@@ -6,11 +7,14 @@ import {
   Header,
   Icon,
   Item,
-  Divider
+  Divider,
+  Label
 } from "semantic-ui-react";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
 import { toast } from "react-semantic-toasts";
+import { withRouter } from "react-router-dom";
+import qStr from "query-string";
 
 import PaginationBlock from "@commonViews/Pagination";
 import BookItem from "@DUI/common/BookItem";
@@ -21,10 +25,42 @@ import ResultFilters from "./components/ResultFilters";
 import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";
-import { storeData } from "@act";
 import MSG from "@msg";
 
+/**
+ * Виджет поиска книг
+ *
+ * Пропсы:
+ * @param {Array} allAccess предоставлять ли пользователям полный доступ к виджету
+ * @param {Component} formHeader заголовок виджета
+ * @param {Component} showBooksWhenOpen загружать ли список книг после загрузки виджета
+ */
+
 class ManageBooks extends Component {
+  static checkBookHiddenOrNot(bookId, status, func) {
+    axs
+      .get(`/books`, {
+        params: {
+          searchQuery: { _id: bookId }
+        }
+      })
+      .then(resp => {
+        if (!resp.data.error) {
+          if (resp.data.payload[0].pseudoDeleted !== status) {
+            func();
+          } else {
+            toast(
+              MSG.toastClassicError(
+                "Нельзя выполнить данную операцию. Проверьте запрос!"
+              )
+            );
+          }
+        } else {
+          toast(MSG.toastClassicSuccess(resp.data.message));
+        }
+      });
+  }
+
   constructor(props) {
     super(props);
 
@@ -37,11 +73,14 @@ class ManageBooks extends Component {
         fetch_type: 1,
         sort: "desc",
         limit: 10,
-        page: 1
+        page: 1,
+        displayMode: "all"
       },
-      bookToDeleteId: "",
+      deleteOrRestoreBookId: "",
+      deleteBookModalOpen: false,
+      restoreBookModalOpen: false,
+      restoreBookModalLoading: false,
       deleteBookModal: {
-        open: false,
         isLoading: false,
         result: {
           BookedBooks: 0,
@@ -52,7 +91,38 @@ class ManageBooks extends Component {
   }
 
   componentDidMount() {
-    this.handleSearchBooks(true);
+    const { showBooksWhenOpen, location } = this.props;
+    const query = qStr.parse(location.search);
+    if (!_.isEmpty(query) && _.has(query, "mode")) {
+      if (
+        query.mode === "delete" &&
+        _.has(query, "bookId") &&
+        !_.isEmpty(query.bookId)
+      ) {
+        ManageBooks.checkBookHiddenOrNot(query.bookId, "true", () =>
+          this.manageConfirmWindow(query.bookId, "deleteBookModalOpen")
+        );
+      } else if (
+        query.mode === "restore" &&
+        _.has(query, "bookId") &&
+        !_.isEmpty(query.bookId)
+      ) {
+        ManageBooks.checkBookHiddenOrNot(query.bookId, "false", () =>
+          this.manageConfirmWindow(query.bookId, "restoreBookModalOpen")
+        );
+      } else if (query.mode === "find") {
+        const dataQuery = qStr.parse(query.data);
+        Object.keys(dataQuery).map(key =>
+          this.handleChangeSearchQuery([dataQuery[key]], key, false, () =>
+            this.handleSearchBooks(true)
+          )
+        );
+      }
+    }
+
+    if (showBooksWhenOpen) {
+      this.handleSearchBooks(true);
+    }
   }
 
   handleSearchBooks = (dropPageCount = false) => {
@@ -90,7 +160,7 @@ class ManageBooks extends Component {
       });
   };
 
-  handleChangeSearchQuery = (value, name, regex = false) =>
+  handleChangeSearchQuery = (value, name, regex = false, cb = () => {}) =>
     this.setState(prevState => {
       const { searchQuery } = prevState;
       let searchQueryCloned = _.cloneDeep(searchQuery);
@@ -112,14 +182,14 @@ class ManageBooks extends Component {
       return {
         searchQuery: { ...searchQueryCloned }
       };
-    });
+    }, cb);
 
-  handleChangeSortType = value =>
+  handleChangeResultFilterValue = (value, prop) =>
     this.setState(
       prevState => ({
         options: {
           ...prevState.options,
-          sort: value
+          [prop]: value
         }
       }),
       () => this.handleSearchBooks()
@@ -145,7 +215,7 @@ class ManageBooks extends Component {
     );
 
   deleteBook = deleteBook => {
-    const { bookToDeleteId, deleteBookModal } = this.state;
+    const { deleteOrRestoreBookId, deleteBookModal } = this.state;
 
     if (deleteBook) {
       this.setState({
@@ -155,46 +225,39 @@ class ManageBooks extends Component {
           isLoading: true
         }
       });
-      axs.delete(`/books/${bookToDeleteId}`).then(resp => {
-        if (!resp.data.error) {
+      axs.delete(`/books/${deleteOrRestoreBookId}`).then(deleteResp => {
+        if (!deleteResp.data.error) {
           this.setState(
             {
               isLoading: false,
-              bookToDeleteId: "",
+              deleteOrRestoreBookId: "",
+              deleteBookModalOpen: false,
               deleteBookModal: {
                 ...deleteBookModal,
-                open: false
+                isLoading: false
               }
             },
             () => {
               this.handleSearchBooks(true);
-              toast(MSG.toastClassicSuccess(resp.data.message));
+              toast(MSG.toastClassicSuccess(deleteResp.data.message));
             }
           );
-        } else if (resp.data.error && _.has(resp.data.payload, "bookOnHand")) {
+        } else {
           this.setState({
             isLoading: false,
             deleteBookModal: {
               ...deleteBookModal,
-              isLoading: false,
-              result: {
-                BookedBooks: resp.data.payload.result.BookedBooks,
-                OrderedBooks: resp.data.payload.result.OrderedBooks
-              }
+              isLoading: false
             }
           });
-        } else {
-          this.setState({
-            isLoading: false
-          });
-          toast(MSG.toastClassicError(resp.data.message));
+          toast(MSG.toastClassicError(deleteResp.data.message));
         }
       });
     } else {
       this.setState({
+        deleteBookModalOpen: false,
         deleteBookModal: {
           ...deleteBookModal,
-          open: false,
           result: {
             BookedBooks: 0,
             OrderedBooks: 0
@@ -204,55 +267,51 @@ class ManageBooks extends Component {
     }
   };
 
-  putBookDataInToStore(currentBook) {
-    const { dispatch, history, bookToDB } = this.props;
-
-    this.setState({
-      isLoading: true
-    });
-
-    axs
-      .get(`/books/${currentBook._id}`, {
-        params: {
-          options: { fetch_type: 0 }
-        }
-      })
-      .then(resp => {
+  bookRestore(restore) {
+    const { deleteOrRestoreBookId } = this.state;
+    if (restore) {
+      this.setState({
+        restoreBookModalLoading: true
+      });
+      axs.put(`/books/${deleteOrRestoreBookId}/restore`).then(resp => {
         if (!resp.data.error) {
-          const clonedResp = resp;
-          delete clonedResp.data.payload[0].__v;
-
           this.setState(
             {
-              isLoading: false
+              isLoading: false,
+              deleteOrRestoreBookId: "",
+              restoreBookModalOpen: false,
+              restoreBookModalLoading: false
             },
             () => {
-              dispatch(storeData, PARAMS.BOOK_TO_DB, {
-                ...bookToDB,
-                flag: "edit",
-                book: {
-                  ...clonedResp.data.payload[0]
-                }
-              });
-              history.push("/dashboard/books/new");
+              this.handleSearchBooks(true);
+              toast(MSG.toastClassicSuccess(resp.data.message));
             }
           );
         } else {
           this.setState({
-            isLoading: false
+            isLoading: false,
+            restoreBookModalLoading: false
           });
+          toast(MSG.toastClassicError(resp.data.message));
         }
       });
+    } else {
+      this.setState({
+        restoreBookModalOpen: false
+      });
+    }
   }
 
-  manageConfirmWindow(book) {
-    const { deleteBookModal } = this.state;
+  goToBookEdit(currentBook) {
+    const { history } = this.props;
+
+    history.push(`/dashboard/books/new?mode=edit&bookId=${currentBook._id}`);
+  }
+
+  manageConfirmWindow(bookId, param) {
     this.setState({
-      deleteBookModal: {
-        ...deleteBookModal,
-        open: true
-      },
-      bookToDeleteId: book._id
+      [param]: true,
+      deleteOrRestoreBookId: bookId
     });
   }
 
@@ -263,12 +322,16 @@ class ManageBooks extends Component {
       searchQuery,
       options,
       maxElements,
-      deleteBookModal
+      deleteBookModal,
+      deleteBookModalOpen,
+      restoreBookModalOpen,
+      restoreBookModalLoading
     } = this.state;
+    const { allAccess, formHeader } = this.props;
     return (
       <Segment.Group>
         <Segment>
-          <Header as="h3">Список книг</Header>
+          <Header as="h3">{formHeader}</Header>
         </Segment>
         <Segment loading={isLoading}>
           <Form onSubmit={() => this.handleSearchBooks(true)}>
@@ -290,6 +353,7 @@ class ManageBooks extends Component {
               onChangeSearchQuery={(value, name) =>
                 this.handleChangeSearchQuery(value, name)
               }
+              permanentOpen={!allAccess}
             />
             <Divider />
             <Button icon type="submit" primary labelPosition="left">
@@ -299,7 +363,7 @@ class ManageBooks extends Component {
             <Divider />
             <ResultFilters
               options={options}
-              onChangeSort={this.handleChangeSortType}
+              onChangeResultFilterValue={this.handleChangeResultFilterValue}
               onChangeLimit={this.handleChangeLimit}
             />
           </Form>
@@ -317,8 +381,20 @@ class ManageBooks extends Component {
                 <BookItem
                   key={book._id}
                   book={book}
-                  onEditClick={bookData => this.putBookDataInToStore(bookData)}
-                  onDeleteClick={bookData => this.manageConfirmWindow(bookData)}
+                  onEditClick={bookData => this.goToBookEdit(bookData)}
+                  onRestoreClick={bookData =>
+                    this.manageConfirmWindow(
+                      bookData._id,
+                      "restoreBookModalOpen"
+                    )
+                  }
+                  onDeleteClick={bookData =>
+                    this.manageConfirmWindow(
+                      bookData._id,
+                      "deleteBookModalOpen"
+                    )
+                  }
+                  showOptions={allAccess}
                 />
               ))}
             </Item.Group>
@@ -335,17 +411,66 @@ class ManageBooks extends Component {
           </Segment>
         )}
         <ModalWindow
-          deleteBookModal={deleteBookModal}
-          onBookDeleteClick={this.deleteBook}
+          header="Восстановление книги"
+          open={restoreBookModalOpen}
+          onCancelClick={() => this.bookRestore(false)}
+          onRunClick={() => this.bookRestore(true)}
+          firstPageContent={
+            <p>Вы действительно хотите восстановить видимость этой книги?</p>
+          }
+          showFirstPageContentIf={!restoreBookModalLoading}
+          isLoading={restoreBookModalLoading}
+          disableRunButton={restoreBookModalLoading}
+        />
+        <ModalWindow
+          header="Удаление книги"
+          open={deleteBookModalOpen}
+          onCancelClick={() => this.deleteBook(false)}
+          onRunClick={() => this.deleteBook(true)}
+          firstPageContent={<p>Вы действительно хотите удалить эту книгу?</p>}
+          showFirstPageContentIf={
+            !deleteBookModal.isLoading &&
+            deleteBookModal.result.BookedBooks === 0 &&
+            deleteBookModal.result.OrderedBooks === 0
+          }
+          isLoading={deleteBookModal.isLoading}
+          disableRunButton={
+            deleteBookModal.isLoading ||
+            deleteBookModal.result.BookedBooks !== 0 ||
+            deleteBookModal.result.OrderedBooks !== 0
+          }
+          showSecondPageContentIf={
+            !deleteBookModal.isLoading &&
+            (deleteBookModal.result.BookedBooks !== 0 ||
+              deleteBookModal.result.OrderedBooks !== 0)
+          }
+          secondPageContent={
+            <>
+              <Header as="h3" color="red">
+                Произошла ошибка.
+              </Header>
+              <p>Книги есть у пользователей на руках либо они забронированы</p>
+              <p>
+                Забронированных книг:{" "}
+                <Label>{deleteBookModal.result.BookedBooks}</Label>
+              </p>
+              <p>
+                Книг на руках:{" "}
+                <Label>{deleteBookModal.result.OrderedBooks}</Label>
+              </p>
+            </>
+          }
         />
       </Segment.Group>
     );
   }
 }
 
-export default branch(
-  {
-    bookToDB: PARAMS.BOOK_TO_DB
-  },
-  ManageBooks
+export default withRouter(
+  branch(
+    {
+      bookToDB: PARAMS.BOOK_TO_DB
+    },
+    ManageBooks
+  )
 );

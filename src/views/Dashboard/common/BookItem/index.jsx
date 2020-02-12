@@ -1,19 +1,27 @@
 import React from "react";
-import { Item, Label, Icon, Dropdown, Divider } from "semantic-ui-react";
-import cn from "classnames";
+import { Item, Label, Icon, Divider } from "semantic-ui-react";
 
-import s from "./index.module.scss";
+import BookOptions from "@commonViews/BookOptions";
+
+import { isAdmin } from "@utils";
 
 export default function BookItem(props) {
   const {
     book,
     onDeleteClick,
     onEditClick,
+    onRestoreClick,
     renderCustomInfo,
-    dividedInfo
+    dividedInfo,
+    showOptions
   } = props;
   return (
-    <Item>
+    <Item
+      style={{
+        backgroundColor:
+          book.pseudoDeleted === "true" ? "rgba(255, 0, 0, 0.08)" : undefined
+      }}
+    >
       <Item.Image
         as="a"
         href={`/book/${book._id}`}
@@ -25,33 +33,14 @@ export default function BookItem(props) {
         <Item.Header as="a" href={`/book/${book._id}`} target="blanc">
           {book.bookInfo.title}
         </Item.Header>
-        {(onEditClick || onDeleteClick) && (
-          <Dropdown
-            icon="ellipsis horizontal"
-            floating
-            button
-            className={cn(s.headerDrop, "icon")}
-          >
-            <Dropdown.Menu>
-              <Dropdown.Menu scrolling>
-                {onEditClick && (
-                  <Dropdown.Item
-                    text="Редактировать"
-                    icon="pencil alternate"
-                    onClick={() => onEditClick(book)}
-                  />
-                )}
-                {onEditClick && onDeleteClick && <Dropdown.Divider />}
-                {onDeleteClick && (
-                  <Dropdown.Item
-                    text="Удалить"
-                    icon="close"
-                    onClick={() => onDeleteClick(book)}
-                  />
-                )}
-              </Dropdown.Menu>
-            </Dropdown.Menu>
-          </Dropdown>
+        {(onEditClick || onDeleteClick) && showOptions && (
+          <BookOptions
+            onEditClick={() => onEditClick(book)}
+            onDeleteClick={() => onDeleteClick(book)}
+            onRestoreClick={() => onRestoreClick(book)}
+            isBookHidden={book.pseudoDeleted === "true"}
+            isAdmin={isAdmin()}
+          />
         )}
         <Item.Meta>
           <span className="cinema">

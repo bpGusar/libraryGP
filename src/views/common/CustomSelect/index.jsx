@@ -11,7 +11,9 @@ function CustomSelect(props) {
     defaultValue,
     onChange,
     placeholder,
-    required
+    required,
+    loading,
+    value: selectValue
   } = props;
 
   const unqId = uniqid("cussel_");
@@ -27,6 +29,8 @@ function CustomSelect(props) {
         options={options}
         defaultValue={defaultValue}
         onChange={(e, { value, name }) => onChange(value, name)}
+        value={selectValue}
+        loading={loading || undefined}
       />
     </Form.Field>
   );
