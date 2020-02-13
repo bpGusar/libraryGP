@@ -1,3 +1,4 @@
+import blog from "./blog";
 import bookAuthors from "./bookAuthors";
 import bookCategories from "./bookCategories";
 import bookLanguages from "./bookLanguages";
@@ -12,6 +13,7 @@ import users from "./users";
 
 // eslint-disable-next-line import/prefer-default-export
 export {
+  blog,
   bookAuthors,
   bookCategories,
   bookLanguages,
