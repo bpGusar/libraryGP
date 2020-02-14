@@ -4,7 +4,7 @@ const { Schema } = Mongoose;
 
 const BlogSchema = new Schema({
   header: String,
-  text: String,
+  text: Object,
   userId: {
     type: String,
     ref: "User"

@@ -47,6 +47,7 @@
     "node-cron": "^2.0.3",
     "nodemailer": "^6.3.0",
     "rimraf": "^3.0.0",
-    "uniqid": "^5.1.0"
+    "uniqid": "^5.1.0",
+    "url-metadata": "^2.4.0"
   }
 }

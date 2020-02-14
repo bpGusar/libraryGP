@@ -12,4 +12,6 @@ app.post(
   (req, res) => BlogContr.addPost(req, res)
 );
 
+app.get("/api/blog", (req, res) => BlogContr.getPosts(req, res));
+
 export default app;

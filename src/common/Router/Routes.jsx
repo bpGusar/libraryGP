@@ -160,7 +160,7 @@ function AppRotes(props) {
         accessRole={[userRoles.admin.value]}
         checkAuth={checkAuth}
         path="/dashboard/info-page"
-        component={InfoPage}
+        component={() => <InfoPage to="/dashboard" />}
       />
       <PrivateRoute
         exact
@@ -285,7 +285,7 @@ function AppRotes(props) {
         exact
         path="/info-page"
         layout={MainLayout}
-        component={InfoPage}
+        component={() => <InfoPage to="/" />}
       />
       <AppRoute exact path="/blog" layout={MainLayout} component={BlogPage} />
       <AppRoute

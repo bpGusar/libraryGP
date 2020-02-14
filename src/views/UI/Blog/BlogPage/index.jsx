@@ -1,25 +1,58 @@
-import React, { Component } from "react";
-import { Header } from "semantic-ui-react";
+import React from "react";
+import { Header, Segment, Icon } from "semantic-ui-react";
+import _ from "lodash";
+
 import BlogItem from "./components/Item";
 
-// eslint-disable-next-line react/prefer-stateless-function
-export default class BlogPage extends Component {
+import axs from "@axios";
+
+export default class BlogPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      posts: []
+    };
+  }
+
+  componentDidMount() {
+    this.getPosts();
+  }
+
+  getPosts = () => {
+    axs
+      .get(`/blog`, { params: { page: 1, limit: 99, sort: "desc" } })
+      .then(resp => {
+        if (!resp.data.error) {
+          this.setState({
+            posts: resp.data.payload
+          });
+        }
+      });
+  };
+
   render() {
+    const { posts } = this.state;
+    console.log(posts);
     return (
       <div>
         <Header as="h1">Блог</Header>
         <hr />
-        <BlogItem
-          header="Название"
-          link="/fdgfdgfd"
-          text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum."
-        />
+        {_.isEmpty(posts) ? (
+          <Segment placeholder>
+            <Header icon>
+              <Icon name="list" />
+              Ничего здесь нет, пока что....
+            </Header>
+          </Segment>
+        ) : (
+          posts.map(post => (
+            <BlogItem
+              header={post.header}
+              link={`/blog/${post._id}`}
+              text={post.text}
+            />
+          ))
+        )}
       </div>
     );
   }
