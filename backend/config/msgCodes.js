@@ -93,6 +93,9 @@ const MSG = {
   cantUpdateBook: {
     ru: "Произошла ошибка при обновлении книги."
   },
+  cantUpdatePost: {
+    ru: "Произошла ошибка при обновлении поста."
+  },
   cantUpdateSettings: {
     ru: "Произошла ошибка при обновлении настроек."
   },
@@ -116,6 +119,9 @@ const MSG = {
   },
   bookWasUpdated: {
     ru: "Книга успешно обновлена."
+  },
+  postWasUpdated: {
+    ru: "Пост успешно обновлен."
   },
   settingsWasUpdated: {
     ru: "Настройки успешно обновлены."
