@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React from "react";
-import { Header, Image, List, Divider } from "semantic-ui-react";
+import { Header, Image, List, Divider, Message } from "semantic-ui-react";
 import ReactHtmlParser from "react-html-parser";
 
 export default function Text(props) {
@@ -22,6 +22,15 @@ export default function Text(props) {
             <p key={`${block.type}_${idx}`}>
               {ReactHtmlParser(block.data.text)}
             </p>
+          );
+          break;
+        case "quote":
+          html.push(
+            <Message
+              color="blue"
+              header={ReactHtmlParser(block.data.caption)}
+              content={ReactHtmlParser(block.data.text)}
+            />
           );
           break;
         case "delimiter":

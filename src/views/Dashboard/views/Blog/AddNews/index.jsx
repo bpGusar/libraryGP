@@ -1,7 +1,7 @@
 /* eslint-disable react/prefer-stateless-function */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { Component } from "react";
-import { Segment, Header as SemHeader, Form, Button } from "semantic-ui-react";
+import { Segment, Header as SemHeader, Button, Input } from "semantic-ui-react";
 import uniqid from "uniqid";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
@@ -110,7 +110,7 @@ class AddNews extends Component {
           {isEdit ? "Редактировать запись" : "Добавить запись"}
         </SemHeader>
         <Segment attached loading={isLoading}>
-          <Form.Input
+          <Input
             fluid
             required
             label="Заголовок"

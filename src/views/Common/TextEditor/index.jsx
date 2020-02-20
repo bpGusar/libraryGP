@@ -7,12 +7,19 @@ import LinkTool from "@editorjs/link";
 import ImageTool from "@editorjs/image";
 import Quote from "@editorjs/quote";
 import Delimiter from "@editorjs/delimiter";
+import uniqid from "uniqid";
 
 export default class TextEditor extends React.Component {
   constructor(props) {
     super(props);
+    this.Id = uniqid("textEditor_");
+    this.editor = {};
+  }
+
+  componentDidMount() {
+    const { data } = this.props;
     this.editor = new EditorJS({
-      holderId: "textEditor",
+      holderId: this.Id,
       onChange: () => this.saver(),
       tools: {
         header: Header,
@@ -39,7 +46,7 @@ export default class TextEditor extends React.Component {
           }
         }
       },
-      data: _.has(props, "data") ? { ...props.data } : {}
+      data: _.has(this.props, "data") ? { ...data } : {}
     });
   }
 
@@ -57,6 +64,6 @@ export default class TextEditor extends React.Component {
   }
 
   render() {
-    return <div id="textEditor" />;
+    return <div id={this.Id} />;
   }
 }

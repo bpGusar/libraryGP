@@ -21,7 +21,7 @@ function InfoPage(props) {
   return (
     <Segment placeholder>
       {_.isEmpty(infoPage.type) ? (
-        history.push(to)
+        history.push(to || "/")
       ) : (
         <>
           <Header icon>

@@ -19,6 +19,7 @@ import BookPage from "@UI/Books/BookPage";
 import EmailVerify from "@UI/Users/EmailVerify";
 import ProfilePage from "@UI/Users/ProfilePage";
 import BlogPage from "@UI/Blog/BlogPage";
+import BlogFullPage from "@UI/Blog/BlogFullPage";
 
 /** вьюхи дашборда */
 import AddAuthor from "@DUI/views/Authors/AddAuthor";
@@ -288,6 +289,12 @@ function AppRotes(props) {
         component={() => <InfoPage to="/" />}
       />
       <AppRoute exact path="/blog" layout={MainLayout} component={BlogPage} />
+      <AppRoute
+        exact
+        path="/blog/:id"
+        layout={MainLayout}
+        component={BlogFullPage}
+      />
       <AppRoute
         exact
         path="/book/:id"
