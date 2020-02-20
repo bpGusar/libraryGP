@@ -14,9 +14,9 @@ import { branch } from "baobab-react/higher-order";
 import { DateTime } from "luxon";
 import { Link } from "react-router-dom";
 
-import PaginationBlock from "@commonViews/Pagination";
 import BookItem from "@DUI/common/BookItem";
 import UniqueDropdown from "@views/Common/UniqueDropdown/";
+import FormContainer from "@DUI/common/FormContainer";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
@@ -137,11 +137,16 @@ class OrdersArchive extends Component {
   render() {
     const { books, isLoading, searchQuery, options, maxElements } = this.state;
     return (
-      <Segment.Group>
-        <Segment>
-          <Header as="h3">Архив выданных книг</Header>
-        </Segment>
-        <Segment loading={isLoading}>
+      <FormContainer
+        formHeader="Архив забронированных книг"
+        formLoading={isLoading}
+        resultLoading={isLoading}
+        showPagination
+        pagMaxElements={maxElements}
+        pagLimit={options.limit}
+        pagPage={options.page}
+        pagOnPageChange={this.handlePageChange}
+        form={() => (
           <Form onSubmit={() => this.handleSearchBooks(true)}>
             <UniqueDropdown
               axsQuery={{ params: { options: { limit: 999 } } }}
@@ -175,104 +180,96 @@ class OrdersArchive extends Component {
               onChangeLimit={this.handleChangeLimit}
             />
           </Form>
-        </Segment>
-        <Segment placeholder={_.isEmpty(books)} loading={isLoading}>
-          {_.isEmpty(books) && !isLoading && (
-            <Header icon>
-              <Icon name="search" />
-              Результатов нет
-            </Header>
-          )}
-          {!_.isEmpty(books) && (
-            <Item.Group divided>
-              {books.map(book => {
-                const {
-                  bookedBookInfo: { bookId },
-                  bookedBookInfo
-                } = book;
-                return (
-                  <BookItem
-                    key={book._id}
-                    book={bookId}
-                    dividedInfo
-                    renderCustomInfo={() => (
-                      <>
-                        <strong
-                          style={{
-                            color: "black"
-                          }}
-                        >
-                          Информация о брони:
-                        </strong>
-                        <Segment>
-                          <List divided relaxed>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Дата брони:</List.Header>
-                                <List.Description>
-                                  {DateTime.fromISO(bookedBookInfo.createdAt)
-                                    .setLocale("ru")
-                                    .toFormat("dd MMMM yyyy")}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Бронировал:</List.Header>
-                                <List.Description>
-                                  <Link
-                                    to={`/profile/${bookedBookInfo.userId._id}`}
-                                    target="blanc"
-                                  >
-                                    {bookedBookInfo.userId.login}
-                                  </Link>
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>
-                                  В архив добавлена пользователем:
-                                </List.Header>
-                                <List.Description>
-                                  <Link
-                                    to={`/profile/${book.userId._id}`}
-                                    target="blanc"
-                                  >
-                                    {book.userId.login}
-                                  </Link>
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Комментарий:</List.Header>
-                                <List.Description>
-                                  {book.comment}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                          </List>
-                        </Segment>
-                      </>
-                    )}
-                  />
-                );
-              })}
-            </Item.Group>
-          )}
-        </Segment>
-        {Number(maxElements) > options.limit && (
-          <Segment>
-            <PaginationBlock
-              onPageChange={this.handlePageChange}
-              page={options.page}
-              limit={options.limit}
-              maxElements={maxElements}
-            />
+        )}
+        result={() => (
+          <Segment placeholder={_.isEmpty(books)}>
+            {_.isEmpty(books) && !isLoading && (
+              <Header icon>
+                <Icon name="search" />
+                Результатов нет
+              </Header>
+            )}
+            {!_.isEmpty(books) && (
+              <Item.Group divided>
+                {books.map(book => {
+                  const {
+                    bookedBookInfo: { bookId },
+                    bookedBookInfo
+                  } = book;
+                  return (
+                    <BookItem
+                      key={book._id}
+                      book={bookId}
+                      dividedInfo
+                      renderCustomInfo={() => (
+                        <>
+                          <strong
+                            style={{
+                              color: "black"
+                            }}
+                          >
+                            Информация о брони:
+                          </strong>
+                          <Segment>
+                            <List divided relaxed>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>Дата брони:</List.Header>
+                                  <List.Description>
+                                    {DateTime.fromISO(bookedBookInfo.createdAt)
+                                      .setLocale("ru")
+                                      .toFormat("dd MMMM yyyy")}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>Бронировал:</List.Header>
+                                  <List.Description>
+                                    <Link
+                                      to={`/profile/${bookedBookInfo.userId._id}`}
+                                      target="blanc"
+                                    >
+                                      {bookedBookInfo.userId.login}
+                                    </Link>
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>
+                                    В архив добавлена пользователем:
+                                  </List.Header>
+                                  <List.Description>
+                                    <Link
+                                      to={`/profile/${book.userId._id}`}
+                                      target="blanc"
+                                    >
+                                      {book.userId.login}
+                                    </Link>
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>Комментарий:</List.Header>
+                                  <List.Description>
+                                    {book.comment}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                            </List>
+                          </Segment>
+                        </>
+                      )}
+                    />
+                  );
+                })}
+              </Item.Group>
+            )}
           </Segment>
         )}
-      </Segment.Group>
+      />
     );
   }
 }

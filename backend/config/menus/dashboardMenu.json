@@ -178,6 +178,13 @@
         "text": "Добавить запись",
         "to": "/dashboard/blog/new",
         "type": "simple"
+      },
+      {
+        "id": "menuItem_k6ufpzof",
+        "icon": "list",
+        "text": "Все посты",
+        "to": "/dashboard/blog/list",
+        "type": "simple"
       }
     ]
   },

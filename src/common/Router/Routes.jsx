@@ -41,6 +41,7 @@ import AddNewUser from "@DUI/views/Users/AddNew";
 import MenusPage from "@DUI/views/MenusPage";
 import UsersList from "@DUI/views/Users/UsersListPage";
 import AddNews from "@DUI/views/Blog/AddNews";
+import ManageBlogPosts from "@DUI/views/Blog/ManageBlogPosts";
 import SettingsPage from "@DUI/views/Settings";
 import DashboardPage from "@DUI";
 
@@ -242,6 +243,14 @@ function AppRotes(props) {
         checkAuth={checkAuth}
         path="/dashboard/blog/new"
         component={AddNews}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/blog/list"
+        component={ManageBlogPosts}
       />
       <PrivateRoute
         exact
