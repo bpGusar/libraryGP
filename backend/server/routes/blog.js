@@ -18,7 +18,10 @@ app.put(
   (req, res) => BlogContr.updatePost(req, res)
 );
 
-app.get("/api/blog", (req, res) => BlogContr.getPosts(req, res));
+app.get("/api/blog", (req, res) => {
+  const { searchQuery } = req.query;
+  BlogContr.getPosts(req, res, searchQuery);
+});
 
 app.get("/api/blog/:id", (req, res) =>
   BlogContr.getPosts(req, res, JSON.stringify({ _id: req.params.id }))

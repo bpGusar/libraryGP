@@ -130,6 +130,11 @@ function getPosts(req, res, data = {}) {
         .sort({ createdAt: options.sort })
         .skip(getSkip())
         .limit(options.limit)
+        .populate([
+          {
+            path: "userId"
+          }
+        ])
         .exec((err, posts) => {
           if (err) {
             res.json(config.getRespData(true, MSG.internalServerErr, err));

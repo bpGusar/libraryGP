@@ -15,6 +15,9 @@ export default function BookItem(props) {
     dividedInfo,
     showOptions
   } = props;
+
+  const bookHidden = book.pseudoDeleted === "true";
+
   return (
     <Item
       style={{
@@ -35,10 +38,20 @@ export default function BookItem(props) {
         </Item.Header>
         {(onEditClick || onDeleteClick) && showOptions && (
           <BookOptions
-            onEditClick={() => onEditClick(book)}
-            onDeleteClick={() => onDeleteClick(book)}
-            onRestoreClick={() => onRestoreClick(book)}
-            isBookHidden={book.pseudoDeleted === "true"}
+            options={[
+              {
+                text: "Редактировать",
+                icon: "pencil alternate",
+                onClick: () => onEditClick(book)
+              },
+              {
+                text: !bookHidden ? "Скрыть" : "Восстановить видимость",
+                icon: !bookHidden ? "close" : "reply",
+                onClick: !bookHidden
+                  ? () => onDeleteClick(book)
+                  : () => onRestoreClick(book)
+              }
+            ]}
             isAdmin={isAdmin()}
           />
         )}

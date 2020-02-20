@@ -3,6 +3,24 @@ import { Segment, Header } from "semantic-ui-react";
 
 import PaginationBlock from "@commonViews/Pagination";
 
+/**
+ * 
+ * @param {*} props 
+ * @example 
+ * <FormContainer
+        formHeader="blablabla"
+        formLoading={isLoading}
+        resultLoading={isLoading}
+        showPagination
+        pagMaxElements={maxElements}
+        pagLimit={options.limit}
+        pagPage={options.page}
+        pagOnPageChange={this.handlePageChange}
+        form={() => ()}
+        result={() => ()}
+     />
+ */
+
 export default function FormContainer(props) {
   const {
     formHeader,
