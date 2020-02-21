@@ -94,23 +94,65 @@ function uploadImageByFile(req, res) {
   });
 }
 
+function deletePost(res, req) {
+  const { id } = req.params;
+  Blog.findOneAndUpdate(
+    { _id: id },
+    {
+      pseudoDeleted: "true"
+    },
+    { new: true },
+    err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantHidePost, err));
+      } else {
+        res.json(config.getRespData(false, MSG.postWasHidden));
+      }
+    }
+  );
+}
+
+function restorePost(res, req) {
+  const { id } = req.params;
+  Blog.findOneAndUpdate(
+    { _id: id },
+    {
+      pseudoDeleted: "false"
+    },
+    { new: true },
+    err => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantRestorePost, err));
+      } else {
+        res.json(config.getRespData(false, MSG.bookWasRestored));
+      }
+    }
+  );
+}
+
 // TODO: попробовать переделать все подобные функции в одну функцию фабрику
 function getPosts(req, res, data = {}) {
   let { options } = req.query;
+  const clonedData = _.isEmpty(data) ? {} : JSON.parse(data);
+  const findByData = _.cloneDeep(clonedData);
 
   if (_.isUndefined(options)) {
     options = {
       page: 1,
       limit: 99,
-      sort: "desc"
+      sort: "desc",
+      displayMode: "all"
     };
   } else {
     options = JSON.parse(options);
   }
 
   options.page = _.isUndefined(options.page) ? 1 : options.page;
-  options.sort = _.isUndefined(options.sort) ? 1 : options.sort;
+  options.sort = _.isUndefined(options.sort) ? "desc" : options.sort;
   options.limit = _.isUndefined(options.limit) ? 99 : options.limit;
+  options.displayMode = _.isUndefined(options.displayMode)
+    ? "all"
+    : options.displayMode;
 
   const getSkip = () => {
     if (options.page === 1) {
@@ -120,14 +162,28 @@ function getPosts(req, res, data = {}) {
   };
 
   Blog.countDocuments(
-    _.isEmpty(data) ? {} : JSON.parse(data),
+    options.displayMode === "all"
+      ? findByData
+      : {
+          ...findByData,
+          pseudoDeleted: { $eq: `${options.displayMode === "true"}` }
+        },
     (countError, count) => {
       res.set({
         "max-elements": count,
         ...options
       });
-      Blog.find(_.isEmpty(data) ? {} : JSON.parse(data))
-        .sort({ createdAt: options.sort })
+      Blog.find(
+        options.displayMode === "all"
+          ? findByData
+          : {
+              ...findByData,
+              pseudoDeleted: { $eq: `${options.displayMode === "true"}` }
+            }
+      )
+        .sort({
+          dateAdded: options.sort
+        })
         .skip(getSkip())
         .limit(options.limit)
         .populate([
@@ -135,9 +191,9 @@ function getPosts(req, res, data = {}) {
             path: "userId"
           }
         ])
-        .exec((err, posts) => {
-          if (err) {
-            res.json(config.getRespData(true, MSG.internalServerErr, err));
+        .exec((findBookError, posts) => {
+          if (findBookError) {
+            res.json(config.getRespData(true, MSG.postNotFound, findBookError));
           } else {
             res.json(config.getRespData(false, null, posts));
           }
@@ -151,5 +207,7 @@ export default {
   getPosts,
   updatePost,
   uploadImageByFile,
-  uploadImageByURL
+  uploadImageByURL,
+  deletePost,
+  restorePost
 };

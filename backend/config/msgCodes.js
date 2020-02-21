@@ -102,8 +102,14 @@ const MSG = {
   cantHideBook: {
     ru: "Произошла ошибка при добавлении книги в скрытые."
   },
+  cantHidePost: {
+    ru: "Произошла ошибка при добавлении поста в скрытые."
+  },
   cantRestoreBook: {
     ru: "Произошла ошибка при восстановлении видимости книги."
+  },
+  cantRestorePost: {
+    ru: "Произошла ошибка при восстановлении видимости поста."
   },
   cantDeleteAuthor: {
     ru: "Произошла ошибка при удалении автора."
@@ -129,8 +135,14 @@ const MSG = {
   bookWasHidden: {
     ru: "Книга успешно скрыта."
   },
+  postWasHidden: {
+    ru: "Пост успешно скрыт."
+  },
   bookWasRestored: {
     ru: "Видимость книги успешно восстановлена."
+  },
+  postWasRestored: {
+    ru: "Видимость поста успешно восстановлена."
   },
   authorWasDeleted: {
     ru: "Автор успешно удален."
@@ -187,6 +199,9 @@ const MSG = {
   },
   bookNotFound: {
     ru: "Такой книги не существует."
+  },
+  postNotFound: {
+    ru: "Такого поста не существует."
   },
   youHaveMaxQuantityOfBooksOnYourHands: {
     ru:

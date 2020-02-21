@@ -19,10 +19,10 @@ import qStr from "query-string";
 import BookItem from "@DUI/common/BookItem";
 import BookFilters from "@DUI/common/BookFilters";
 import FormContainer from "@DUI/common/FormContainer";
+import ModalWindow from "@DUI/common/Modal";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
-import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";
 import MSG from "@msg";

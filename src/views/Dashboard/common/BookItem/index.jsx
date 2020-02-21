@@ -21,8 +21,7 @@ export default function BookItem(props) {
   return (
     <Item
       style={{
-        backgroundColor:
-          book.pseudoDeleted === "true" ? "rgba(255, 0, 0, 0.08)" : undefined
+        backgroundColor: bookHidden ? "rgba(255, 0, 0, 0.08)" : undefined
       }}
     >
       <Item.Image

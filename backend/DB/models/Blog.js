@@ -12,6 +12,10 @@ const BlogSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now()
+  },
+  pseudoDeleted: {
+    type: String,
+    default: "false"
   }
 });
 

@@ -56,7 +56,6 @@ function findBooks(res, req, data = {}) {
       limit: 99,
       fetch_type: 0,
       sort: "desc",
-      notShowDeleted: true,
       displayMode: "all"
     };
   } else {

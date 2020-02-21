@@ -27,6 +27,18 @@ app.get("/api/blog/:id", (req, res) =>
   BlogContr.getPosts(req, res, JSON.stringify({ _id: req.params.id }))
 );
 
+app.delete(
+  "/api/blog/:id",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => BlogContr.deletePost(res, req)
+);
+
+app.put(
+  "/api/blog/:id/restore",
+  (req, res, next) => withAuth(req, res, next, [1]),
+  (req, res) => BlogContr.restorePost(res, req)
+);
+
 app.post(
   "/api/blog/upload/imageByFile",
   (req, res, next) => withAuth(req, res, next, [1]),

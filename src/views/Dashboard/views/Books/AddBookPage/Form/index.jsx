@@ -48,8 +48,10 @@ class AddBookForm extends React.Component {
       _.set(bookClone.book, "dateAdded", today);
 
       dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
-    } else {
-      this.getBookForEdit(query);
+    } else if (!_.isEmpty(query) && _.has(query, "mode")) {
+      if (_.has(query, "bookId") && !_.isEmpty(query.bookId)) {
+        this.getBookForEdit(query);
+      }
     }
   }
 
