@@ -188,7 +188,7 @@ class TopInfoBlock extends React.Component {
       isThisBookOrdered
     } = this.state;
     const bookAvailability = book.stockInfo.freeForBooking === 0;
-
+    const isBookHidden = book.pseudoDeleted === "true";
     return (
       <div className={s.topInfoBlock}>
         <div className={s.bookPosterBlock}>
@@ -246,21 +246,33 @@ class TopInfoBlock extends React.Component {
                             isThisBookBooked ||
                             isThisBookOrdered.ordered ||
                             isBookButtonDisabled ||
-                            book.pseudoDeleted === "true"
+                            isBookHidden
                           }
                           loading={isButtonLoading}
                           primary
                           onClick={this.bookABook}
                         >
-                          {book.pseudoDeleted === "true"
+                          {isBookHidden
                             ? "Книга временно не доступна"
                             : "Взять в аренду"}
                         </Button>
                         <BookOptions
-                          onEditClick={() => this.goToBookEdit(book._id)}
-                          onDeleteClick={() => this.deleteBook(book._id)}
-                          onRestoreClick={() => this.restoreBook(book._id)}
-                          isBookHidden={book.pseudoDeleted === "true"}
+                          options={[
+                            {
+                              text: "Редактировать",
+                              icon: "pencil alternate",
+                              onClick: () => this.goToBookEdit(book._id)
+                            },
+                            {
+                              text: !isBookHidden
+                                ? "Скрыть"
+                                : "Восстановить видимость",
+                              icon: !isBookHidden ? "close" : "reply",
+                              onClick: !isBookHidden
+                                ? () => this.deleteBook(book._id)
+                                : () => this.restoreBook(book._id)
+                            }
+                          ]}
                           isAdmin={isAdmin()}
                           pointing="bottom left"
                           additionPosition="top"
@@ -295,7 +307,6 @@ class TopInfoBlock extends React.Component {
                             {MSG.orderBookModalInfo.messageHeader}
                           </Message.Header>
                           <p>{MSG.orderBookModalInfo.messageText}</p>
-                          {/* <Header color="red">{uniqueOrderId}</Header> */}
                           <p className={s.messageSubText}>
                             {MSG.orderBookModalInfo.messageSubText}
                           </p>
