@@ -13,6 +13,7 @@ import Dashboard from "@views/Layouts/Dashboard/index";
 import LoginPage from "@UI/Users/LoginPage";
 import RegistrationPage from "@UI/Users/RegistrationPage/index";
 import ResetPasswordPage from "@UI/Users/ResetPasswordPage";
+import ImPage from "@UI/Messages/ImPage";
 import MainPage from "@UI/MainPage";
 import InfoPage from "@views/Common/InfoPage";
 import BookPage from "@UI/Books/BookPage";
@@ -259,6 +260,14 @@ function AppRotes(props) {
         checkAuth={checkAuth}
         path="/profile/:userId"
         component={ProfilePage}
+      />
+      <PrivateRoute
+        exact
+        layout={MainLayout}
+        accessRole={[userRoles.admin.value, userRoles.user.value]}
+        checkAuth={checkAuth}
+        path={["/im", "/im/:userId"]}
+        component={ImPage}
       />
       <AppRoute exact path="/" layout={MainLayout} component={MainPage} />
       <AppRoute

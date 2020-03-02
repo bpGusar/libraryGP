@@ -5,6 +5,7 @@ import bookLanguages from "./bookLanguages";
 import bookPublishers from "./bookPublishers";
 import bookedBooks from "./bookedBooks";
 import books from "./books";
+import chats from "./chats";
 import menu from "./menu";
 import orderedBooks from "./orderedBooks";
 import services from "./services";
@@ -21,6 +22,7 @@ export {
   bookPublishers,
   bookedBooks,
   books,
+  chats,
   menu,
   orderedBooks,
   services,

@@ -197,6 +197,13 @@ class UsersList extends Component {
                       >
                         <Dropdown.Menu>
                           <Dropdown.Item
+                            text="Отправить сообщение"
+                            icon="send"
+                            target="blanc"
+                            as={Link}
+                            to={`/im/${user._id}`}
+                          />
+                          <Dropdown.Item
                             text="Просмотр профиля"
                             icon="eye"
                             target="blanc"

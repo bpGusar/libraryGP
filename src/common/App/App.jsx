@@ -46,19 +46,20 @@ class App extends React.Component {
             dispatch(storeData, PARAMS.USER_INFO, resp.data.payload);
           }
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, true);
+          isError = resp.data.error;
         } else {
+          isError = resp.data.error;
           dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
         }
-
-        isError = resp.data.error;
       });
 
       dispatch(isAuthInProgress, false);
-
-      return { isError };
+    } else {
+      isError = true;
+      dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
+      dispatch(isAuthInProgress, false);
     }
-    dispatch(storeData, PARAMS.IS_USER_AUTHORIZED, false);
-    dispatch(isAuthInProgress, false);
+    return { isError };
   }
 
   render() {
