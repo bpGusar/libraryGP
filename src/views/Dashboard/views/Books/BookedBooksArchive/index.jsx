@@ -226,12 +226,16 @@ class OrdersArchive extends Component {
                                 <List.Content>
                                   <List.Header>Бронировал:</List.Header>
                                   <List.Description>
-                                    <Link
-                                      to={`/profile/${bookedBookInfo.userId._id}`}
-                                      target="blanc"
-                                    >
-                                      {bookedBookInfo.userId.login}
-                                    </Link>
+                                    {_.isNull(bookedBookInfo.userId) ? (
+                                      "Неизвестный пользователь"
+                                    ) : (
+                                      <Link
+                                        to={`/profile/${bookedBookInfo.userId._id}`}
+                                        target="blanc"
+                                      >
+                                        {bookedBookInfo.userId.login}
+                                      </Link>
+                                    )}
                                   </List.Description>
                                 </List.Content>
                               </List.Item>
@@ -241,12 +245,16 @@ class OrdersArchive extends Component {
                                     В архив добавлена пользователем:
                                   </List.Header>
                                   <List.Description>
-                                    <Link
-                                      to={`/profile/${book.userId._id}`}
-                                      target="blanc"
-                                    >
-                                      {book.userId.login}
-                                    </Link>
+                                    {_.isNull(book.userId) ? (
+                                      "Неизвестный пользователь"
+                                    ) : (
+                                      <Link
+                                        to={`/profile/${book.userId._id}`}
+                                        target="blanc"
+                                      >
+                                        {book.userId.login}
+                                      </Link>
+                                    )}
                                   </List.Description>
                                 </List.Content>
                               </List.Item>

@@ -1,5 +1,6 @@
 import React from "react";
-import { Item, Label, Icon, Divider } from "semantic-ui-react";
+import { Item, Label, Icon, Divider, Segment } from "semantic-ui-react";
+import _ from "lodash";
 
 import BookOptions from "@commonViews/BookOptions";
 
@@ -15,7 +16,20 @@ export default function BookItem(props) {
     dividedInfo,
     showOptions
   } = props;
-
+  if (_.isNull(book)) {
+    return (
+      <Item>
+        <Segment
+          style={{
+            width: "100%"
+          }}
+        >
+          <Icon name="exclamation triangle" />
+          Неизвестная книга, возможно она удалена и не может быть показана
+        </Segment>
+      </Item>
+    );
+  }
   const bookHidden = book.pseudoDeleted === "true";
 
   return (

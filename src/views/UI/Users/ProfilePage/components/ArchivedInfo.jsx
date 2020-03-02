@@ -5,9 +5,11 @@ import {
   Image,
   Divider,
   Header,
-  Label
+  Label,
+  Icon
 } from "semantic-ui-react";
 import { DateTime } from "luxon";
+import _ from "lodash";
 
 import Pagination from "@commonViews/Pagination";
 
@@ -88,10 +90,20 @@ export default class ArchivedInfo extends Component {
               <List divided relaxed>
                 {archivedBooks.map(archivedBook => {
                   const bookInfoProp = archivedBook[dataObjPropName];
+                  if (_.isNull(bookInfoProp.bookId)) {
+                    return (
+                      <List.Item key={archivedBook._id}>
+                        <Segment>
+                          <Icon name="exclamation triangle" />
+                          Неизвестная книга, возможно она удалена и не может
+                          быть показана
+                        </Segment>
+                      </List.Item>
+                    );
+                  }
                   const {
                     bookId: { bookInfo }
                   } = bookInfoProp;
-
                   return (
                     <List.Item key={archivedBook._id}>
                       <Image avatar src={bookInfo.imageLinks.poster} />

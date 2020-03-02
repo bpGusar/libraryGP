@@ -196,6 +196,13 @@ class UsersList extends Component {
                         text={`${user.firstName} ${user.lastName} ${user.patronymic}`}
                       >
                         <Dropdown.Menu>
+                          <Dropdown.Item
+                            text="Просмотр профиля"
+                            icon="eye"
+                            target="blanc"
+                            as={Link}
+                            to={`/profile/${user._id}`}
+                          />
                           <Modal
                             trigger={
                               <Dropdown.Item
