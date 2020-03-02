@@ -18,6 +18,8 @@ import InfoPage from "@views/Common/InfoPage";
 import BookPage from "@UI/Books/BookPage";
 import EmailVerify from "@UI/Users/EmailVerify";
 import ProfilePage from "@UI/Users/ProfilePage";
+import BlogPage from "@UI/Blog/BlogPage";
+import BlogFullPage from "@UI/Blog/BlogFullPage";
 
 /** вьюхи дашборда */
 import AddAuthor from "@DUI/views/Authors/AddAuthor";
@@ -38,6 +40,8 @@ import BookedBooksArchive from "@DUI/views/Books/BookedBooksArchive";
 import AddNewUser from "@DUI/views/Users/AddNew";
 import MenusPage from "@DUI/views/MenusPage";
 import UsersList from "@DUI/views/Users/UsersListPage";
+import AddNews from "@DUI/views/Blog/AddNews";
+import ManageBlogPosts from "@DUI/views/Blog/ManageBlogPosts";
 import SettingsPage from "@DUI/views/Settings";
 import DashboardPage from "@DUI";
 
@@ -158,7 +162,7 @@ function AppRotes(props) {
         accessRole={[userRoles.admin.value]}
         checkAuth={checkAuth}
         path="/dashboard/info-page"
-        component={InfoPage}
+        component={() => <InfoPage to="/dashboard" />}
       />
       <PrivateRoute
         exact
@@ -234,6 +238,22 @@ function AppRotes(props) {
       />
       <PrivateRoute
         exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/blog/new"
+        component={AddNews}
+      />
+      <PrivateRoute
+        exact
+        layout={Dashboard}
+        accessRole={[userRoles.admin.value]}
+        checkAuth={checkAuth}
+        path="/dashboard/blog/list"
+        component={ManageBlogPosts}
+      />
+      <PrivateRoute
+        exact
         layout={MainLayout}
         accessRole={[userRoles.admin.value, userRoles.user.value]}
         checkAuth={checkAuth}
@@ -275,7 +295,14 @@ function AppRotes(props) {
         exact
         path="/info-page"
         layout={MainLayout}
-        component={InfoPage}
+        component={() => <InfoPage to="/" />}
+      />
+      <AppRoute exact path="/blog" layout={MainLayout} component={BlogPage} />
+      <AppRoute
+        exact
+        path="/blog/:id"
+        layout={MainLayout}
+        component={BlogFullPage}
       />
       <AppRoute
         exact

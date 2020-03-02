@@ -1,14 +1,14 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from "react";
 import {
-  Segment,
   Form,
   Button,
   Header,
   Icon,
   Item,
   Divider,
-  Label
+  Label,
+  Segment
 } from "semantic-ui-react";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
@@ -16,13 +16,13 @@ import { toast } from "react-semantic-toasts";
 import { withRouter } from "react-router-dom";
 import qStr from "query-string";
 
-import PaginationBlock from "@commonViews/Pagination";
 import BookItem from "@DUI/common/BookItem";
 import BookFilters from "@DUI/common/BookFilters";
+import FormContainer from "@DUI/common/FormContainer";
+import ModalWindow from "@DUI/common/Modal";
 
 import axs from "@axios";
 import ResultFilters from "./components/ResultFilters";
-import ModalWindow from "./components/Modal";
 
 import { PARAMS } from "@store";
 import MSG from "@msg";
@@ -329,87 +329,86 @@ class ManageBooks extends Component {
     } = this.state;
     const { allAccess, formHeader } = this.props;
     return (
-      <Segment.Group>
-        <Segment>
-          <Header as="h3">{formHeader}</Header>
-        </Segment>
-        <Segment loading={isLoading}>
-          <Form onSubmit={() => this.handleSearchBooks(true)}>
-            <Form.Input
-              fluid
-              label="Название книги"
-              value={
-                _.has(searchQuery["bookInfo.title"], "$regex")
-                  ? searchQuery["bookInfo.title"].$regex
-                  : ""
-              }
-              name="bookInfo.title"
-              onChange={(e, { value, name }) =>
-                this.handleChangeSearchQuery(value, name, true)
-              }
-            />
-            <BookFilters
-              searchQuery={searchQuery}
-              onChangeSearchQuery={(value, name) =>
-                this.handleChangeSearchQuery(value, name)
-              }
-              permanentOpen={!allAccess}
-            />
-            <Divider />
-            <Button icon type="submit" primary labelPosition="left">
-              <Icon name="search" />
-              Поиск
-            </Button>
-            <Divider />
-            <ResultFilters
-              options={options}
-              onChangeResultFilterValue={this.handleChangeResultFilterValue}
-              onChangeLimit={this.handleChangeLimit}
-            />
-          </Form>
-        </Segment>
-        <Segment placeholder={_.isEmpty(books)} loading={isLoading}>
-          {_.isEmpty(books) && !isLoading && (
-            <Header icon>
-              <Icon name="search" />
-              Результатов нет
-            </Header>
+      <>
+        <FormContainer
+          formHeader={formHeader}
+          formLoading={isLoading}
+          resultLoading={isLoading}
+          showPagination
+          pagMaxElements={maxElements}
+          pagLimit={options.limit}
+          pagPage={options.page}
+          pagOnPageChange={this.handlePageChange}
+          form={() => (
+            <Form onSubmit={() => this.handleSearchBooks(true)}>
+              <Form.Input
+                fluid
+                label="Название книги"
+                value={
+                  _.has(searchQuery["bookInfo.title"], "$regex")
+                    ? searchQuery["bookInfo.title"].$regex
+                    : ""
+                }
+                name="bookInfo.title"
+                onChange={(e, { value, name }) =>
+                  this.handleChangeSearchQuery(value, name, true)
+                }
+              />
+              <BookFilters
+                searchQuery={searchQuery}
+                onChangeSearchQuery={(value, name) =>
+                  this.handleChangeSearchQuery(value, name)
+                }
+                permanentOpen={!allAccess}
+              />
+              <Divider />
+              <Button icon type="submit" primary labelPosition="left">
+                <Icon name="search" />
+                Поиск
+              </Button>
+              <Divider />
+              <ResultFilters
+                options={options}
+                onChangeResultFilterValue={this.handleChangeResultFilterValue}
+                onChangeLimit={this.handleChangeLimit}
+              />
+            </Form>
           )}
-          {!_.isEmpty(books) && (
-            <Item.Group divided>
-              {books.map(book => (
-                <BookItem
-                  key={book._id}
-                  book={book}
-                  onEditClick={bookData => this.goToBookEdit(bookData)}
-                  onRestoreClick={bookData =>
-                    this.manageConfirmWindow(
-                      bookData._id,
-                      "restoreBookModalOpen"
-                    )
-                  }
-                  onDeleteClick={bookData =>
-                    this.manageConfirmWindow(
-                      bookData._id,
-                      "deleteBookModalOpen"
-                    )
-                  }
-                  showOptions={allAccess}
-                />
-              ))}
-            </Item.Group>
+          result={() => (
+            <Segment placeholder={_.isEmpty(books)}>
+              {_.isEmpty(books) && !isLoading && (
+                <Header icon>
+                  <Icon name="search" />
+                  Результатов нет
+                </Header>
+              )}
+              {!_.isEmpty(books) && (
+                <Item.Group divided>
+                  {books.map(book => (
+                    <BookItem
+                      key={book._id}
+                      book={book}
+                      onEditClick={bookData => this.goToBookEdit(bookData)}
+                      onRestoreClick={bookData =>
+                        this.manageConfirmWindow(
+                          bookData._id,
+                          "restoreBookModalOpen"
+                        )
+                      }
+                      onDeleteClick={bookData =>
+                        this.manageConfirmWindow(
+                          bookData._id,
+                          "deleteBookModalOpen"
+                        )
+                      }
+                      showOptions={allAccess}
+                    />
+                  ))}
+                </Item.Group>
+              )}
+            </Segment>
           )}
-        </Segment>
-        {Number(maxElements) > options.limit && (
-          <Segment>
-            <PaginationBlock
-              onPageChange={this.handlePageChange}
-              page={options.page}
-              limit={options.limit}
-              maxElements={maxElements}
-            />
-          </Segment>
-        )}
+        />
         <ModalWindow
           header="Восстановление книги"
           open={restoreBookModalOpen}
@@ -461,7 +460,7 @@ class ManageBooks extends Component {
             </>
           }
         />
-      </Segment.Group>
+      </>
     );
   }
 }

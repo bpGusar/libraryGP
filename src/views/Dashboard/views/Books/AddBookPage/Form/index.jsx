@@ -8,7 +8,7 @@ import { DateTime } from "luxon";
 import { DateInput } from "semantic-ui-calendar-react";
 import qStr from "query-string";
 
-import { Form, Button, Message, Segment } from "semantic-ui-react";
+import { Form, Button, Message, Segment, Header } from "semantic-ui-react";
 
 import UniqueDropdown from "@views/Common/UniqueDropdown/";
 import Poster from "./components/Poster/Poster";
@@ -48,8 +48,10 @@ class AddBookForm extends React.Component {
       _.set(bookClone.book, "dateAdded", today);
 
       dispatch(storeData, PARAMS.BOOK_TO_DB, bookClone);
-    } else {
-      this.getBookForEdit(query);
+    } else if (!_.isEmpty(query) && _.has(query, "mode")) {
+      if (_.has(query, "bookId") && !_.isEmpty(query.bookId)) {
+        this.getBookForEdit(query);
+      }
     }
   }
 
@@ -199,12 +201,10 @@ class AddBookForm extends React.Component {
             <p>Проверьте введенные данные и попробуйте еще раз.</p>
           </Message>
         )}
-        {isEdit && (
-          <Message warning>
-            <Message.Header>Редактирование книги</Message.Header>
-          </Message>
-        )}
-        <Segment>
+        <Header as="h3" attached="top">
+          {isEdit ? "Редактирование книги" : "Добавить книгу"}
+        </Header>
+        <Segment attached>
           <Form loading={!isFormLoaded} onSubmit={() => this.handleSubmit()}>
             <Poster />
             <Form.Group widths="equal">

@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { branch } from "baobab-react/higher-order";
 import { Button, Header, Icon, Segment } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
 import { PARAMS } from "@store";
 
@@ -17,11 +17,11 @@ function InfoPage(props) {
       color: "green"
     }
   };
-  const { infoPage, history } = props;
+  const { infoPage, history, to } = props;
   return (
     <Segment placeholder>
       {_.isEmpty(infoPage.type) ? (
-        history.push("/")
+        history.push(to || "/")
       ) : (
         <>
           <Header icon>
@@ -32,7 +32,7 @@ function InfoPage(props) {
             {infoPage.text}
           </Header>
           <Segment.Inline>
-            <Button as={Link} to="/">
+            <Button as={Link} to={to}>
               На главную
             </Button>
           </Segment.Inline>
@@ -42,9 +42,11 @@ function InfoPage(props) {
   );
 }
 
-export default branch(
-  {
-    infoPage: PARAMS.INFO_PAGE
-  },
-  InfoPage
+export default withRouter(
+  branch(
+    {
+      infoPage: PARAMS.INFO_PAGE
+    },
+    InfoPage
+  )
 );

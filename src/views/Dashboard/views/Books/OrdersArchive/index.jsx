@@ -14,7 +14,7 @@ import { branch } from "baobab-react/higher-order";
 import { DateTime } from "luxon";
 import { Link } from "react-router-dom";
 
-import PaginationBlock from "@commonViews/Pagination";
+import FormContainer from "@DUI/common/FormContainer";
 import BookItem from "@DUI/common/BookItem";
 import UniqueDropdown from "@views/Common/UniqueDropdown/";
 
@@ -137,11 +137,16 @@ class OrdersArchive extends Component {
   render() {
     const { books, isLoading, searchQuery, options, maxElements } = this.state;
     return (
-      <Segment.Group>
-        <Segment>
-          <Header as="h3">Архив выданных книг</Header>
-        </Segment>
-        <Segment loading={isLoading}>
+      <FormContainer
+        formHeader="Архив выданных книг"
+        formLoading={isLoading}
+        resultLoading={isLoading}
+        showPagination
+        pagMaxElements={maxElements}
+        pagLimit={options.limit}
+        pagPage={options.page}
+        pagOnPageChange={this.handlePageChange}
+        form={() => (
           <Form onSubmit={() => this.handleSearchBooks(true)}>
             <UniqueDropdown
               axsQuery={{ params: { options: { limit: 999 } } }}
@@ -175,128 +180,128 @@ class OrdersArchive extends Component {
               onChangeLimit={this.handleChangeLimit}
             />
           </Form>
-        </Segment>
-        <Segment placeholder={_.isEmpty(books)} loading={isLoading}>
-          {_.isEmpty(books) && !isLoading && (
-            <Header icon>
-              <Icon name="search" />
-              Результатов нет
-            </Header>
-          )}
-          {!_.isEmpty(books) && (
-            <Item.Group divided>
-              {books.map(book => {
-                const {
-                  orderedBookInfo: { bookId },
-                  orderedBookInfo
-                } = book;
-                return (
-                  <BookItem
-                    key={book._id}
-                    book={bookId}
-                    dividedInfo
-                    renderCustomInfo={() => (
-                      <>
-                        <strong
-                          style={{
-                            color: "black"
-                          }}
-                        >
-                          Информация о возврате:
-                        </strong>
-                        <Segment>
-                          <List divided relaxed>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Дата аренды:</List.Header>
-                                <List.Description>
-                                  {DateTime.fromISO(orderedBookInfo.orderedAt)
-                                    .setLocale("ru")
-                                    .toFormat("dd MMMM yyyy")}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>
-                                  Планируемая дата возврата:
-                                </List.Header>
-                                <List.Description>
-                                  {DateTime.fromISO(
-                                    orderedBookInfo.orderedUntil
-                                  )
-                                    .setLocale("ru")
-                                    .toFormat("dd MMMM yyyy")}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Дата возврата:</List.Header>
-                                <List.Description>
-                                  {DateTime.fromISO(book.createdAt)
-                                    .setLocale("ru")
-                                    .toFormat("dd MMMM yyyy")}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>
-                                  Была выдана на руки пользователю:
-                                </List.Header>
-                                <List.Description>
-                                  <Link
-                                    to={`/profile/${orderedBookInfo.userId._id}`}
-                                    target="blanc"
-                                  >
-                                    {orderedBookInfo.userId.login}
-                                  </Link>
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Возврат произвел:</List.Header>
-                                <List.Description>
-                                  <Link
-                                    to={`/profile/${book.userId._id}`}
-                                    target="blanc"
-                                  >
-                                    {book.userId.login}
-                                  </Link>
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                            <List.Item>
-                              <List.Content>
-                                <List.Header>Комментарий:</List.Header>
-                                <List.Description>
-                                  {book.comment}
-                                </List.Description>
-                              </List.Content>
-                            </List.Item>
-                          </List>
-                        </Segment>
-                      </>
-                    )}
-                  />
-                );
-              })}
-            </Item.Group>
-          )}
-        </Segment>
-        {Number(maxElements) > options.limit && (
-          <Segment>
-            <PaginationBlock
-              onPageChange={this.handlePageChange}
-              page={options.page}
-              limit={options.limit}
-              maxElements={maxElements}
-            />
+        )}
+        result={() => (
+          <Segment placeholder={_.isEmpty(books)}>
+            {_.isEmpty(books) && !isLoading && (
+              <Header icon>
+                <Icon name="search" />
+                Результатов нет
+              </Header>
+            )}
+            {!_.isEmpty(books) && (
+              <Item.Group divided>
+                {books.map(book => {
+                  const {
+                    orderedBookInfo: { bookId },
+                    orderedBookInfo
+                  } = book;
+                  return (
+                    <BookItem
+                      key={book._id}
+                      book={bookId}
+                      dividedInfo
+                      renderCustomInfo={() => (
+                        <>
+                          <strong
+                            style={{
+                              color: "black"
+                            }}
+                          >
+                            Информация о возврате:
+                          </strong>
+                          <Segment>
+                            <List divided relaxed>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>Дата аренды:</List.Header>
+                                  <List.Description>
+                                    {DateTime.fromISO(orderedBookInfo.orderedAt)
+                                      .setLocale("ru")
+                                      .toFormat("dd MMMM yyyy")}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>
+                                    Планируемая дата возврата:
+                                  </List.Header>
+                                  <List.Description>
+                                    {DateTime.fromISO(
+                                      orderedBookInfo.orderedUntil
+                                    )
+                                      .setLocale("ru")
+                                      .toFormat("dd MMMM yyyy")}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>Дата возврата:</List.Header>
+                                  <List.Description>
+                                    {DateTime.fromISO(book.createdAt)
+                                      .setLocale("ru")
+                                      .toFormat("dd MMMM yyyy")}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>
+                                    Была выдана на руки пользователю:
+                                  </List.Header>
+                                  <List.Description>
+                                    {_.isNull(orderedBookInfo.userId) ? (
+                                      "Неизвестный пользователь"
+                                    ) : (
+                                      <Link
+                                        to={`/profile/${orderedBookInfo.userId._id}`}
+                                        target="blanc"
+                                      >
+                                        {orderedBookInfo.userId.login}
+                                      </Link>
+                                    )}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>Возврат произвел:</List.Header>
+                                  <List.Description>
+                                    {_.isNull(book.userId) ? (
+                                      "Неизвестный пользователь"
+                                    ) : (
+                                      <Link
+                                        to={`/profile/${book.userId._id}`}
+                                        target="blanc"
+                                      >
+                                        {book.userId.login}
+                                      </Link>
+                                    )}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                              <List.Item>
+                                <List.Content>
+                                  <List.Header>Комментарий:</List.Header>
+                                  <List.Description>
+                                    {book.comment}
+                                  </List.Description>
+                                </List.Content>
+                              </List.Item>
+                            </List>
+                          </Segment>
+                        </>
+                      )}
+                    />
+                  );
+                })}
+              </Item.Group>
+            )}
           </Segment>
         )}
-      </Segment.Group>
+      />
     );
   }
 }

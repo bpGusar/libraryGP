@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   Segment,
-  Header,
   Form,
   Button,
   Icon,
@@ -14,7 +13,7 @@ import {
 import _ from "lodash";
 import { Link } from "react-router-dom";
 
-import PaginationBlock from "@commonViews/Pagination";
+import FormContainer from "@DUI/common/FormContainer";
 import EditUser from "../EditUser";
 import ResultFilters from "./components/ResultFilters";
 
@@ -129,11 +128,16 @@ class UsersList extends Component {
     const { history } = this.props;
 
     return (
-      <Segment.Group>
-        <Segment>
-          <Header as="h3">Список пользователей</Header>
-        </Segment>
-        <Segment loading={isLoading}>
+      <FormContainer
+        formHeader="Список пользователей"
+        formLoading={isLoading}
+        resultLoading={isLoading}
+        showPagination
+        pagMaxElements={maxElements}
+        pagLimit={options.limit}
+        pagPage={options.page}
+        pagOnPageChange={this.handlePageChange}
+        form={() => (
           <Form onSubmit={() => this.handleSubmitForm(true)}>
             <Form.Group widths="equal">
               <Form.Input
@@ -172,68 +176,67 @@ class UsersList extends Component {
               onLimitChange={this.handleLimitChange}
             />
           </Form>
-        </Segment>
-        <Segment loading={isLoading}>
-          <Item.Group divided>
-            {users.map(user => (
-              <Item key={user._id}>
-                <Item.Image
-                  as={Link}
-                  to={`/profile/${user._id}`}
-                  target="blanc"
-                  size="tiny"
-                  src={user.avatar}
-                />
+        )}
+        result={() => (
+          <Segment loading={isLoading}>
+            <Item.Group divided>
+              {users.map(user => (
+                <Item key={user._id}>
+                  <Item.Image
+                    as={Link}
+                    to={`/profile/${user._id}`}
+                    target="blanc"
+                    size="tiny"
+                    src={user.avatar}
+                  />
 
-                <Item.Content>
-                  <Item.Header>
-                    <Dropdown
-                      text={`${user.firstName} ${user.lastName} ${user.patronymic}`}
-                    >
-                      <Dropdown.Menu>
-                        <Modal
-                          trigger={
-                            <Dropdown.Item
-                              text="Редактировать"
-                              icon="pencil alternate"
-                            />
-                          }
-                        >
-                          <Modal.Header>
-                            Редактирование пользователя {user.login}
-                          </Modal.Header>
-                          <Modal.Content>
-                            <Modal.Description>
-                              <EditUser user={user} history={history} />
-                            </Modal.Description>
-                          </Modal.Content>
-                        </Modal>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </Item.Header>
-                  <Item.Meta>{user.readerId}</Item.Meta>
-                  <Item.Extra>
-                    <Label color="blue">
-                      <Icon name="calendar" />
-                      Email: {user.email}
-                    </Label>
-                  </Item.Extra>
-                </Item.Content>
-              </Item>
-            ))}
-          </Item.Group>
-        </Segment>
-        {Number(maxElements) > options.limit && (
-          <Segment>
-            <PaginationBlock
-              page={options.page}
-              limit={options.limit}
-              maxElements={maxElements}
-              onPageChange={this.handlePageChange}
-            />
+                  <Item.Content>
+                    <Item.Header>
+                      <Dropdown
+                        text={`${user.firstName} ${user.lastName} ${user.patronymic}`}
+                      >
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            text="Просмотр профиля"
+                            icon="eye"
+                            target="blanc"
+                            as={Link}
+                            to={`/profile/${user._id}`}
+                          />
+                          <Modal
+                            trigger={
+                              <Dropdown.Item
+                                text="Редактировать"
+                                icon="pencil alternate"
+                              />
+                            }
+                          >
+                            <Modal.Header>
+                              Редактирование пользователя {user.login}
+                            </Modal.Header>
+                            <Modal.Content>
+                              <Modal.Description>
+                                <EditUser user={user} history={history} />
+                              </Modal.Description>
+                            </Modal.Content>
+                          </Modal>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </Item.Header>
+                    <Item.Meta>{user.readerId}</Item.Meta>
+                    <Item.Extra>
+                      <Label color="blue">
+                        <Icon name="calendar" />
+                        Email: {user.email}
+                      </Label>
+                    </Item.Extra>
+                  </Item.Content>
+                </Item>
+              ))}
+            </Item.Group>
           </Segment>
         )}
-      </Segment.Group>
+      />
     );
   }
 }

@@ -98,9 +98,7 @@ export const getInitialState = () => ({
       editInfo: []
     }
   },
-  [PARAMS.SETTINGS]: {
-    showHiddenBooksOnMainPage: false
-  }
+  [PARAMS.SETTINGS]: {}
 });
 
 export const store = new Baobab(getInitialState());

@@ -1,19 +1,12 @@
 import React from "react";
 import { Dropdown } from "semantic-ui-react";
 import cn from "classnames";
+import uniqid from "uniqid";
 
 import s from "./index.module.scss";
 
 export default function BookOptions(props) {
-  const {
-    onEditClick,
-    onDeleteClick,
-    onRestoreClick,
-    isBookHidden,
-    isAdmin,
-    pointing,
-    additionPosition
-  } = props;
+  const { isAdmin, pointing, additionPosition, options } = props;
   return (
     <>
       {isAdmin && (
@@ -27,28 +20,14 @@ export default function BookOptions(props) {
         >
           <Dropdown.Menu>
             <Dropdown.Menu scrolling>
-              {onEditClick && (
+              {options.map(option => (
                 <Dropdown.Item
-                  text="Редактировать"
-                  icon="pencil alternate"
-                  onClick={() => onEditClick()}
+                  key={uniqid()}
+                  text={option.text}
+                  icon={option.icon}
+                  onClick={() => option.onClick()}
                 />
-              )}
-              {onEditClick && onDeleteClick && <Dropdown.Divider />}
-              {!isBookHidden && onDeleteClick && (
-                <Dropdown.Item
-                  text="Скрыть"
-                  icon="close"
-                  onClick={() => onDeleteClick()}
-                />
-              )}
-              {isBookHidden && onRestoreClick && (
-                <Dropdown.Item
-                  text="Восстановить видимость"
-                  icon="reply"
-                  onClick={() => onRestoreClick()}
-                />
-              )}
+              ))}
             </Dropdown.Menu>
           </Dropdown.Menu>
         </Dropdown>

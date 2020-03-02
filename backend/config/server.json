@@ -23,6 +23,10 @@
     "avatars": {
       "mainFolder": "server/files/avatars/",
       "urlToAvatar": "/avatar"
+    },
+    "postImages": {
+      "mainFolder": "server/files/posts/",
+      "urlToPostImage": "/posts/image"
     }
   }
 }

@@ -23,6 +23,13 @@ const staticUrls = {
       __dirname,
       `../${servConf.filesPaths.avatars.mainFolder}`
     )
+  },
+  pathToPostImage: {
+    url: servConf.filesPaths.postImages.urlToPostImage,
+    pathToFolder: path.join(
+      __dirname,
+      `../${servConf.filesPaths.postImages.mainFolder}`
+    )
   }
 };
 

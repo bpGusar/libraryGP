@@ -167,6 +167,28 @@
     ]
   },
   {
+    "id": "menuItem_k6knia8t",
+    "icon": "blogger",
+    "text": "Блог",
+    "type": "dropdown",
+    "items": [
+      {
+        "id": "menuItem_k6knjfot",
+        "icon": "plus",
+        "text": "Добавить запись",
+        "to": "/dashboard/blog/new",
+        "type": "simple"
+      },
+      {
+        "id": "menuItem_k6ufpzof",
+        "icon": "list",
+        "text": "Все посты",
+        "to": "/dashboard/blog/list",
+        "type": "simple"
+      }
+    ]
+  },
+  {
     "id": "k3fn0d1m",
     "icon": "pencil",
     "text": "Редактировать меню",
