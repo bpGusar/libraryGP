@@ -1,6 +1,55 @@
 .messageContainer {
-  height: 500px;
+  height: 750px;
   .userListColumn {
     border-right: 1px solid rgba(34, 36, 38, 0.15);
+    padding: 0 !important;
+    .userListItem {
+      padding: 15px !important;
+      cursor: pointer;
+      &:hover {
+        background: #ececec;
+      }
+      &.active {
+        background: #ececec;
+      }
+    }
+  }
+  .messagesBlock {
+    padding: 0 !important;
+    .divider {
+      margin: 1rem 0 0 0;
+    }
+    .messageForm {
+      padding: 14px 15px;
+      border-top: 1px solid #dededf;
+      .messageTextArea {
+        textarea {
+          height: 50px;
+          max-height: 50px;
+          min-height: 50px;
+        }
+      }
+    }
+    .messagesContainer {
+      padding: 0 15px;
+      height: 562px;
+      overflow-y: scroll;
+      margin: 0;
+      .messageItem {
+        margin: 15px 0 !important;
+      }
+    }
+    .recipientBlock {
+      padding: 8px 0px 7px 15px;
+      margin: 0 !important;
+      .recipientBlockAvatar {
+        img {
+          border-radius: 50px !important;
+        }
+      }
+      .recipientBlockContent {
+        padding-top: 12px !important;
+      }
+    }
   }
 }

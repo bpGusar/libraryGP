@@ -62,6 +62,7 @@ const cronFunctions = {
       time: "0 0 */1 * *",
       function: () => {
         BookedBooks.find({}, (err, bookedBooksDocs) => {
+          console.log(bookedBooksDocs);
           if (!_.isUndefined(bookedBooksDocs.length)) {
             if (bookedBooksDocs.length !== 0) {
               const todayDate = DateTime.local();

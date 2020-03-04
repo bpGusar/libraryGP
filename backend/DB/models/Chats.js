@@ -3,13 +3,20 @@ import Mongoose from "mongoose";
 const { Schema } = Mongoose;
 
 const ChatsSchema = new Schema({
-  from: {
-    type: String,
-    ref: "User"
+  members: [
+    {
+      type: String,
+      required: true,
+      ref: "User"
+    }
+  ],
+  createdAt: {
+    type: Date,
+    default: Date.now()
   },
-  to: {
-    type: String,
-    ref: "User"
+  lastMessage: {
+    message: String,
+    from: String
   },
   messages: [
     {
@@ -17,7 +24,8 @@ const ChatsSchema = new Schema({
         type: Date,
         default: Date.now()
       },
-      message: String
+      message: String,
+      from: String
     }
   ]
 });

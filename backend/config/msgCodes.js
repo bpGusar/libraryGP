@@ -99,6 +99,9 @@ const MSG = {
   cantUpdateSettings: {
     ru: "Произошла ошибка при обновлении настроек."
   },
+  cantLoadChatList: {
+    ru: "Произошла ошибка при получении списка чатов."
+  },
   cantHideBook: {
     ru: "Произошла ошибка при добавлении книги в скрытые."
   },
@@ -131,6 +134,9 @@ const MSG = {
   },
   settingsWasUpdated: {
     ru: "Настройки успешно обновлены."
+  },
+  chatListFetched: {
+    ru: "Список чатов получен успешно."
   },
   bookWasHidden: {
     ru: "Книга успешно скрыта."
