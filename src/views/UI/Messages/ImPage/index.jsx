@@ -37,13 +37,13 @@ class ImPage extends Component {
 
     this.socket = io.connect();
 
-    this.socket.on("new_chat_msg", data => {
+    this.socket.on("chat.new_msg", data => {
       const { selectedChat } = this.state;
       if (!_.isEmpty(selectedChat)) {
-        console.log("object");
-        this.setState({
-          messages: data.newMessage
-        });
+        console.log(data.newMessage);
+        this.setState(ps => ({
+          messages: [...ps.messages, data.newMessage]
+        }));
       }
     });
 
@@ -72,6 +72,7 @@ class ImPage extends Component {
             selectedChat: chat,
             messages: resp.data.payload.messages
           });
+          this.socket.emit("room.join", chat._id);
         }
       });
   }

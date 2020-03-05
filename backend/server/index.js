@@ -6,7 +6,7 @@ import fileUpload from "express-fileupload";
 import "dotenv/config";
 import cron from "node-cron";
 import http from "http";
-import socket from "socket.io";
+import socketIo from "socket.io";
 
 import * as dbConfig from "../DB/config";
 import cronFunctions from "../config/cron";
@@ -15,22 +15,23 @@ import generateRoutes from "./routes/routesGenerator";
 
 const app = express();
 const server = http.createServer(app);
-const io = socket.listen(server);
+const io = socketIo.listen(server);
 
-const socketConnections = [];
+const socketsConnections = [];
 
 /** server starter */
 server.listen(process.env.BACK_PORT, () => {
   console.log(`Server is up and running on port ${process.env.BACK_PORT}`);
 });
 
-io.sockets.on("connection", socketArg => {
-  console.log("Успешное соединение");
-  socketConnections.push(socketArg);
+io.on("connection", socket => {
+  socket.on("room.join", room => {
+    socket.leaveAll();
+    socket.join(room);
+  });
 
-  socketArg.on("disconnect", () => {
-    socketConnections.splice(socketConnections.indexOf(socketArg), 1);
-    console.log("Успешное отсоединение");
+  socket.on("disconnect", () => {
+    socket.leaveAll();
   });
 });
 

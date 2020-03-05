@@ -48,34 +48,25 @@ function getChats(req, res) {
 function getChatMessages(req, res) {
   const {
     middlewareUserInfo,
-    query: { toId }
+    query: { toId },
+    io
   } = req;
 
-  parallel(
-    {
-      fondedChatMessages: cb =>
-        Chats.findOne({
-          members: {
-            $in: [_.toString(middlewareUserInfo._id), _.toString(toId)]
-          }
-        })
-          .select("messages")
-          .exec(cb)
-    },
-    (parErr, result) => {
-      if (parErr) {
-        res.json(config.getRespData(true, MSG.cantUpdateSettings, parErr));
+  Chats.findOne({
+    members: {
+      $in: [_.toString(middlewareUserInfo._id), _.toString(toId)]
+    }
+  })
+    .select("messages")
+    .exec((err, fondedChatMessages) => {
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantUpdateSettings, err));
       } else {
         res.json(
-          config.getRespData(
-            false,
-            MSG.settingsWasUpdated,
-            result.fondedChatMessages
-          )
+          config.getRespData(false, MSG.settingsWasUpdated, fondedChatMessages)
         );
       }
-    }
-  );
+    });
 }
 
 function postNewMessage(req, res) {
@@ -120,9 +111,14 @@ function postNewMessage(req, res) {
             if (err) {
               res.json(config.getRespData(true, MSG.cantUpdatePost, err));
             } else {
-              io.sockets.emit("new_chat_msg", {
-                newMessage: updatedChat.messages
+              io.sockets.in(updatedChat._id).emit("chat.new_msg", {
+                newMessage:
+                  updatedChat.messages[updatedChat.messages.length - 1]
               });
+
+              // io.sockets.emit("chat_list", {
+              //   chatId: updatedChat._id
+              // });
               res.json(config.getRespData(false, MSG.postWasUpdated));
             }
           }
