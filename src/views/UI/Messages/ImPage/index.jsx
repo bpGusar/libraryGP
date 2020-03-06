@@ -37,15 +37,7 @@ class ImPage extends Component {
 
     this.socket = io.connect();
 
-    this.socket.on("chat.new_msg", data => {
-      const { selectedChat } = this.state;
-      if (!_.isEmpty(selectedChat)) {
-        console.log(data.newMessage);
-        this.setState(ps => ({
-          messages: [...ps.messages, data.newMessage]
-        }));
-      }
-    });
+    this.socket.on("chat.new_msg", data => this.handleReceiveNewMessage(data));
 
     this.messagesContainerRef = React.createRef();
   }
@@ -57,6 +49,24 @@ class ImPage extends Component {
   componentDidUpdate() {
     const messagesContainer = this.messagesContainerRef;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  handleReceiveNewMessage(data) {
+    const { selectedChat, chats } = this.state;
+    let chatsCloned = _.cloneDeep(chats);
+    if (!_.isEmpty(selectedChat)) {
+      chatsCloned.splice(chatsCloned.indexOf(selectedChat._id), 1);
+
+      chatsCloned = [
+        { ...selectedChat, lastMessage: data.newMessage },
+        ...chatsCloned
+      ];
+
+      this.setState(ps => ({
+        messages: [...ps.messages, data.newMessage],
+        chats: chatsCloned
+      }));
+    }
   }
 
   handleSelectChat(chat) {
@@ -169,6 +179,7 @@ class ImPage extends Component {
       msgValue,
       messagesWhichIsNotUpload
     } = this.state;
+
     return (
       <Segment>
         <Grid columns={2} className={s.messageContainer}>

@@ -12,20 +12,38 @@ const ChatsSchema = new Schema({
   ],
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
+    required: true
   },
   lastMessage: {
-    message: String,
-    from: String
+    message: {
+      type: String,
+      required: true
+    },
+    from: {
+      type: String,
+      required: true
+    },
+    createdAt: {
+      type: Date,
+      required: true
+    }
   },
   messages: [
     {
       createdAt: {
         type: Date,
-        default: Date.now()
+        required: true
       },
-      message: String,
-      from: String
+      message: {
+        type: String,
+        required: true
+      },
+      from: {
+        type: String,
+        ref: "User",
+        required: true
+      }
     }
   ]
 });

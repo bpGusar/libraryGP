@@ -97,12 +97,14 @@ function postNewMessage(req, res) {
           {
             lastMessage: {
               message: body.message,
-              from: middlewareUserInfo._id
+              from: middlewareUserInfo._id,
+              createdAt: Date.now()
             },
             $push: {
               messages: {
                 message: body.message,
-                from: middlewareUserInfo._id
+                from: middlewareUserInfo._id,
+                createdAt: Date.now()
               }
             }
           },
