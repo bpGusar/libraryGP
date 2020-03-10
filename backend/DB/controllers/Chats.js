@@ -52,21 +52,72 @@ function getChatMessages(req, res) {
     io
   } = req;
 
-  Chats.findOne({
-    members: {
-      $in: [_.toString(middlewareUserInfo._id), _.toString(toId)]
+  let { options } = req.query;
+
+  if (_.isUndefined(options)) {
+    options = {
+      page: 1,
+      limit: 99,
+      fetch_type: 0,
+      sort: "desc",
+      displayMode: "all"
+    };
+  } else {
+    options = JSON.parse(options);
+  }
+
+  options.page = _.isUndefined(options.page) ? 1 : options.page;
+  options.limit = _.isUndefined(options.limit) ? 25 : options.limit;
+
+  const getSkip = () => {
+    if (options.page === 1) {
+      return options.limit;
     }
-  })
-    .select("messages")
-    .exec((err, fondedChatMessages) => {
-      if (err) {
-        res.json(config.getRespData(true, MSG.cantUpdateSettings, err));
+    return options.limit * options.page;
+  };
+
+  console.log([-getSkip(), options.limit]);
+
+  parallel(
+    {
+      foundedChatMessages: cb =>
+        Chats.findOne({
+          members: {
+            $in: [_.toString(middlewareUserInfo._id), _.toString(toId)]
+          }
+        })
+          .select("messages")
+          .slice("messages", [-getSkip(), options.limit])
+          .exec(cb),
+      countAllMessages: cb =>
+        Chats.aggregate()
+          .match({
+            members: {
+              $in: [_.toString(middlewareUserInfo._id), _.toString(toId)]
+            }
+          })
+          .project({
+            messages: { $size: "$messages" }
+          })
+          .exec(cb)
+    },
+    (parErr, result) => {
+      if (parErr) {
+        res.json(config.getRespData(true, MSG.cantUpdateSettings, parErr));
       } else {
+        res.set({
+          "max-elements": result.countAllMessages[0].messages
+        });
         res.json(
-          config.getRespData(false, MSG.settingsWasUpdated, fondedChatMessages)
+          config.getRespData(
+            false,
+            MSG.settingsWasUpdated,
+            result.foundedChatMessages
+          )
         );
       }
-    });
+    }
+  );
 }
 
 function postNewMessage(req, res) {

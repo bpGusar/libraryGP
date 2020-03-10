@@ -98,6 +98,7 @@
     "react-helmet": "^5.2.1",
     "react-html-parser": "^2.0.2",
     "react-infinite-scroll-component": "^5.0.4",
+    "react-infinite-scroll-reverse": "^1.0.3",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-semantic-toasts": "^0.6.4",

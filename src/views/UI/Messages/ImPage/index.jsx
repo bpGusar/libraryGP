@@ -1,4 +1,3 @@
-/* eslint-disable react/prefer-stateless-function */
 import React, { Component } from "react";
 import {
   Segment,
@@ -17,12 +16,14 @@ import { DateTime } from "luxon";
 import io from "socket.io-client";
 import uniqid from "uniqid";
 import cn from "classnames";
+import InfiniteScrollReverse from "react-infinite-scroll-reverse";
 
 import axs from "@axios";
 
 import { PARAMS } from "@store";
 
 import s from "./index.module.scss";
+import CustomDimmer from "../../../Common/CustomDimmer";
 
 class ImPage extends Component {
   constructor(props) {
@@ -30,9 +31,15 @@ class ImPage extends Component {
     this.state = {
       chats: [],
       selectedChat: {},
+      maxMessages: 0,
       messages: [],
       msgValue: "",
-      messagesWhichIsNotUpload: []
+      isLoading: false,
+      messagesWhichIsNotUpload: [],
+      options: {
+        limit: 25,
+        page: 1
+      }
     };
 
     this.socket = io.connect();
@@ -49,6 +56,19 @@ class ImPage extends Component {
   componentDidUpdate() {
     const messagesContainer = this.messagesContainerRef;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  loadMoreMessages() {
+    const { selectedChat } = this.state;
+    this.setState(
+      ps => ({
+        options: {
+          ...ps.options,
+          page: ps.options.page + 1
+        }
+      }),
+      () => this.handleSelectChat(selectedChat)
+    );
   }
 
   handleReceiveNewMessage(data) {
@@ -69,18 +89,59 @@ class ImPage extends Component {
     }
   }
 
-  handleSelectChat(chat) {
+  handleSelectChat(chat, clearLoad) {
+    let optionsCloned = {};
+
+    if (clearLoad) {
+      this.setState(
+        {
+          messages: [],
+          options: {
+            limit: 25,
+            page: 1
+          }
+        },
+        () => {
+          const { options } = this.state;
+          optionsCloned = options;
+        }
+      );
+    } else {
+      const { options } = this.state;
+      optionsCloned = options;
+    }
+
+    this.setState({
+      isLoading: true
+    });
+    // TODO: переделать хранение сообщений, ибо щас это ****** который не дает нормально ими распоряжаться
     axs
       .get(`/chats/messages`, {
         params: {
-          toId: chat.peer._id
+          toId: chat.peer._id,
+          options: optionsCloned
         }
       })
       .then(resp => {
         if (!resp.data.error) {
-          this.setState({
-            selectedChat: chat,
-            messages: resp.data.payload.messages
+          this.setState(ps => {
+            const messagesArr = _.cloneDeep(ps.messages);
+
+            resp.data.payload.messages.forEach(message => {
+              if (
+                !_.isEmpty(ps.messages) &&
+                ps.messages.find(mes => message._id !== mes._id)
+              ) {
+                messagesArr.push(message);
+              }
+            });
+            console.log(messagesArr);
+            return {
+              selectedChat: chat,
+              isLoading: false,
+              messages: messagesArr,
+              maxMessages: Number(resp.headers["max-elements"])
+            };
           });
           this.socket.emit("room.join", chat._id);
         }
@@ -110,65 +171,66 @@ class ImPage extends Component {
     return selectedUser;
   }
 
-  handleChangeMsg(value) {
+  handleChangeMsg(e) {
     this.setState({
-      msgValue: value
+      msgValue: e.currentTarget.value
     });
   }
 
   handleSendMessage() {
     const { msgValue, selectedChat, messagesWhichIsNotUpload } = this.state;
     const { currentUser } = this.props;
-
-    const newMsg = {
-      _id: uniqid(),
-      message: msgValue,
-      from: currentUser._id,
-      createdAt: new Date().toISOString()
-    };
-
-    this.setState(ps => ({
-      msgValue: "",
-      messages: [...ps.messages, newMsg],
-      messagesWhichIsNotUpload: [...ps.messagesWhichIsNotUpload, newMsg._id]
-    }));
-
-    axs
-      .post(`/chats/messages`, {
+    if (msgValue !== "") {
+      const newMsg = {
+        _id: uniqid(),
         message: msgValue,
-        toId: selectedChat.peer._id
-      })
-      .then(resp => {
-        if (!resp.data.error) {
-          const { messages, chats } = this.state;
+        from: currentUser._id,
+        createdAt: new Date().toISOString()
+      };
 
-          const messagesWhichIsNotUploadCloned = _.cloneDeep(
-            messagesWhichIsNotUpload
-          );
-          const messagesCloned = _.cloneDeep(messages);
-          let chatsCloned = _.cloneDeep(chats);
+      this.setState(ps => ({
+        msgValue: "",
+        messages: [...ps.messages, newMsg],
+        messagesWhichIsNotUpload: [...ps.messagesWhichIsNotUpload, newMsg._id]
+      }));
 
-          messagesWhichIsNotUploadCloned.splice(
-            messagesWhichIsNotUploadCloned.indexOf(newMsg._id),
-            1
-          );
+      axs
+        .post(`/chats/messages`, {
+          message: msgValue,
+          toId: selectedChat.peer._id
+        })
+        .then(resp => {
+          if (!resp.data.error) {
+            const { messages, chats } = this.state;
 
-          messagesCloned.splice(messagesCloned.indexOf(newMsg._id), 1);
+            const messagesWhichIsNotUploadCloned = _.cloneDeep(
+              messagesWhichIsNotUpload
+            );
+            const messagesCloned = _.cloneDeep(messages);
+            let chatsCloned = _.cloneDeep(chats);
 
-          chatsCloned.splice(chatsCloned.indexOf(selectedChat._id), 1);
+            messagesWhichIsNotUploadCloned.splice(
+              messagesWhichIsNotUploadCloned.indexOf(newMsg._id),
+              1
+            );
 
-          chatsCloned = [
-            { ...selectedChat, lastMessage: newMsg },
-            ...chatsCloned
-          ];
+            messagesCloned.splice(messagesCloned.indexOf(newMsg._id), 1);
 
-          this.setState({
-            messages: messagesCloned,
-            messagesWhichIsNotUpload: messagesWhichIsNotUploadCloned,
-            chats: chatsCloned
-          });
-        }
-      });
+            chatsCloned.splice(chatsCloned.indexOf(selectedChat._id), 1);
+
+            chatsCloned = [
+              { ...selectedChat, lastMessage: newMsg },
+              ...chatsCloned
+            ];
+
+            this.setState({
+              messages: messagesCloned,
+              messagesWhichIsNotUpload: messagesWhichIsNotUploadCloned,
+              chats: chatsCloned
+            });
+          }
+        });
+    }
   }
 
   render() {
@@ -177,9 +239,11 @@ class ImPage extends Component {
       selectedChat,
       messages,
       msgValue,
-      messagesWhichIsNotUpload
+      messagesWhichIsNotUpload,
+      maxMessages,
+      isLoading
     } = this.state;
-
+    // console.log(messages);
     return (
       <Segment>
         <Grid columns={2} className={s.messageContainer}>
@@ -188,7 +252,7 @@ class ImPage extends Component {
               {chats.map(chat => (
                 <List.Item
                   key={chat._id}
-                  onClick={() => this.handleSelectChat(chat)}
+                  onClick={() => this.handleSelectChat(chat, true)}
                   className={cn(
                     s.userListItem,
                     selectedChat._id === chat._id && s.active
@@ -230,45 +294,62 @@ class ImPage extends Component {
               </>
             )}
             <div
-              className={cn(
-                "ui comments",
-                !_.isEmpty(messages) && s.messagesContainer
-              )}
               // eslint-disable-next-line no-return-assign
               ref={el => (this.messagesContainerRef = el)}
             >
-              {!_.isEmpty(messages) &&
-                messages.map(message => (
-                  <Comment key={message._id} className={s.messageItem}>
-                    <Comment.Avatar
-                      src={this.handleGetSenderInfo(message).avatar}
-                    />
-                    <Comment.Content>
-                      <Comment.Author as="a">
-                        {messagesWhichIsNotUpload.find(
-                          el => el === message._id
-                        ) && <Icon loading name="spinner" />}
-                        {this.handleGetSenderInfo(message).firstName}
-                      </Comment.Author>
-                      <Comment.Metadata>
-                        <div>
-                          {DateTime.fromISO(message.createdAt)
-                            .setLocale("ru")
-                            .toFormat("hh:mm dd MMMM yyyy")}
-                        </div>
-                      </Comment.Metadata>
-                      <Comment.Text>{message.message}</Comment.Text>
-                    </Comment.Content>
-                  </Comment>
-                ))}
+              {!_.isEmpty(messages) && (
+                <InfiniteScrollReverse
+                  className={cn(
+                    "ui comments",
+                    !_.isEmpty(messages) && s.messagesContainer
+                  )}
+                  hasMore={messages.length < maxMessages}
+                  isLoading={isLoading}
+                  loadArea={250}
+                  loadMore={() => this.loadMoreMessages()}
+                >
+                  {!isLoading ? (
+                    messages.map(message => (
+                      <div
+                        key={message._id}
+                        className={cn("comment", s.messageItem)}
+                      >
+                        <Comment.Avatar
+                          src={this.handleGetSenderInfo(message).avatar}
+                        />
+                        <Comment.Content>
+                          <Comment.Author as="a">
+                            {messagesWhichIsNotUpload.find(
+                              el => el === message._id
+                            ) && <Icon loading name="spinner" />}
+                            {this.handleGetSenderInfo(message).firstName}
+                          </Comment.Author>
+                          <Comment.Metadata>
+                            <div>
+                              {DateTime.fromISO(message.createdAt)
+                                .setLocale("ru")
+                                .toFormat("hh:mm dd MMMM yyyy")}
+                            </div>
+                          </Comment.Metadata>
+                          <Comment.Text>{message.message}</Comment.Text>
+                        </Comment.Content>
+                      </div>
+                    ))
+                  ) : (
+                    <CustomDimmer active showLoader />
+                  )}
+                </InfiniteScrollReverse>
+              )}
             </div>
             {!_.isEmpty(messages) && (
               <Form reply className={s.messageForm}>
-                <Form.TextArea
-                  className={s.messageTextArea}
-                  onChange={(e, { value }) => this.handleChangeMsg(value)}
-                  value={msgValue}
-                />
+                <div className={cn("field", s.messageTextArea)}>
+                  <textarea
+                    rows="3"
+                    value={msgValue}
+                    onChange={e => this.handleChangeMsg(e)}
+                  />
+                </div>
                 <Button
                   content="Отправить"
                   labelPosition="left"

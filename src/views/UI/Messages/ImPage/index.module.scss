@@ -31,9 +31,11 @@
       }
     }
     .messagesContainer {
-      padding: 0 15px;
-      height: 562px;
-      overflow-y: scroll;
+      padding: 0px 0px 0 15px;
+      height: 562px !important;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden auto;
       margin: 0;
       .messageItem {
         margin: 15px 0 !important;
