@@ -76,8 +76,6 @@ function getChatMessages(req, res) {
     return options.limit * options.page;
   };
 
-  console.log([-getSkip(), options.limit]);
-
   parallel(
     {
       foundedChatMessages: cb =>

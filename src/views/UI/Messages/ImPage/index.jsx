@@ -1,3 +1,5 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable class-methods-use-this */
 import React, { Component } from "react";
 import {
   Segment,
@@ -18,12 +20,13 @@ import uniqid from "uniqid";
 import cn from "classnames";
 import InfiniteScrollReverse from "react-infinite-scroll-reverse";
 
+import CustomDimmer from "../../../Common/CustomDimmer";
+
 import axs from "@axios";
 
 import { PARAMS } from "@store";
 
 import s from "./index.module.scss";
-import CustomDimmer from "../../../Common/CustomDimmer";
 
 class ImPage extends Component {
   constructor(props) {
@@ -124,25 +127,15 @@ class ImPage extends Component {
       })
       .then(resp => {
         if (!resp.data.error) {
-          this.setState(ps => {
-            const messagesArr = _.cloneDeep(ps.messages);
-
-            resp.data.payload.messages.forEach(message => {
-              if (
-                !_.isEmpty(ps.messages) &&
-                ps.messages.find(mes => message._id !== mes._id)
-              ) {
-                messagesArr.push(message);
-              }
-            });
-            console.log(messagesArr);
-            return {
-              selectedChat: chat,
-              isLoading: false,
-              messages: messagesArr,
-              maxMessages: Number(resp.headers["max-elements"])
-            };
-          });
+          this.setState(ps => ({
+            selectedChat: chat,
+            isLoading: false,
+            messages: [
+              ..._.differenceBy(resp.data.payload.messages, ps.messages, "_id"),
+              ...ps.messages
+            ],
+            maxMessages: Number(resp.headers["max-elements"])
+          }));
           this.socket.emit("room.join", chat._id);
         }
       });
