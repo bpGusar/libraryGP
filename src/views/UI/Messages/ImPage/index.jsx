@@ -47,7 +47,11 @@ class ImPage extends Component {
 
     this.socket = io.connect();
 
+    this.socket.emit("room.join", `chatList#${props.currentUser._id}`);
     this.socket.on("chat.new_msg", data => this.handleReceiveNewMessage(data));
+    this.socket.on("chat.new_chatItem", data =>
+      this.handleReceiveNewChatItem(data)
+    );
 
     this.messagesContainerRef = React.createRef();
   }
@@ -72,6 +76,19 @@ class ImPage extends Component {
       }),
       () => this.handleSelectChat(selectedChat)
     );
+  }
+
+  handleReceiveNewChatItem(data) {
+    console.log(data);
+    const { chats } = this.state;
+    let chatsCloned = _.cloneDeep(chats);
+    chatsCloned.splice(chatsCloned.indexOf(data.newChat._id), 1);
+
+    chatsCloned = [data.newChat, ...chatsCloned];
+
+    this.setState({
+      chats: chatsCloned
+    });
   }
 
   handleReceiveNewMessage(data) {

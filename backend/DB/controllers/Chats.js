@@ -2,31 +2,26 @@ import _ from "lodash";
 import { parallel } from "async";
 
 import Chats from "../models/Chats";
+import User from "../models/User";
 import MSG from "../../config/msgCodes";
 import * as config from "../config";
 
 function getChats(req, res) {
   const { middlewareUserInfo } = req;
-
-  parallel(
-    {
-      fondedChats: cb =>
-        Chats.find({ members: { $in: [_.toString(middlewareUserInfo._id)] } })
-          .select("-messages")
-          .sort({
-            lastMessage: -1
-          })
-          .populate([
-            {
-              path: "members",
-              select:
-                "-password -emailVerified -userGroup -createdAt -readerId -email -login"
-            }
-          ])
-          .exec(cb)
-    },
-    (parErr, result) => {
-      const chatsArr = result.fondedChats.map(chat => ({
+  Chats.find({ members: { $in: [_.toString(middlewareUserInfo._id)] } })
+    .select("-messages")
+    .sort({
+      lastMessage: -1
+    })
+    .populate([
+      {
+        path: "members",
+        select:
+          "-password -emailVerified -userGroup -createdAt -readerId -email -login"
+      }
+    ])
+    .exec((err, fondedChats) => {
+      const chatsArr = fondedChats.map(chat => ({
         _id: chat._id,
         createdAt: chat.createdAt,
         peer: chat.members.find(
@@ -36,13 +31,12 @@ function getChats(req, res) {
         lastMessage: chat.lastMessage
       }));
 
-      if (parErr) {
-        res.json(config.getRespData(true, MSG.cantLoadChatList, parErr));
+      if (err) {
+        res.json(config.getRespData(true, MSG.cantLoadChatList, err));
       } else {
         res.json(config.getRespData(false, MSG.chatListFetched, chatsArr));
       }
-    }
-  );
+    });
 }
 
 function getChatMessages(req, res) {
@@ -162,14 +156,28 @@ function postNewMessage(req, res) {
             if (err) {
               res.json(config.getRespData(true, MSG.cantUpdatePost, err));
             } else {
-              io.sockets.in(updatedChat._id).emit("chat.new_msg", {
-                newMessage:
-                  updatedChat.messages[updatedChat.messages.length - 1]
-              });
+              User.findOne({ _id: middlewareUserInfo._id })
+                .select(
+                  "-password -emailVerified -userGroup -createdAt -readerId -email -login"
+                )
+                .exec((err, user) => {
+                  io.sockets.in(updatedChat._id).emit("chat.new_msg", {
+                    newMessage:
+                      updatedChat.messages[updatedChat.messages.length - 1]
+                  });
 
-              // io.sockets.emit("chat_list", {
-              //   chatId: updatedChat._id
-              // });
+                  io.sockets
+                    .in(`chatList#${body.toId}`)
+                    .emit("chat.new_chatItem", {
+                      newChat: {
+                        _id: updatedChat._id,
+                        createdAt: updatedChat.createdAt,
+                        peer: user,
+                        lastMessage: updatedChat.lastMessage
+                      }
+                    });
+                });
+
               res.json(config.getRespData(false, MSG.postWasUpdated));
             }
           }
