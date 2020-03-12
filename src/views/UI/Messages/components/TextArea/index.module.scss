@@ -1,0 +1,23 @@
+.messageForm {
+  padding: 14px 15px;
+  border-top: 1px solid #dededf;
+  .messageTextAreaInput {
+    height: 36px;
+    width: 100%;
+    vertical-align: top;
+    margin: 0;
+    appearance: none;
+    padding: 8px 15px;
+    background: #fff;
+    border: 1px solid rgba(34, 36, 38, 0.15);
+    outline: 0;
+    color: rgba(0, 0, 0, 0.87);
+    border-radius: 0.28571429rem;
+    box-shadow: 0 0 0 0 transparent inset;
+    transition: color 0.1s ease, border-color 0.1s ease;
+    font-size: 1em;
+    line-height: 1.2857;
+    resize: vertical;
+    margin-bottom: 15px;
+  }
+}

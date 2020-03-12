@@ -19,20 +19,9 @@
     .divider {
       margin: 1rem 0 0 0;
     }
-    .messageForm {
-      padding: 14px 15px;
-      border-top: 1px solid #dededf;
-      .messageTextArea {
-        textarea {
-          height: 50px;
-          max-height: 50px;
-          min-height: 50px;
-        }
-      }
-    }
     .messagesContainer {
       padding: 0px 0px 0 15px;
-      height: 562px !important;
+      height: 574px !important;
       width: 100%;
       max-width: 100%;
       overflow: hidden auto;

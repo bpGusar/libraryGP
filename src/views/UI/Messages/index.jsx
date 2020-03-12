@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-plusplus */
 /* eslint-disable class-methods-use-this */
 import React, { Component } from "react";
@@ -7,8 +8,6 @@ import {
   List,
   Image,
   Comment,
-  Form,
-  Button,
   Divider,
   Icon
 } from "semantic-ui-react";
@@ -21,13 +20,14 @@ import cn from "classnames";
 import InfiniteScrollReverse from "react-infinite-scroll-reverse";
 import { Link } from "react-router-dom";
 
-import CustomDimmer from "../../../Common/CustomDimmer";
+import CustomDimmer from "../../Common/CustomDimmer";
 
 import axs from "@axios";
 
 import { PARAMS } from "@store";
 
 import s from "./index.module.scss";
+import TextArea from "./components/TextArea";
 
 class ImPage extends Component {
   constructor(props) {
@@ -66,6 +66,76 @@ class ImPage extends Component {
   componentWillUnmount() {
     this.setState(this.initialState);
   }
+
+  handleSendMessage = () => {
+    const { msgValue, selectedChat, messagesWhichIsNotUpload } = this.state;
+    const { currentUser } = this.props;
+    if (msgValue !== "") {
+      const newMsg = {
+        _id: uniqid(),
+        message: msgValue,
+        from: currentUser._id,
+        createdAt: new Date().toISOString()
+      };
+      this.setState(ps => ({
+        msgValue: "",
+        messages: [...ps.messages, newMsg],
+        messagesWhichIsNotUpload: [...ps.messagesWhichIsNotUpload, newMsg._id]
+      }));
+      axs
+        .post(`/chats/messages`, {
+          message: msgValue,
+          toId: selectedChat.peer._id
+        })
+        .then(resp => {
+          if (!resp.data.error) {
+            const { messages, chats } = this.state;
+            const messagesWhichIsNotUploadCloned = _.cloneDeep(
+              messagesWhichIsNotUpload
+            );
+            const messagesCloned = _.cloneDeep(messages);
+            const chatsCloned = _.cloneDeep(chats);
+            messagesWhichIsNotUploadCloned.splice(
+              messagesWhichIsNotUploadCloned.findIndex(
+                message => message._id === newMsg._id
+              ),
+              1
+            );
+            messagesCloned.splice(
+              messagesCloned.findIndex(message => message._id === newMsg._id),
+              1
+            );
+            chatsCloned.splice(
+              chatsCloned.findIndex(chat => chat._id === selectedChat._id),
+              1,
+              { ...selectedChat, lastMessage: newMsg }
+            );
+            this.setState({
+              messages: messagesCloned,
+              messagesWhichIsNotUpload: messagesWhichIsNotUploadCloned,
+              chats: chatsCloned.sort(
+                (a, b) =>
+                  new Date(b.lastMessage.createdAt).getTime() -
+                  new Date(a.lastMessage.createdAt).getTime()
+              )
+            });
+          }
+        });
+    }
+  };
+
+  handleChangeMsg = e => {
+    // if (e.key === "Enter") {
+    //   if (e.shiftKey) {
+    //     e.target.style.height = e.target.offsetHeight + 20 + "px";
+    //   } else {
+    //     this.handleSendMessage(e);
+    //   }
+    // }
+    this.setState({
+      msgValue: e.currentTarget.innerHTML
+    });
+  };
 
   loadMoreMessages() {
     const { selectedChat } = this.state;
@@ -180,76 +250,6 @@ class ImPage extends Component {
     }
 
     return selectedUser;
-  }
-
-  handleChangeMsg(e) {
-    this.setState({
-      msgValue: e.currentTarget.value
-    });
-  }
-
-  handleSendMessage() {
-    const { msgValue, selectedChat, messagesWhichIsNotUpload } = this.state;
-    const { currentUser } = this.props;
-    if (msgValue !== "") {
-      const newMsg = {
-        _id: uniqid(),
-        message: msgValue,
-        from: currentUser._id,
-        createdAt: new Date().toISOString()
-      };
-
-      this.setState(ps => ({
-        msgValue: "",
-        messages: [...ps.messages, newMsg],
-        messagesWhichIsNotUpload: [...ps.messagesWhichIsNotUpload, newMsg._id]
-      }));
-
-      axs
-        .post(`/chats/messages`, {
-          message: msgValue,
-          toId: selectedChat.peer._id
-        })
-        .then(resp => {
-          if (!resp.data.error) {
-            const { messages, chats } = this.state;
-
-            const messagesWhichIsNotUploadCloned = _.cloneDeep(
-              messagesWhichIsNotUpload
-            );
-            const messagesCloned = _.cloneDeep(messages);
-            const chatsCloned = _.cloneDeep(chats);
-
-            messagesWhichIsNotUploadCloned.splice(
-              messagesWhichIsNotUploadCloned.findIndex(
-                message => message._id === newMsg._id
-              ),
-              1
-            );
-
-            messagesCloned.splice(
-              messagesCloned.findIndex(message => message._id === newMsg._id),
-              1
-            );
-
-            chatsCloned.splice(
-              chatsCloned.findIndex(chat => chat._id === selectedChat._id),
-              1,
-              { ...selectedChat, lastMessage: newMsg }
-            );
-
-            this.setState({
-              messages: messagesCloned,
-              messagesWhichIsNotUpload: messagesWhichIsNotUploadCloned,
-              chats: chatsCloned.sort(
-                (a, b) =>
-                  new Date(b.lastMessage.createdAt).getTime() -
-                  new Date(a.lastMessage.createdAt).getTime()
-              )
-            });
-          }
-        });
-    }
   }
 
   handleSelectChat(selectChat, clickedChat) {
@@ -376,22 +376,11 @@ class ImPage extends Component {
               </InfiniteScrollReverse>
             )}
             {!_.isEmpty(messages) && (
-              <Form reply className={s.messageForm}>
-                <div className={cn("field", s.messageTextArea)}>
-                  <textarea
-                    rows="3"
-                    value={msgValue}
-                    onChange={e => this.handleChangeMsg(e)}
-                  />
-                </div>
-                <Button
-                  content="Отправить"
-                  labelPosition="left"
-                  icon="edit"
-                  primary
-                  onClick={() => this.handleSendMessage()}
-                />
-              </Form>
+              <TextArea
+                value={msgValue}
+                onChange={this.handleChangeMsg}
+                onSubmit={this.handleSendMessage}
+              />
             )}
           </Grid.Column>
         </Grid>
