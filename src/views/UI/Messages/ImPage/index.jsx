@@ -19,6 +19,7 @@ import io from "socket.io-client";
 import uniqid from "uniqid";
 import cn from "classnames";
 import InfiniteScrollReverse from "react-infinite-scroll-reverse";
+import { Link } from "react-router-dom";
 
 import CustomDimmer from "../../../Common/CustomDimmer";
 
@@ -31,7 +32,7 @@ import s from "./index.module.scss";
 class ImPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.initialState = {
       chats: [],
       selectedChat: {},
       maxMessages: 0,
@@ -44,6 +45,8 @@ class ImPage extends Component {
         page: 1
       }
     };
+
+    this.state = this.initialState;
 
     this.socket = io.connect();
 
@@ -60,9 +63,8 @@ class ImPage extends Component {
     this.handleFetchChatsList();
   }
 
-  componentDidUpdate() {
-    const messagesContainer = this.messagesContainerRef;
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  componentWillUnmount() {
+    this.setState(this.initialState);
   }
 
   loadMoreMessages() {
@@ -74,42 +76,39 @@ class ImPage extends Component {
           page: ps.options.page + 1
         }
       }),
-      () => this.handleSelectChat(selectedChat)
+      () => this.handleGetMessagesFromChat(selectedChat)
     );
   }
 
   handleReceiveNewChatItem(data) {
-    console.log(data);
     const { chats } = this.state;
-    let chatsCloned = _.cloneDeep(chats);
-    chatsCloned.splice(chatsCloned.indexOf(data.newChat._id), 1);
+    const chatsCloned = _.cloneDeep(chats);
 
-    chatsCloned = [data.newChat, ...chatsCloned];
+    chatsCloned.splice(
+      chatsCloned.findIndex(chat => chat._id === data.newChat._id),
+      1,
+      data.newChat
+    );
 
     this.setState({
-      chats: chatsCloned
+      chats: chatsCloned.sort(
+        (a, b) =>
+          new Date(b.lastMessage.createdAt).getTime() -
+          new Date(a.lastMessage.createdAt).getTime()
+      )
     });
   }
 
   handleReceiveNewMessage(data) {
-    const { selectedChat, chats } = this.state;
-    let chatsCloned = _.cloneDeep(chats);
+    const { selectedChat } = this.state;
     if (!_.isEmpty(selectedChat)) {
-      chatsCloned.splice(chatsCloned.indexOf(selectedChat._id), 1);
-
-      chatsCloned = [
-        { ...selectedChat, lastMessage: data.newMessage },
-        ...chatsCloned
-      ];
-
       this.setState(ps => ({
-        messages: [...ps.messages, data.newMessage],
-        chats: chatsCloned
+        messages: [...ps.messages, data.newMessage]
       }));
     }
   }
 
-  handleSelectChat(chat, clearLoad) {
+  handleGetMessagesFromChat(chat, clearLoad) {
     let optionsCloned = {};
 
     if (clearLoad) {
@@ -134,7 +133,7 @@ class ImPage extends Component {
     this.setState({
       isLoading: true
     });
-    // TODO: переделать хранение сообщений, ибо щас это ****** который не дает нормально ими распоряжаться
+
     axs
       .get(`/chats/messages`, {
         params: {
@@ -153,7 +152,6 @@ class ImPage extends Component {
             ],
             maxMessages: Number(resp.headers["max-elements"])
           }));
-          this.socket.emit("room.join", chat._id);
         }
       });
   }
@@ -217,30 +215,46 @@ class ImPage extends Component {
               messagesWhichIsNotUpload
             );
             const messagesCloned = _.cloneDeep(messages);
-            let chatsCloned = _.cloneDeep(chats);
+            const chatsCloned = _.cloneDeep(chats);
 
             messagesWhichIsNotUploadCloned.splice(
-              messagesWhichIsNotUploadCloned.indexOf(newMsg._id),
+              messagesWhichIsNotUploadCloned.findIndex(
+                message => message._id === newMsg._id
+              ),
               1
             );
 
-            messagesCloned.splice(messagesCloned.indexOf(newMsg._id), 1);
+            messagesCloned.splice(
+              messagesCloned.findIndex(message => message._id === newMsg._id),
+              1
+            );
 
-            chatsCloned.splice(chatsCloned.indexOf(selectedChat._id), 1);
-
-            chatsCloned = [
-              { ...selectedChat, lastMessage: newMsg },
-              ...chatsCloned
-            ];
+            chatsCloned.splice(
+              chatsCloned.findIndex(chat => chat._id === selectedChat._id),
+              1,
+              { ...selectedChat, lastMessage: newMsg }
+            );
 
             this.setState({
               messages: messagesCloned,
               messagesWhichIsNotUpload: messagesWhichIsNotUploadCloned,
-              chats: chatsCloned
+              chats: chatsCloned.sort(
+                (a, b) =>
+                  new Date(b.lastMessage.createdAt).getTime() -
+                  new Date(a.lastMessage.createdAt).getTime()
+              )
             });
           }
         });
     }
+  }
+
+  handleSelectChat(selectChat, clickedChat) {
+    if (!_.isEmpty(selectChat)) {
+      this.socket.emit("room.leave", selectChat._id);
+    }
+    this.socket.emit("room.join", clickedChat._id);
+    this.handleGetMessagesFromChat(clickedChat, true);
   }
 
   render() {
@@ -253,7 +267,7 @@ class ImPage extends Component {
       maxMessages,
       isLoading
     } = this.state;
-    // console.log(messages);
+
     return (
       <Segment>
         <Grid columns={2} className={s.messageContainer}>
@@ -262,7 +276,7 @@ class ImPage extends Component {
               {chats.map(chat => (
                 <List.Item
                   key={chat._id}
-                  onClick={() => this.handleSelectChat(chat, true)}
+                  onClick={() => this.handleSelectChat(selectedChat, chat)}
                   className={cn(
                     s.userListItem,
                     selectedChat._id === chat._id && s.active
@@ -292,7 +306,10 @@ class ImPage extends Component {
                       src={selectedChat.peer.avatar}
                     />
                     <Comment.Content className={s.recipientBlockContent}>
-                      <Comment.Author as="a">
+                      <Comment.Author
+                        as={Link}
+                        to={`/profile/${selectedChat.peer._id}`}
+                      >
                         {selectedChat.peer.firstName}{" "}
                         {selectedChat.peer.lastName}{" "}
                         {selectedChat.peer.patronymic}
@@ -303,23 +320,25 @@ class ImPage extends Component {
                 <Divider className={s.divider} />
               </>
             )}
-            <div
-              // eslint-disable-next-line no-return-assign
-              ref={el => (this.messagesContainerRef = el)}
-            >
-              {!_.isEmpty(messages) && (
-                <InfiniteScrollReverse
-                  className={cn(
-                    "ui comments",
-                    !_.isEmpty(messages) && s.messagesContainer
-                  )}
-                  hasMore={messages.length < maxMessages}
-                  isLoading={isLoading}
-                  loadArea={250}
-                  loadMore={() => this.loadMoreMessages()}
-                >
-                  {!isLoading ? (
-                    messages.map(message => (
+            {!_.isEmpty(messages) && (
+              <InfiniteScrollReverse
+                className={cn(
+                  "ui comments",
+                  !_.isEmpty(messages) && s.messagesContainer
+                )}
+                hasMore={messages.length < maxMessages}
+                isLoading={isLoading}
+                loadArea={250}
+                loadMore={() => this.loadMoreMessages()}
+              >
+                {!isLoading ? (
+                  messages
+                    .sort(
+                      (a, b) =>
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime()
+                    )
+                    .map(message => (
                       <div
                         key={message._id}
                         className={cn("comment", s.messageItem)}
@@ -328,7 +347,10 @@ class ImPage extends Component {
                           src={this.handleGetSenderInfo(message).avatar}
                         />
                         <Comment.Content>
-                          <Comment.Author as="a">
+                          <Comment.Author
+                            as={Link}
+                            to={`/profile/${selectedChat.peer._id}`}
+                          >
                             {messagesWhichIsNotUpload.find(
                               el => el === message._id
                             ) && <Icon loading name="spinner" />}
@@ -345,12 +367,11 @@ class ImPage extends Component {
                         </Comment.Content>
                       </div>
                     ))
-                  ) : (
-                    <CustomDimmer active showLoader />
-                  )}
-                </InfiniteScrollReverse>
-              )}
-            </div>
+                ) : (
+                  <CustomDimmer active showLoader />
+                )}
+              </InfiniteScrollReverse>
+            )}
             {!_.isEmpty(messages) && (
               <Form reply className={s.messageForm}>
                 <div className={cn("field", s.messageTextArea)}>

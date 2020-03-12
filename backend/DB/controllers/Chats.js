@@ -8,10 +8,10 @@ import * as config from "../config";
 
 function getChats(req, res) {
   const { middlewareUserInfo } = req;
-  Chats.find({ members: { $in: [_.toString(middlewareUserInfo._id)] } })
+  Chats.find({ members: { $all: [_.toString(middlewareUserInfo._id)] } })
     .select("-messages")
     .sort({
-      lastMessage: -1
+      "lastMessage.createdAt": -1
     })
     .populate([
       {
@@ -75,7 +75,7 @@ function getChatMessages(req, res) {
       foundedChatMessages: cb =>
         Chats.findOne({
           members: {
-            $in: [_.toString(middlewareUserInfo._id), _.toString(toId)]
+            $all: [_.toString(middlewareUserInfo._id), _.toString(toId)]
           }
         })
           .select("messages")
@@ -85,7 +85,7 @@ function getChatMessages(req, res) {
         Chats.aggregate()
           .match({
             members: {
-              $in: [_.toString(middlewareUserInfo._id), _.toString(toId)]
+              $all: [_.toString(middlewareUserInfo._id), _.toString(toId)]
             }
           })
           .project({
@@ -121,7 +121,7 @@ function postNewMessage(req, res) {
         Chats.countDocuments(
           {
             members: {
-              $in: [_.toString(middlewareUserInfo._id), _.toString(body.toId)]
+              $all: [_.toString(middlewareUserInfo._id), _.toString(body.toId)]
             }
           },
           cb
@@ -134,7 +134,7 @@ function postNewMessage(req, res) {
         Chats.findOneAndUpdate(
           {
             members: {
-              $in: [_.toString(middlewareUserInfo._id), _.toString(body.toId)]
+              $all: [_.toString(middlewareUserInfo._id), _.toString(body.toId)]
             }
           },
           {
@@ -156,16 +156,15 @@ function postNewMessage(req, res) {
             if (err) {
               res.json(config.getRespData(true, MSG.cantUpdatePost, err));
             } else {
+              io.sockets.in(updatedChat._id).emit("chat.new_msg", {
+                newMessage:
+                  updatedChat.messages[updatedChat.messages.length - 1]
+              });
               User.findOne({ _id: middlewareUserInfo._id })
                 .select(
                   "-password -emailVerified -userGroup -createdAt -readerId -email -login"
                 )
                 .exec((err, user) => {
-                  io.sockets.in(updatedChat._id).emit("chat.new_msg", {
-                    newMessage:
-                      updatedChat.messages[updatedChat.messages.length - 1]
-                  });
-
                   io.sockets
                     .in(`chatList#${body.toId}`)
                     .emit("chat.new_chatItem", {
@@ -178,10 +177,59 @@ function postNewMessage(req, res) {
                     });
                 });
 
-              res.json(config.getRespData(false, MSG.postWasUpdated));
+              res.json(
+                config.getRespData(
+                  false,
+                  MSG.postWasUpdated,
+                  updatedChat.messages[updatedChat.messages.length - 1]
+                )
+              );
             }
           }
         );
+      } else {
+        const newChat = new Chats({
+          members: [middlewareUserInfo._id, body.toId],
+          lastMessage: {
+            message: body.message,
+            from: middlewareUserInfo._id,
+            createdAt: Date.now()
+          },
+          messages: [
+            {
+              message: body.message,
+              from: middlewareUserInfo._id,
+              createdAt: Date.now()
+            }
+          ]
+        });
+
+        newChat.save((newChatErr, newChatDoc) => {
+          if (newChatErr) {
+            res.json(config.getRespData(true, MSG.cantAddNewBook, newChatErr));
+          } else {
+            io.sockets.in(newChatDoc._id).emit("chat.new_msg", {
+              newMessage: newChatDoc.messages[newChatDoc.messages.length - 1]
+            });
+            User.findOne({ _id: middlewareUserInfo._id })
+              .select(
+                "-password -emailVerified -userGroup -createdAt -readerId -email -login"
+              )
+              .exec((err, user) => {
+                io.sockets
+                  .in(`chatList#${body.toId}`)
+                  .emit("chat.new_chatItem", {
+                    newChat: {
+                      _id: newChatDoc._id,
+                      createdAt: newChatDoc.createdAt,
+                      peer: user,
+                      lastMessage: newChatDoc.lastMessage
+                    }
+                  });
+              });
+            res.send(config.getRespData(false, MSG.bookAddedSuccessfully));
+          }
+        });
       }
     }
   );

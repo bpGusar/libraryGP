@@ -26,8 +26,11 @@ server.listen(process.env.BACK_PORT, () => {
 
 io.on("connection", socket => {
   socket.on("room.join", room => {
-    socket.leaveAll();
     socket.join(room);
+  });
+
+  socket.on("room.leave", room => {
+    socket.leave(room);
   });
 
   socket.on("disconnect", () => {
