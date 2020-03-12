@@ -83,12 +83,15 @@ class ImPage extends Component {
   handleReceiveNewChatItem(data) {
     const { chats } = this.state;
     const chatsCloned = _.cloneDeep(chats);
-
-    chatsCloned.splice(
-      chatsCloned.findIndex(chat => chat._id === data.newChat._id),
-      1,
-      data.newChat
+    const indexOf = chatsCloned.findIndex(
+      chat => chat._id === data.newChat._id
     );
+
+    if (indexOf !== -1) {
+      chatsCloned.splice(indexOf, 1, data.newChat);
+    } else {
+      chatsCloned.push(data.newChat);
+    }
 
     this.setState({
       chats: chatsCloned.sort(
