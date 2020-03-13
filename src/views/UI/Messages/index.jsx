@@ -2,23 +2,13 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable class-methods-use-this */
 import React, { Component } from "react";
-import {
-  Segment,
-  Grid,
-  List,
-  Image,
-  Comment,
-  Divider,
-  Icon
-} from "semantic-ui-react";
+import { Segment, Grid, List } from "semantic-ui-react";
 import { branch } from "baobab-react/higher-order";
 import _ from "lodash";
-import { DateTime } from "luxon";
 import io from "socket.io-client";
 import uniqid from "uniqid";
 import cn from "classnames";
 import InfiniteScrollReverse from "react-infinite-scroll-reverse";
-import { Link } from "react-router-dom";
 
 import CustomDimmer from "../../Common/CustomDimmer";
 
@@ -28,6 +18,9 @@ import { PARAMS } from "@store";
 
 import s from "./index.module.scss";
 import TextArea from "./components/TextArea";
+import MessageItem from "./components/MessageItem";
+import MessagesTopInfoBlock from "./components/MessagesTopInfoBlock";
+import ChatItem from "./components/ChatItem";
 
 class ImPage extends Component {
   constructor(props) {
@@ -43,7 +36,8 @@ class ImPage extends Component {
       options: {
         limit: 25,
         page: 1
-      }
+      },
+      inputHeight: 37
     };
 
     this.state = this.initialState;
@@ -56,7 +50,7 @@ class ImPage extends Component {
       this.handleReceiveNewChatItem(data)
     );
 
-    this.messagesContainerRef = React.createRef();
+    this.textAreaRef = React.createRef();
   }
 
   componentDidMount() {
@@ -77,8 +71,10 @@ class ImPage extends Component {
         from: currentUser._id,
         createdAt: new Date().toISOString()
       };
+      this.textAreaRef.current.value = "";
       this.setState(ps => ({
         msgValue: "",
+        inputHeight: this.initialState.inputHeight,
         messages: [...ps.messages, newMsg],
         messagesWhichIsNotUpload: [...ps.messagesWhichIsNotUpload, newMsg._id]
       }));
@@ -124,17 +120,23 @@ class ImPage extends Component {
     }
   };
 
-  handleChangeMsg = e => {
-    // if (e.key === "Enter") {
-    //   if (e.shiftKey) {
-    //     e.target.style.height = e.target.offsetHeight + 20 + "px";
-    //   } else {
-    //     this.handleSendMessage(e);
-    //   }
-    // }
-    this.setState({
-      msgValue: e.currentTarget.innerHTML
-    });
+  handleOnChange = e => {
+    const keyCode = e.keyCode ? e.keyCode : e.which;
+    if (keyCode === 13 && !e.shiftKey) {
+      this.handleSendMessage();
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (e.shiftKey && keyCode === 13) {
+      this.setState(ps => ({
+        inputHeight: ps.inputHeight <= 96 ? ps.inputHeight + 15 : ps.inputHeight
+      }));
+    }
+    if (keyCode !== 13) {
+      this.setState({
+        msgValue: e.target.value
+      });
+    }
   };
 
   loadMoreMessages() {
@@ -265,11 +267,13 @@ class ImPage extends Component {
       chats,
       selectedChat,
       messages,
-      msgValue,
       messagesWhichIsNotUpload,
       maxMessages,
-      isLoading
+      isLoading,
+      inputHeight
     } = this.state;
+
+    const { currentUser } = this.props;
 
     return (
       <Segment>
@@ -277,111 +281,65 @@ class ImPage extends Component {
           <Grid.Column width={5} className={s.userListColumn}>
             <List divided relaxed>
               {chats.map(chat => (
-                <List.Item
-                  key={chat._id}
-                  onClick={() => this.handleSelectChat(selectedChat, chat)}
-                  className={cn(
-                    s.userListItem,
-                    selectedChat._id === chat._id && s.active
-                  )}
-                >
-                  <Image avatar src={chat.peer.avatar} />
-                  <List.Content>
-                    <List.Header>
-                      {chat.peer.firstName} {chat.peer.lastName}{" "}
-                      {chat.peer.patronymic}
-                    </List.Header>
-                    <List.Description>
-                      {chat.lastMessage.message}
-                    </List.Description>
-                  </List.Content>
-                </List.Item>
+                <ChatItem
+                  chatId={chat._id}
+                  onItemClick={() => this.handleSelectChat(selectedChat, chat)}
+                  selectedChat={selectedChat}
+                  chat={chat}
+                  currentUser={currentUser}
+                />
               ))}
             </List>
           </Grid.Column>
           <Grid.Column width={11} className={s.messagesBlock}>
             {!_.isEmpty(selectedChat) && (
-              <>
-                <Comment.Group className={s.recipientBlock}>
-                  <Comment>
-                    <Comment.Avatar
-                      className={s.recipientBlockAvatar}
-                      src={selectedChat.peer.avatar}
-                    />
-                    <Comment.Content className={s.recipientBlockContent}>
-                      <Comment.Author
-                        as={Link}
-                        to={`/profile/${selectedChat.peer._id}`}
-                      >
-                        {selectedChat.peer.firstName}{" "}
-                        {selectedChat.peer.lastName}{" "}
-                        {selectedChat.peer.patronymic}
-                      </Comment.Author>
-                    </Comment.Content>
-                  </Comment>
-                </Comment.Group>
-                <Divider className={s.divider} />
-              </>
+              <MessagesTopInfoBlock selectedChat={selectedChat} />
             )}
-            {!_.isEmpty(messages) && (
-              <InfiniteScrollReverse
-                className={cn(
-                  "ui comments",
-                  !_.isEmpty(messages) && s.messagesContainer
-                )}
-                hasMore={messages.length < maxMessages}
-                isLoading={isLoading}
-                loadArea={250}
-                loadMore={() => this.loadMoreMessages()}
-              >
-                {!isLoading ? (
-                  messages
-                    .sort(
-                      (a, b) =>
-                        new Date(a.createdAt).getTime() -
-                        new Date(b.createdAt).getTime()
-                    )
-                    .map(message => (
-                      <div
-                        key={message._id}
-                        className={cn("comment", s.messageItem)}
-                      >
-                        <Comment.Avatar
-                          src={this.handleGetSenderInfo(message).avatar}
+            <div className={s.messagesAndForm}>
+              {!_.isEmpty(messages) && (
+                <InfiniteScrollReverse
+                  className={cn(
+                    "ui comments",
+                    !_.isEmpty(messages) && s.messagesContainer
+                  )}
+                  hasMore={messages.length < maxMessages}
+                  isLoading={isLoading}
+                  loadArea={250}
+                  loadMore={() => this.loadMoreMessages()}
+                >
+                  {!isLoading ? (
+                    messages
+                      .sort(
+                        (a, b) =>
+                          new Date(a.createdAt).getTime() -
+                          new Date(b.createdAt).getTime()
+                      )
+                      .map(message => (
+                        <MessageItem
+                          messageId={message._id}
+                          avatarSrc={this.handleGetSenderInfo(message).avatar}
+                          firstName={
+                            this.handleGetSenderInfo(message).firstName
+                          }
+                          selectedChat={selectedChat}
+                          messagesWhichIsNotUpload={messagesWhichIsNotUpload}
+                          message={message}
                         />
-                        <Comment.Content>
-                          <Comment.Author
-                            as={Link}
-                            to={`/profile/${selectedChat.peer._id}`}
-                          >
-                            {messagesWhichIsNotUpload.find(
-                              el => el === message._id
-                            ) && <Icon loading name="spinner" />}
-                            {this.handleGetSenderInfo(message).firstName}
-                          </Comment.Author>
-                          <Comment.Metadata>
-                            <div>
-                              {DateTime.fromISO(message.createdAt)
-                                .setLocale("ru")
-                                .toFormat("hh:mm dd MMMM yyyy")}
-                            </div>
-                          </Comment.Metadata>
-                          <Comment.Text>{message.message}</Comment.Text>
-                        </Comment.Content>
-                      </div>
-                    ))
-                ) : (
-                  <CustomDimmer active showLoader />
-                )}
-              </InfiniteScrollReverse>
-            )}
-            {!_.isEmpty(messages) && (
-              <TextArea
-                value={msgValue}
-                onChange={this.handleChangeMsg}
-                onSubmit={this.handleSendMessage}
-              />
-            )}
+                      ))
+                  ) : (
+                    <CustomDimmer active showLoader />
+                  )}
+                </InfiniteScrollReverse>
+              )}
+              {!_.isEmpty(messages) && (
+                <TextArea
+                  onKeyPress={this.handleOnChange}
+                  onButtonClick={this.handleSendMessage}
+                  innerRef={this.textAreaRef}
+                  inputHeight={inputHeight}
+                />
+              )}
+            </div>
           </Grid.Column>
         </Grid>
       </Segment>

@@ -1,0 +1,10 @@
+.userListItem {
+  padding: 15px !important;
+  cursor: pointer;
+  &:hover {
+    background: #ececec;
+  }
+  &.active {
+    background: #ececec;
+  }
+}

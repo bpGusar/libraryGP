@@ -1,27 +1,26 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from "react";
-import { Form, Button } from "semantic-ui-react";
-import ContentEditable from "react-contenteditable";
+import { Form, Button, Icon } from "semantic-ui-react";
 
 import s from "./index.module.scss";
 
 export default function TextArea(props) {
-  // доделать высоту при ентер и т.д
-  const { value, onChange, onSubmit } = props;
+  const { onKeyPress, innerRef, inputHeight, onButtonClick } = props;
   return (
-    <Form reply className={s.messageForm}>
-      <ContentEditable
-        onChange={onChange}
-        html={value}
+    <Form className={s.messageForm}>
+      <textarea
+        onKeyPress={onKeyPress}
+        ref={innerRef}
         className={s.messageTextAreaInput}
+        style={{
+          minHeight: inputHeight,
+          maxHeight: inputHeight,
+          overflow: inputHeight === 97 ? "hidden auto" : "hidden"
+        }}
+        placeholder="Введите сообщение..."
       />
-      <Button
-        content="Отправить"
-        labelPosition="left"
-        icon="edit"
-        primary
-        onClick={() => onSubmit()}
-      />
+      <Button color="blue" icon onClick={onButtonClick}>
+        <Icon name="send" />
+      </Button>
     </Form>
   );
 }
