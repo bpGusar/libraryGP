@@ -139,19 +139,13 @@ function postNewMessage(req, res) {
           },
           {
             lastMessage: {
-              message: body.message
-                .trim()
-                .replace(/(\r\n|\r|\n){2}/g, "$1")
-                .replace(/(\r\n|\r|\n){3,}/g, "$1\n"),
+              message: body.message,
               from: middlewareUserInfo._id,
               createdAt: Date.now()
             },
             $push: {
               messages: {
-                message: body.message
-                  .trim()
-                  .replace(/(\r\n|\r|\n){2}/g, "$1")
-                  .replace(/(\r\n|\r|\n){3,}/g, "$1\n"),
+                message: body.message,
                 from: middlewareUserInfo._id,
                 createdAt: Date.now()
               }
@@ -197,19 +191,13 @@ function postNewMessage(req, res) {
         const newChat = new Chats({
           members: [middlewareUserInfo._id, body.toId],
           lastMessage: {
-            message: body.message
-              .trim()
-              .replace(/(\r\n|\r|\n){2}/g, "$1")
-              .replace(/(\r\n|\r|\n){3,}/g, "$1\n"),
+            message: body.message,
             from: middlewareUserInfo._id,
             createdAt: Date.now()
           },
           messages: [
             {
-              message: body.message
-                .trim()
-                .replace(/(\r\n|\r|\n){2}/g, "$1")
-                .replace(/(\r\n|\r|\n){3,}/g, "$1\n"),
+              message: body.message,
               from: middlewareUserInfo._id,
               createdAt: Date.now()
             }

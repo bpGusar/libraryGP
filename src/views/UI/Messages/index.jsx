@@ -30,7 +30,6 @@ class ImPage extends Component {
       selectedChat: {},
       maxMessages: 0,
       messages: [],
-      msgValue: "",
       isLoading: false,
       messagesWhichIsNotUpload: [],
       options: {
@@ -61,13 +60,14 @@ class ImPage extends Component {
     this.setState(this.initialState);
   }
 
-  handleSendMessage = () => {
-    const { msgValue, selectedChat, messagesWhichIsNotUpload } = this.state;
+  handleSendMessage = textAreaValue => {
+    const { selectedChat, messagesWhichIsNotUpload } = this.state;
     const { currentUser } = this.props;
-    if (msgValue !== "") {
+    const value = textAreaValue.trim();
+    if (value !== "") {
       const newMsg = {
         _id: uniqid(),
-        message: msgValue,
+        message: value,
         from: currentUser._id,
         createdAt: new Date().toISOString()
       };
@@ -75,7 +75,6 @@ class ImPage extends Component {
       this.textAreaRef.current.value = "";
 
       this.setState(ps => ({
-        msgValue: "",
         inputHeight: this.initialState.inputHeight,
         messages: [...ps.messages, newMsg],
         messagesWhichIsNotUpload: [...ps.messagesWhichIsNotUpload, newMsg._id]
@@ -83,7 +82,7 @@ class ImPage extends Component {
 
       axs
         .post(`/chats/messages`, {
-          message: msgValue,
+          message: value,
           toId: selectedChat.peer._id
         })
         .then(resp => {
@@ -126,7 +125,7 @@ class ImPage extends Component {
   handleOnChange = e => {
     const keyCode = e.keyCode ? e.keyCode : e.which;
     if (keyCode === 13 && !e.shiftKey) {
-      this.handleSendMessage();
+      this.handleSendMessage(e.target.value);
       e.preventDefault();
       e.stopPropagation();
     }
@@ -134,11 +133,6 @@ class ImPage extends Component {
       this.setState(ps => ({
         inputHeight: ps.inputHeight <= 96 ? ps.inputHeight + 15 : ps.inputHeight
       }));
-    }
-    if (keyCode !== 13) {
-      this.setState({
-        msgValue: e.target.value
-      });
     }
   };
 
