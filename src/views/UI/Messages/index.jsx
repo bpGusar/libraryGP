@@ -71,13 +71,16 @@ class ImPage extends Component {
         from: currentUser._id,
         createdAt: new Date().toISOString()
       };
+
       this.textAreaRef.current.value = "";
+
       this.setState(ps => ({
         msgValue: "",
         inputHeight: this.initialState.inputHeight,
         messages: [...ps.messages, newMsg],
         messagesWhichIsNotUpload: [...ps.messagesWhichIsNotUpload, newMsg._id]
       }));
+
       axs
         .post(`/chats/messages`, {
           message: msgValue,
