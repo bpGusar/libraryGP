@@ -33,9 +33,7 @@ io.on("connection", socket => {
     socket.leave(room);
   });
 
-  socket.on("disconnect", () => {
-    socket.leaveAll();
-  });
+  socket.on("disconnect", () => {});
 });
 
 const corsOptions = {

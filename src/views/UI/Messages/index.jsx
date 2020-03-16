@@ -41,13 +41,7 @@ class ImPage extends Component {
 
     this.state = this.initialState;
 
-    this.socket = io.connect();
-
-    this.socket.emit("room.join", `chatList#${props.currentUser._id}`);
-    this.socket.on("chat.new_msg", data => this.handleReceiveNewMessage(data));
-    this.socket.on("chat.new_chatItem", data =>
-      this.handleReceiveNewChatItem(data)
-    );
+    this.setUpSocketIoConnecions();
 
     this.textAreaRef = React.createRef();
   }
@@ -59,6 +53,17 @@ class ImPage extends Component {
   componentWillUnmount() {
     this.setState(this.initialState);
   }
+
+  setUpSocketIoConnecions = () => {
+    const { currentUser } = this.props;
+    this.socket = io.connect();
+
+    this.socket.emit("room.join", `chatList#${currentUser._id}`);
+    this.socket.on("chat.new_msg", data => this.handleReceiveNewMessage(data));
+    this.socket.on("chat.new_chatItem", data =>
+      this.handleReceiveNewChatItem(data)
+    );
+  };
 
   handleSendMessage = textAreaValue => {
     const { selectedChat, messagesWhichIsNotUpload } = this.state;
@@ -331,7 +336,9 @@ class ImPage extends Component {
               {!_.isEmpty(messages) && (
                 <TextArea
                   onKeyPress={this.handleOnChange}
-                  onButtonClick={this.handleSendMessage}
+                  onButtonClick={() =>
+                    this.handleSendMessage(this.textAreaRef.current.value)
+                  }
                   innerRef={this.textAreaRef}
                   inputHeight={inputHeight}
                 />
