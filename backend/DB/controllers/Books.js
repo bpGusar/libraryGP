@@ -146,7 +146,7 @@ function addBook(req, res) {
   const posterName = `book_poster_${Date.now()}.png`;
   const pathToNewPoster = path.join(
     __dirname,
-    `../../server/${servConf.filesPaths.bookPoster.mainFolder}`,
+    `../../${servConf.filesPaths.bookPoster.mainFolder}`,
     posterName
   );
 
