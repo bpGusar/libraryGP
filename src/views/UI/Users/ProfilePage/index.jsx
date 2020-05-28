@@ -123,7 +123,7 @@ class ProfilePage extends Component {
         )
       },
       {
-        menuItem: "История арендованных",
+        menuItem: "История забронированных книг",
         pane: (
           <Tab.Pane attached={false} className={s.tabPane}>
             <ArchivedInfo
