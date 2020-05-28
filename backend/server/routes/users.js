@@ -51,7 +51,7 @@ app.get(
     BookedBooksArchiveContr.findBooks(
       req,
       res,
-      { "bookedBookInfo.userInfo._id": ObjectId(userId) },
+      { "bookedBookInfo.userId": ObjectId(userId) },
       false
     );
   }

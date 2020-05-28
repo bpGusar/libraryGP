@@ -41,7 +41,7 @@ function rejectOrdering(req, res) {
           } else {
             const newArchivedBookedBook = new BookedBooksArchive({
               comment: req.body.comment,
-              orderedBookInfo: {
+              bookedBookInfo: {
                 bookId: bookedBook[0].bookId,
                 userId: bookedBook[0].userId,
                 createdAt: bookedBook[0].createdAt
@@ -49,6 +49,8 @@ function rejectOrdering(req, res) {
               userId: req.middlewareUserInfo._id,
               status: req.body.status
             });
+
+            console.log(newArchivedBookedBook);
 
             newArchivedBookedBook.save(saveErr => {
               if (saveErr) {
@@ -105,7 +107,7 @@ function rejectOrdering(req, res) {
  */
 function findBooks(req, res, data = {}, useParse = true) {
   let { options } = req.query;
-
+  console.log(data);
   if (_.isUndefined(options)) {
     options = {
       page: 1,

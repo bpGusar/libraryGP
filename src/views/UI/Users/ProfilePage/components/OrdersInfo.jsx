@@ -46,13 +46,9 @@ export default class OrdersInfo extends Component {
         [bookedBook._id]: "loading"
       }
     });
+    console.log(bookedBook);
     axs
-      .post(`/booked-books/cancel-reservation`, {
-        bookedBookInfo: {
-          createdAt: bookedBook.createdAt,
-          bookId: bookedBook.bookId._id,
-          userId: bookedBook.userId._id
-        },
+      .post(`/booked-books/${bookedBook._id}/cancel-reservation`, {
         status: "canceled",
         comment: "Отмена по инициативе пользователя"
       })
