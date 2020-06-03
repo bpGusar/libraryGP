@@ -50,8 +50,6 @@ function rejectOrdering(req, res) {
               status: req.body.status
             });
 
-            console.log(newArchivedBookedBook);
-
             newArchivedBookedBook.save(saveErr => {
               if (saveErr) {
                 res.json(
@@ -107,7 +105,6 @@ function rejectOrdering(req, res) {
  */
 function findBooks(req, res, data = {}, useParse = true) {
   let { options } = req.query;
-  console.log(data);
   if (_.isUndefined(options)) {
     options = {
       page: 1,

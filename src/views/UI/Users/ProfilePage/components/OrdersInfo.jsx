@@ -46,7 +46,6 @@ export default class OrdersInfo extends Component {
         [bookedBook._id]: "loading"
       }
     });
-    console.log(bookedBook);
     axs
       .post(`/booked-books/${bookedBook._id}/cancel-reservation`, {
         status: "canceled",
