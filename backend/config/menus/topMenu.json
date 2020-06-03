@@ -1,8 +1,7 @@
 {
   "always": [
     { "to": "/", "name": "Главная" },
-    { "to": "/blog", "name": "Блог" },
-    { "to": "/im", "name": "Сообщения" }
+    { "to": "/blog", "name": "Блог" }
   ],
   "authorized": [],
   "onlyNotAuthorized": [{ "to": "/login", "name": "Вход" }]

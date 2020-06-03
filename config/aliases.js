@@ -9,6 +9,5 @@ module.exports = {
   "@DUI": path.resolve("src/views/Dashboard"),
   "@act": path.resolve("src/common/store/action"),
   "@store": path.resolve("src/common/store/index"),
-  "@utils": path.resolve("src/common/utils"),
-  "@msg": path.resolve("src/common/messages")
+  "@utils": path.resolve("src/common/utils")
 };

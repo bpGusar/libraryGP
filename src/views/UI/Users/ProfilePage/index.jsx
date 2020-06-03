@@ -15,7 +15,6 @@ import { PARAMS } from "@store";
 import axs from "@axios";
 
 import s from "./index.module.scss";
-import MessageButton from "./components/MessageButton";
 
 const userGroup = {
   0: "Пользователь",
@@ -181,7 +180,6 @@ class ProfilePage extends Component {
     const isMyProfileOrAdmin =
       userInfoFromStore._id === user._id ||
       userInfoFromStore.userGroup === userRoles.admin.value;
-    const isMyProfile = userInfoFromStore._id === user._id;
 
     return (
       <>
@@ -199,12 +197,6 @@ class ProfilePage extends Component {
                   onSave={this.handleSaveAvatar}
                   oldAvatar={oldAvatar}
                 />
-                {!isMyProfile && (
-                  <>
-                    <MessageButton userId={user._id} />
-                    <br />
-                  </>
-                )}
 
                 <EditUser
                   trigger={<Button fluid>Редактировать профиль</Button>}
