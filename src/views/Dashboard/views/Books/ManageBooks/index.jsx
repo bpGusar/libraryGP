@@ -26,6 +26,7 @@ import ResultFilters from "./components/ResultFilters";
 
 import { PARAMS } from "@store";
 import MSG from "@msg";
+import { isAdmin } from "@utils";
 
 /**
  * Виджет поиска книг
@@ -74,7 +75,7 @@ class ManageBooks extends Component {
         sort: "desc",
         limit: 10,
         page: 1,
-        displayMode: "all"
+        displayMode: isAdmin() ? "all" : "false"
       },
       deleteOrRestoreBookId: "",
       deleteBookModalOpen: false,
