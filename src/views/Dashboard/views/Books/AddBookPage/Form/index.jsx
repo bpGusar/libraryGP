@@ -193,6 +193,16 @@ class AddBookForm extends React.Component {
     const { isFormLoaded, msg, isEdit, editComment } = this.state;
     const { bookInfo } = bookToDB.book;
 
+    const isPageCountEmpty =
+      Number(bookInfo.pageCount) === 0 && _.isEmpty(bookInfo.pageCount);
+
+    const isMaxAvailableBooksNumberNotCorrect =
+      Number(bookToDB.book.stockInfo.maxAvailableBooks) === 0 &&
+      _.isEmpty(bookToDB.book.stockInfo.maxAvailableBooks);
+
+    const isFreeForBookingNumberCorrect =
+      Number(bookToDB.book.stockInfo.freeForBooking) <=
+      Number(bookToDB.book.stockInfo.maxAvailableBooks);
     return (
       <>
         {msg.error && (
@@ -346,6 +356,7 @@ class AddBookForm extends React.Component {
                   onChange={e => this.handleChangeBookInfo(e.currentTarget)}
                   max={bookToDB.book.stockInfo.maxAvailableBooks}
                   value={bookToDB.book.stockInfo.freeForBooking}
+                  disabled={isMaxAvailableBooksNumberNotCorrect}
                 />
                 <p className={s.fieldSubText}>
                   Не может превышать значение в поле Максимальное количество
@@ -380,7 +391,15 @@ class AddBookForm extends React.Component {
                 />
               </Form.Field>
             )}
-            <Button type="submit" positive>
+            <Button
+              type="submit"
+              positive
+              disabled={
+                isMaxAvailableBooksNumberNotCorrect ||
+                isPageCountEmpty ||
+                !isFreeForBookingNumberCorrect
+              }
+            >
               {isEdit ? "Сохранить" : "Добавить"}
             </Button>
           </Form>

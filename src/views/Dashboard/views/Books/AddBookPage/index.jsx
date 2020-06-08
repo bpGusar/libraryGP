@@ -106,7 +106,8 @@ class FindBookPage extends React.Component {
                       <div className="header">Поиск с помощью Google Books</div>
                       <div className="content">
                         Введите номер ISBN в исходном формате. Для более точного
-                        поиска попробуйте ввести ISBN без тире.
+                        поиска попробуйте ввести ISBN без тире. Так же можно
+                        искать по названию книги.
                       </div>
                       <br />
                       <Button size="small" onClick={() => this.hidePopup4eva()}>
