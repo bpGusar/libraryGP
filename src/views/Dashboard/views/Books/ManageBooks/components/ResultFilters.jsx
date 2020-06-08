@@ -2,7 +2,7 @@ import React from "react";
 import { Form } from "semantic-ui-react";
 
 export default function ResultFilters(props) {
-  const { options, onChangeLimit, onChangeResultFilterValue } = props;
+  const { options, onChangeLimit, onChangeResultFilterValue, isAdmin } = props;
   return (
     <Form.Group widths="equal">
       <Form.Dropdown
@@ -23,31 +23,33 @@ export default function ResultFilters(props) {
           }
         ]}
       />
-      <Form.Dropdown
-        label="Что показывать"
-        selection
-        defaultValue={options.displayMode}
-        onChange={(e, { value }) =>
-          onChangeResultFilterValue(value, "displayMode")
-        }
-        options={[
-          {
-            key: 0,
-            text: "Всех",
-            value: "all"
-          },
-          {
-            key: 1,
-            text: "Только скрытые",
-            value: "true"
-          },
-          {
-            key: 2,
-            text: "Только не скрытые",
-            value: "false"
+      {isAdmin && (
+        <Form.Dropdown
+          label="Что показывать"
+          selection
+          defaultValue={options.displayMode}
+          onChange={(e, { value }) =>
+            onChangeResultFilterValue(value, "displayMode")
           }
-        ]}
-      />
+          options={[
+            {
+              key: 0,
+              text: "Всех",
+              value: "all"
+            },
+            {
+              key: 1,
+              text: "Только скрытые",
+              value: "true"
+            },
+            {
+              key: 2,
+              text: "Только не скрытые",
+              value: "false"
+            }
+          ]}
+        />
+      )}
       <Form.Input
         label="Элементов на странице"
         type="number"

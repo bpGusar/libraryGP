@@ -372,6 +372,7 @@ class ManageBooks extends Component {
                 options={options}
                 onChangeResultFilterValue={this.handleChangeResultFilterValue}
                 onChangeLimit={this.handleChangeLimit}
+                isAdmin={isAdmin()}
               />
             </Form>
           )}
