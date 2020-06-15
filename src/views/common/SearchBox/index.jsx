@@ -19,7 +19,8 @@ class SearchBox extends Component {
         fetch_type: 1,
         sort: "desc",
         limit: 10,
-        page: 1
+        page: 1,
+        displayMode: "false"
       }
     };
   }
