@@ -22,10 +22,9 @@ import FormContainer from "@DUI/common/FormContainer";
 import ModalWindow from "@DUI/common/Modal";
 
 import axs from "@axios";
-import ResultFilters from "./components/ResultFilters";
-
-import { PARAMS } from "@store";
 import MSG from "@msg";
+import { PARAMS } from "@store";
+import ResultFilters from "./components/ResultFilters";
 
 /**
  * Виджет поиска книг

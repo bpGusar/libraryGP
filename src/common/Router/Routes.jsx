@@ -45,10 +45,9 @@ import AddNews from "@DUI/views/Blog/AddNews";
 import ManageBlogPosts from "@DUI/views/Blog/ManageBlogPosts";
 import SettingsPage from "@DUI/views/Settings";
 import DashboardPage from "@DUI";
+import { PARAMS } from "@store";
 
 import PrivateRoute from "./PrivateRoute";
-
-import { PARAMS } from "@store";
 
 const AppRoute = ({ component: Component, layout: Layout, ...rest }) => (
   <Route

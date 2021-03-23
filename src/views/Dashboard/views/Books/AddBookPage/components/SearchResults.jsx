@@ -14,12 +14,11 @@ import {
 } from "semantic-ui-react";
 import { DateTime } from "luxon";
 
-import ResultsModal from "./ResultsModal";
-
 import { PARAMS } from "@store";
 import { storeData } from "@act";
 
 import axs from "@axios";
+import ResultsModal from "./ResultsModal";
 
 class SearchResults extends React.Component {
   static handleFindInfoInDB(url, data, stateProp, postUrl) {

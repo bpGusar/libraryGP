@@ -10,7 +10,6 @@ import menu from "./menu";
 import orderedBooks from "./orderedBooks";
 import services from "./services";
 import settings from "./settings";
-import uploadFiles from "./uploadFiles";
 import users from "./users";
 
 // eslint-disable-next-line import/prefer-default-export
@@ -27,6 +26,5 @@ export {
   orderedBooks,
   services,
   settings,
-  uploadFiles,
   users
 };

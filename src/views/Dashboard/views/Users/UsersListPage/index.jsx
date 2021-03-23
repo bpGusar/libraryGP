@@ -14,10 +14,9 @@ import _ from "lodash";
 import { Link } from "react-router-dom";
 
 import FormContainer from "@DUI/common/FormContainer";
+import axs from "@axios";
 import EditUser from "../EditUser";
 import ResultFilters from "./components/ResultFilters";
-
-import axs from "@axios";
 
 class UsersList extends Component {
   constructor(props) {

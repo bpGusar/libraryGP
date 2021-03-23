@@ -19,9 +19,8 @@ import UniqueDropdown from "@views/Common/UniqueDropdown/";
 import FormContainer from "@DUI/common/FormContainer";
 
 import axs from "@axios";
-import ResultFilters from "./components/ResultFilters";
-
 import { PARAMS } from "@store";
+import ResultFilters from "./components/ResultFilters";
 
 class OrdersArchive extends Component {
   constructor(props) {

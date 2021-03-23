@@ -5,14 +5,12 @@ import { Grid, Segment, Header, Label, Tab, Button } from "semantic-ui-react";
 import { branch } from "baobab-react/higher-order";
 
 import Loader from "@views/Common/Loader";
+import { PARAMS } from "@store";
+import axs from "@axios";
 import OrdersInfo from "./components/OrdersInfo";
 import ArchivedInfo from "./components/ArchivedInfo";
 import EditUser from "./components/EditUser";
 import Avatar from "./components/Avatar";
-
-import { PARAMS } from "@store";
-
-import axs from "@axios";
 
 import s from "./index.module.scss";
 import MessageButton from "./components/MessageButton";

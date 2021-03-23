@@ -82,7 +82,7 @@ export default class ArchivedInfo extends Component {
       <>
         <Header as="h3" attached="top">
           Всего:
-          {<Label>{maxElements}</Label>}
+          <Label>{maxElements}</Label>
         </Header>
         <Segment loading={isLoading} attached>
           {archivedBooks.length !== 0 && (

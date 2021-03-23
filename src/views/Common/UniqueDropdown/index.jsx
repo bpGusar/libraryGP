@@ -5,12 +5,11 @@ import _ from "lodash";
 
 import { Form, Message, Button, Icon } from "semantic-ui-react";
 
-import AddNew from "./AddNew";
-
 import axs from "@axios";
 
 import { storeData } from "@act";
 
+import AddNew from "./AddNew";
 import s from "./index.module.scss";
 
 /**

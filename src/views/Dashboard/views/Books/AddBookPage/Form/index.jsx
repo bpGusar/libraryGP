@@ -11,12 +11,12 @@ import qStr from "query-string";
 import { Form, Button, Message, Segment, Header } from "semantic-ui-react";
 
 import UniqueDropdown from "@views/Common/UniqueDropdown/";
-import Poster from "./components/Poster/Poster";
 
 import { PARAMS, getInitialState } from "@store";
 import { storeData } from "@act";
 
 import axs from "@axios";
+import Poster from "./components/Poster/Poster";
 
 import s from "./index.module.scss";
 

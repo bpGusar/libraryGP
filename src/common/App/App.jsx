@@ -9,12 +9,11 @@ import { createBrowserHistory } from "history";
 import "dotenv/config";
 import _ from "lodash";
 
-import AppRoutes from "../Router/Routes";
-
 import axs from "@axios";
 
 import store, { PARAMS } from "@store";
 import { isAuthInProgress, storeData } from "@act";
+import AppRoutes from "../Router/Routes";
 
 const history = createBrowserHistory();
 

@@ -3,9 +3,8 @@ import _ from "lodash";
 
 import { Header } from "semantic-ui-react";
 import CustomLoader from "@commonViews/Loader";
-import Text from "../components/Text";
-
 import axs from "@axios";
+import Text from "../components/Text";
 
 export default class BlogFullPage extends Component {
   constructor(props) {

@@ -12,10 +12,9 @@ import {
 } from "semantic-ui-react";
 
 import Pagination from "@commonViews/Pagination";
+import axs from "@axios";
 import ItemElement from "./components/ItemElement";
 import ResultFilters from "./components/ResultFilters";
-
-import axs from "@axios";
 
 export default class ShowElements extends Component {
   constructor(props) {

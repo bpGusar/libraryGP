@@ -10,11 +10,10 @@ import uniqid from "uniqid";
 import cn from "classnames";
 import InfiniteScrollReverse from "react-infinite-scroll-reverse";
 
-import CustomDimmer from "../../Common/CustomDimmer";
-
 import axs from "@axios";
 
 import { PARAMS } from "@store";
+import CustomDimmer from "../../Common/CustomDimmer";
 
 import s from "./index.module.scss";
 import TextArea from "./components/TextArea";

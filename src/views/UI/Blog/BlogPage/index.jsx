@@ -4,9 +4,8 @@ import _ from "lodash";
 
 import CustomLoader from "@commonViews/Loader";
 import Pagination from "@commonViews/Pagination";
-import BlogItem from "./Item";
-
 import axs from "@axios";
+import BlogItem from "./Item";
 
 export default class BlogPage extends React.Component {
   constructor(props) {
